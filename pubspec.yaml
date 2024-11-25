@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.6
+  flutter_gen: ^5.8.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
@@ -25,3 +26,18 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    - assets/images/
+    - assets/icons/
+    - assets/videos/
+
+flutter_gen:
+  output: lib/gen/
+
+  integrations:
+    flutter_svg: true
+
+  assets:
+    enabled: true
+    outputs:
+      class_name: AppAssets
