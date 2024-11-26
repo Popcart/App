@@ -1,1 +1,60 @@
-export 'view/app.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:toastification/toastification.dart';
+
+import 'router.dart';
+
+
+// final contextGlobalKey = GlobalKey();
+
+class PopCart extends StatelessWidget {
+  const PopCart({super.key});
+
+  // final _appRouter = AppRouter();
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+      
+      ],
+      child: ToastificationWrapper(
+        child: ScreenUtilInit(
+          designSize: const Size(393, 852),
+          builder: (_, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: const TextScaler.linear(0.8)),
+            child: MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                scaffoldBackgroundColor: Colors.white,
+                textSelectionTheme: const TextSelectionThemeData(
+                  // cursorColor: greenPrimaryColor,
+                ),
+               
+                appBarTheme: const AppBarTheme(
+                  centerTitle: false,
+                  surfaceTintColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  elevation: 0.1,
+                  shadowColor: Color(0xff091824),
+                  titleTextStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 21,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              routerConfig: router,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

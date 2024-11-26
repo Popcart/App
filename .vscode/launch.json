@@ -5,30 +5,64 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch development",
+      "name": "development",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_development.dart",
+      "program": "lib/app/main.dev.dart",
+      "args": ["--flavor", "development", "--target", "lib/app/main.dev.dart"]
+    },
+    {
+      "name": "development-release",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/app/main.dev.dart",
       "args": [
         "--flavor",
         "development",
         "--target",
-        "lib/main_development.dart"
+        "lib/app/main.dev.dart",
+        "--release"
       ]
     },
     {
-      "name": "Launch staging",
+      "name": "staging",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_staging.dart",
-      "args": ["--flavor", "staging", "--target", "lib/main_staging.dart"]
+      "program": "lib/app/main.qa.dart",
+      "args": ["--flavor", "staging", "--target", "lib/app/main.qa.dart"]
     },
     {
-      "name": "Launch production",
+      "name": "staging-release",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_production.dart",
-      "args": ["--flavor", "production", "--target", "lib/main_production.dart"]
+      "program": "lib/app/main.qa.dart",
+      "args": [
+        "--flavor",
+        "staging",
+        "--target",
+        "lib/app/main.qa.dart",
+        "--release"
+      ]
+    },
+    {
+      "name": "production",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/app/main.prod.dart",
+      "args": ["--flavor", "production", "--target", "lib/app/main.prod.dart"]
+    },
+    {
+      "name": "production-release",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/app/main.prod.dart",
+      "args": [
+        "--flavor",
+        "production",
+        "--target",
+        "lib/app/main.prod.dart",
+        "--release"
+      ]
     }
   ]
 }
