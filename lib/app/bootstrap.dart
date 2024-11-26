@@ -154,22 +154,22 @@ Future<void> bootstrap(
       Bloc.observer = AppBlocObserver();
     }
     await notificationPlugin.initialize(initializationSettings);
-    await Firebase.initializeApp();
-    await FirebaseCrashlytics.instance
-        .setCrashlyticsCollectionEnabled(!kDebugMode);
-    FlutterError.onError = (errorDetails) {
-      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    };
+    // await Firebase.initializeApp();
+    // await FirebaseCrashlytics.instance
+    //     .setCrashlyticsCollectionEnabled(!kDebugMode);
+    // FlutterError.onError = (errorDetails) {
+    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    // };
 
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
-    await setupLocator(environment: environment);
-    await locator.get<SharedPrefs>().init();
-    await FirebaseMessaging.instance.requestPermission(provisional: true);
-    FirebaseMessaging.onMessage.listen(onMessage);
-    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+    // PlatformDispatcher.instance.onError = (error, stack) {
+    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    //   return true;
+    // };
+    // await setupLocator(environment: environment);
+    // await locator.get<SharedPrefs>().init();
+    // await FirebaseMessaging.instance.requestPermission(provisional: true);
+    // FirebaseMessaging.onMessage.listen(onMessage);
+    // FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
     // await PrivacyScreen.instance.enable(
     //   iosOptions: const PrivacyIosOptions(
     //     privacyImageName: 'LaunchImage',

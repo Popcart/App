@@ -11,7 +11,7 @@ final router = GoRouter(
   debugLogDiagnostics: kDebugMode,
   navigatorKey: rootNavigatorKey,
   observers: [
-    FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+    // FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
   ],
   routes: [
     GoRoute(
