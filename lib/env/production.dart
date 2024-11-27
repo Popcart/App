@@ -11,11 +11,8 @@ final class ProdEnv implements Env, EnvFields {
   @EnviedField(varName: 'BASE_URL')
   final String baseUrl = _Env.baseUrl;
 
-  // @override
-  // @EnviedField(varName: 'PLACES_API_KEY')
-  // final String placesApiKey = _Env.placesApiKey;
-
-  // @override
-  // @EnviedField(varName: 'APP_VERSION')
-  // final String appVersion = _Env.appVersion;
+  
+  @override
+  @EnviedField(varName: 'INTRO_GIF_URL')
+  final String introGifUrl = _Env.introGifUrl;
 }

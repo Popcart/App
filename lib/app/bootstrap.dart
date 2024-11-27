@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -9,11 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:popcart/app/shared_prefs.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:popcart/env/env.dart';
 import 'package:sprintf/sprintf.dart';
-
-import 'service_locator.dart';
 
 class AppBlocObserver extends BlocObserver {
   @override
@@ -107,7 +104,6 @@ void onMessage(RemoteMessage message) {
     ),
   );
   log(message.toString(), name: 'onMessage');
-  
 }
 
 Future<void> onBackgroundMessage(RemoteMessage message) async {
@@ -180,6 +176,7 @@ Future<void> bootstrap(
     //   ),
     //   backgroundColor: Colors.white.withOpacity(0),
     // );
+    MediaKit.ensureInitialized();
     runApp(await builder());
   } catch (e, s) {
     await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);

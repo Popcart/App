@@ -12,4 +12,7 @@ final class DevEnv implements Env, EnvFields {
   @EnviedField(varName: 'BASE_URL')
   final String baseUrl = _Env.baseUrl;
 
+  @override
+  @EnviedField(varName: 'INTRO_GIF_URL')
+  final String introGifUrl = _Env.introGifUrl;
 }

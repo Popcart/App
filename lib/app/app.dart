@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:popcart/app/router.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
-
-import 'router.dart';
-
 
 // final contextGlobalKey = GlobalKey();
 
@@ -28,9 +26,8 @@ class PopCart extends StatelessWidget {
             theme: ThemeData(
               scaffoldBackgroundColor: Colors.white,
               textSelectionTheme: const TextSelectionThemeData(
-                // cursorColor: greenPrimaryColor,
-              ),
-             
+                  // cursorColor: greenPrimaryColor,
+                  ),
               appBarTheme: const AppBarTheme(
                 centerTitle: false,
                 surfaceTintColor: Colors.white,

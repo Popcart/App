@@ -124,7 +124,7 @@ test/**/failures/*.*
 encodedDevEnvBase64.txt
 encodedQAEnvBase64.txt
 encodedProdEnvBase64.txt
-
+*.gif
 # FVM Version Cache
 .fvm/
 ios/Podfile.lock
