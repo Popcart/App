@@ -11,8 +11,9 @@ Future<void> setupLocator({
   required AppEnvironment environment,
 }) async {
   locator
-    ..registerSingleton<SharedPrefs>(SharedPrefs())
-    ..registerLazySingleton<AppEnvironment>(() => environment);
+    ..registerLazySingleton<AppEnvironment>(() => environment)
+    ..registerSingleton<SharedPrefs>(SharedPrefs());
+
   // ..registerLazySingleton<ApiHandler>(
   //   () => ApiHandler(baseUrl: Env().baseUrl),
   //   instanceName: ApiService.auth.name,

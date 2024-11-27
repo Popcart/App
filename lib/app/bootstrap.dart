@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/env/env.dart';
 // ignore: depend_on_referenced_packages
 import 'package:sprintf/sprintf.dart';
@@ -139,6 +143,8 @@ Future<void> bootstrap(
 }) async {
   try {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    await setupLocator(environment: environment);
+    await locator.get<SharedPrefs>().init();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
     FlutterError.onError = (details) {
       log(
@@ -178,9 +184,33 @@ Future<void> bootstrap(
     //   backgroundColor: Colors.white.withOpacity(0),
     // );
     MediaKit.ensureInitialized();
+    final isFirstTime = locator.get<SharedPrefs>().firstTime;
+    if (isFirstTime == null) {
+      await downloadSplashFromServer();
+      locator.get<SharedPrefs>().firstTime = false;
+    }
     runApp(await builder());
   } catch (e, s) {
-    await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
+    print(e);
+    print(s);
+    // await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
   }
   FlutterNativeSplash.remove();
+}
+
+Future<bool> downloadSplashFromServer() async {
+  print('Downloading splash from server');
+  final splashUrl = Env().introGifUrl;
+  final savePath = await getTemporaryDirectory();
+  final filePath = '${savePath.path}/splash.gif';
+  final fileExists = File(filePath).existsSync();
+  if (!fileExists) {
+    final response = await Dio().download(splashUrl, filePath);
+    if (response.statusCode == 200) {
+      return true;
+    }
+  } else {
+    return false;
+  }
+  return true;
 }
