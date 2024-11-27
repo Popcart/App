@@ -72,3 +72,9 @@ targets:
         enabled: true
         options:
           flutter_svg: true
+
+flutter_native_splash:
+  background_image: "assets/images/splash_image.png"
+  android_12:
+    color: "#111214"
+    icon_background_color: "#111214"

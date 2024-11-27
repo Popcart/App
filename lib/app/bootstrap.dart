@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:popcart/env/env.dart';
+// ignore: depend_on_referenced_packages
 import 'package:sprintf/sprintf.dart';
 
 class AppBlocObserver extends BlocObserver {
