@@ -95,11 +95,17 @@ abstract class AppLocalizations {
     Locale('es')
   ];
 
-  /// Text shown in the AppBar of the Counter Page
+  /// No description provided for @get_started.
   ///
   /// In en, this message translates to:
-  /// **'Counter'**
-  String get counterAppBarTitle;
+  /// **'Get Started'**
+  String get get_started;
+
+  /// No description provided for @get_started_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'By signing up you agree to the Popcart terms of service and other privacy policy details'**
+  String get get_started_sub;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

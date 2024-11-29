@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "544061902527",
+    "project_id": "popcart-c8a2d",
+    "storage_bucket": "popcart-c8a2d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544061902527:android:a8b20a1a9a0009514ac00a",
+        "android_client_info": {
+          "package_name": "com.popcart.africa.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtsGwXdt-tIdqTKsPTV2wkJq8J3dPRcfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

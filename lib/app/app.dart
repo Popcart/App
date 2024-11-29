@@ -24,10 +24,23 @@ class PopCart extends StatelessWidget {
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
+              fontFamily: 'WorkSans',
               scaffoldBackgroundColor: Colors.white,
               textSelectionTheme: const TextSelectionThemeData(
                   // cursorColor: greenPrimaryColor,
                   ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  fixedSize: const Size(double.infinity, 56),
+                ),
+              ),
               appBarTheme: const AppBarTheme(
                 centerTitle: false,
                 surfaceTintColor: Colors.white,

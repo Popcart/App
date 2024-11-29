@@ -7,5 +7,8 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get counterAppBarTitle => 'Counter';
+  String get get_started => 'Get Started';
+
+  @override
+  String get get_started_sub => 'By signing up you agree to the Popcart terms of service and other privacy policy details';
 }

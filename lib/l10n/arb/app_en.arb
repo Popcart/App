@@ -1,7 +1,5 @@
 {
     "@@locale": "en",
-    "counterAppBarTitle": "Counter",
-    "@counterAppBarTitle": {
-        "description": "Text shown in the AppBar of the Counter Page"
-    }
+    "get_started": "Get Started",
+    "get_started_sub" : "By signing up you agree to the Popcart terms of service and other privacy policy details"
 }

@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -157,22 +159,21 @@ Future<void> bootstrap(
       Bloc.observer = AppBlocObserver();
     }
     await notificationPlugin.initialize(initializationSettings);
-    // await Firebase.initializeApp();
-    // await FirebaseCrashlytics.instance
-    //     .setCrashlyticsCollectionEnabled(!kDebugMode);
-    // FlutterError.onError = (errorDetails) {
-    //   FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-    // };
+    await Firebase.initializeApp();
+    await FirebaseCrashlytics.instance
+        .setCrashlyticsCollectionEnabled(!kDebugMode);
+    FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
 
-    // PlatformDispatcher.instance.onError = (error, stack) {
-    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //   return true;
-    // };
-    // await setupLocator(environment: environment);
-    // await locator.get<SharedPrefs>().init();
-    // await FirebaseMessaging.instance.requestPermission(provisional: true);
-    // FirebaseMessaging.onMessage.listen(onMessage);
-    // FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+  
+    await FirebaseMessaging.instance.requestPermission(provisional: true);
+    FirebaseMessaging.onMessage.listen(onMessage);
+    FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
     // await PrivacyScreen.instance.enable(
     //   iosOptions: const PrivacyIosOptions(
     //     privacyImageName: 'LaunchImage',
@@ -191,9 +192,8 @@ Future<void> bootstrap(
     }
     runApp(await builder());
   } catch (e, s) {
-    print(e);
-    print(s);
-    // await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
+    
+    await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
   }
   FlutterNativeSplash.remove();
 }
