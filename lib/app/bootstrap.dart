@@ -197,7 +197,6 @@ Future<void> bootstrap(
 }
 
 Future<bool> downloadSplashFromServer() async {
-  print('Downloading splash from server');
   final splashUrl = Env().introGifUrl;
   final savePath = await getTemporaryDirectory();
   final filePath = '${savePath.path}/splash.gif';

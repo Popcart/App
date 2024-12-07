@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:popcart/app/router.dart';
+import 'package:popcart/core/colors.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
-
-import '../core/colors.dart';
 
 // final contextGlobalKey = GlobalKey();
 
 class PopCart extends StatelessWidget {
   const PopCart({super.key});
-
-  // final _appRouter = AppRouter();
 
   @override
   Widget build(BuildContext context) {

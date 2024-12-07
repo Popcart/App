@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+// import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 
