@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
@@ -184,7 +183,6 @@ Future<void> bootstrap(
     //   ),
     //   backgroundColor: Colors.white.withOpacity(0),
     // );
-    MediaKit.ensureInitialized();
     final isFirstTime = locator.get<SharedPrefs>().firstTime;
     if (isFirstTime == null) {
       await downloadSplashFromServer();

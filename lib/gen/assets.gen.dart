@@ -9,20 +9,44 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsFontsGen {
+  const $AssetsFontsGen();
+
+  /// File path: assets/fonts/WorkSans-Italic-VariableFont_wght.ttf
+  String get workSansItalicVariableFontWght =>
+      'assets/fonts/WorkSans-Italic-VariableFont_wght.ttf';
+
+  /// File path: assets/fonts/WorkSans-VariableFont_wght.ttf
+  String get workSansVariableFontWght =>
+      'assets/fonts/WorkSans-VariableFont_wght.ttf';
+
+  /// List of all assets
+  List<String> get values =>
+      [workSansItalicVariableFontWght, workSansVariableFontWght];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/onboarding_video.gif
-  AssetGenImage get onboardingVideo =>
-      const AssetGenImage('assets/images/onboarding_video.gif');
+  /// File path: assets/images/app_logo.png
+  AssetGenImage get appLogo =>
+      const AssetGenImage('assets/images/app_logo.png');
+
+  /// File path: assets/images/auth_bg.png
+  AssetGenImage get authBg => const AssetGenImage('assets/images/auth_bg.png');
+
+  /// File path: assets/images/splash_image.png
+  AssetGenImage get splashImage =>
+      const AssetGenImage('assets/images/splash_image.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [onboardingVideo];
+  List<AssetGenImage> get values => [appLogo, authBg, splashImage];
 }
 
 class AppAssets {
   AppAssets._();
 
+  static const $AssetsFontsGen fonts = $AssetsFontsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 

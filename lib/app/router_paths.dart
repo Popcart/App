@@ -11,4 +11,6 @@ class SplashPath extends Path<SplashPath> {
 
 class AuthPath extends Path<AuthPath> {
   AuthPath() : super('/auth');
+
+  // Path get selectUserType   => Path('select-user-type');
 }

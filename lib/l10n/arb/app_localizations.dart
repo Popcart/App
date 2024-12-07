@@ -106,6 +106,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'By signing up you agree to the Popcart terms of service and other privacy policy details'**
   String get get_started_sub;
+
+  /// No description provided for @enter_your_phone_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get enter_your_phone_number;
+
+  /// No description provided for @enter_your_phone_number_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'We will send you a verification code'**
+  String get enter_your_phone_number_sub;
+
+  /// No description provided for @select_your_account_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your account type'**
+  String get select_your_account_type;
+
+  /// No description provided for @buyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Buyer'**
+  String get buyer;
+
+  /// No description provided for @buyer_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'Find and purchase products'**
+  String get buyer_sub;
+
+  /// No description provided for @seller.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get seller;
+
+  /// No description provided for @seller_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'List and sell Your products with ease'**
+  String get seller_sub;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

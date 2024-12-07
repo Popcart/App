@@ -9,7 +9,7 @@
       "request": "launch",
       "type": "dart",
       "program": "lib/app/main.dev.dart",
-      "args": ["--flavor", "development", "--target", "lib/app/main.dev.dart"]
+      "args": ["--flavor", "development", "--target", "lib/app/main.dev.dart","-v"]
     },
     {
       "name": "development-release",

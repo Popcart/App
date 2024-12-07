@@ -1,5 +1,12 @@
 {
     "@@locale": "en",
     "get_started": "Get Started",
-    "get_started_sub" : "By signing up you agree to the Popcart terms of service and other privacy policy details"
+    "get_started_sub" : "By signing up you agree to the Popcart terms of service and other privacy policy details",
+    "enter_your_phone_number": "Enter your phone number",
+    "enter_your_phone_number_sub": "We will send you a verification code",
+    "select_your_account_type": "Select your account type",
+    "buyer" : "Buyer",
+    "buyer_sub" : "Find and purchase products",
+    "seller" : "Seller",
+    "seller_sub" : "List and sell Your products with ease"
 }

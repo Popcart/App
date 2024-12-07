@@ -5,6 +5,8 @@ import 'package:popcart/app/router.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
 
+import '../core/colors.dart';
+
 // final contextGlobalKey = GlobalKey();
 
 class PopCart extends StatelessWidget {
@@ -25,10 +27,10 @@ class PopCart extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               fontFamily: 'WorkSans',
-              scaffoldBackgroundColor: Colors.white,
               textSelectionTheme: const TextSelectionThemeData(
-                  // cursorColor: greenPrimaryColor,
-                  ),
+                cursorColor: AppColors.white,
+              ),
+              scaffoldBackgroundColor: const Color(0xff111214),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
