@@ -25,7 +25,7 @@ class PopCart extends StatelessWidget {
             theme: ThemeData(
               fontFamily: 'WorkSans',
               textSelectionTheme: const TextSelectionThemeData(
-                cursorColor: AppColors.white,
+                cursorColor: AppColors.orange,
               ),
               scaffoldBackgroundColor: const Color(0xff111214),
               elevatedButtonTheme: ElevatedButtonThemeData(

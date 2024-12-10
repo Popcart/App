@@ -7,14 +7,14 @@ import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.d
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
-class SelectUserTypeScreen extends StatefulWidget {
-  const SelectUserTypeScreen({super.key});
+class SelectSellerTypeScreen extends StatefulWidget {
+  const SelectSellerTypeScreen({super.key});
 
   @override
-  State<SelectUserTypeScreen> createState() => _SelectUserTypeScreenState();
+  State<SelectSellerTypeScreen> createState() => _SelectSellerTypeScreenState();
 }
 
-class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
+class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
     with TickerProviderStateMixin {
   late Animation<Offset> _firstSlideAnimation;
   late Animation<Offset> _secondSlideAnimation;
@@ -87,7 +87,7 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                       child: SlideTransition(
                         position: _firstSlideAnimation,
                         child: Text(
-                          l10n.select_your_account_type,
+                          l10n.are_you_a_registered_business,
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
@@ -100,7 +100,7 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        isSeller = false;
+                        isBusinessSeller = true;
                         context.pushNamed(
                           AppPath.auth.buyerSignup.completeBuyerSignup.path,
                         );
@@ -132,17 +132,10 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      l10n.buyer,
+                                      l10n.yes,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      l10n.buyer_sub,
-                                      style: const TextStyle(
                                         color: AppColors.white,
                                       ),
                                     ),
@@ -164,8 +157,10 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        isSeller = true;
-                        context.pushNamed(AppPath.auth.selectSellerType.path);
+                        isBusinessSeller = false;
+                        context.pushNamed(
+                          AppPath.auth.buyerSignup.completeBuyerSignup.path,
+                        );
                       },
                       child: FadeTransition(
                         opacity: _controller,
@@ -194,17 +189,10 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      l10n.seller,
+                                      l10n.no,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      l10n.seller_sub,
-                                      style: const TextStyle(
                                         color: AppColors.white,
                                       ),
                                     ),

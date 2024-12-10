@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
-class EnterPhoneNumberScreen extends StatefulWidget {
-  const EnterPhoneNumberScreen({super.key});
+class BuyerSignupScreen extends StatefulWidget {
+  const BuyerSignupScreen({super.key});
 
   @override
-  State<EnterPhoneNumberScreen> createState() => _EnterPhoneNumberScreenState();
+  State<BuyerSignupScreen> createState() => _BuyerSignupScreenState();
 }
 
-class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
+class _BuyerSignupScreenState extends State<BuyerSignupScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _firstSlideAnimation;
@@ -23,7 +26,6 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
   @override
   void initState() {
     _textEditingController = TextEditingController(text: '+234');
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 700),
       vsync: this,
@@ -74,6 +76,7 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -111,35 +114,29 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
                   keyboardType: TextInputType.phone,
                 ),
               ),
+              const Spacer(),
+              ListenableBuilder(
+                listenable: _textEditingController,
+                builder: (_, __) {
+                  return IgnorePointer(
+                    ignoring: _textEditingController.text.length != 14,
+                    child: BouncingEffect(
+                      onTap: () {
+                        context.pushNamed(
+                          AppPath.auth.buyerSignup.verifyPhoneNumber.path,
+                        );
+                      },
+                      child: AnimatedOpacity(
+                        opacity:
+                            _textEditingController.text.length == 14 ? 1 : 0,
+                        duration: const Duration(milliseconds: 300),
+                        child: CustomElevatedButton(text: l10n.proceed),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AppBackButton extends StatelessWidget {
-  const AppBackButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BouncingEffect(
-      onTap: () {
-        context.pop();
-      },
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppColors.darkGrey,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: IconButton(
-            visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.white),
-            onPressed: () {},
           ),
         ),
       ),

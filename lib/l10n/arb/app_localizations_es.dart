@@ -32,4 +32,40 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get seller_sub => 'List and sell Your products with ease';
+
+  @override
+  String get are_you_a_registered_business => 'Are you a registered business?';
+
+  @override
+  String get yes => 'Yes';
+
+  @override
+  String get no => 'No';
+
+  @override
+  String get proceed => 'Proceed';
+
+  @override
+  String get input_the_otp_code => 'Input the OTP code';
+
+  @override
+  String get otp_code_sub => 'We sent an Otp code to your phone number';
+
+  @override
+  String get choose_a_username => 'Choose a username';
+
+  @override
+  String get choose_a_username_sub => 'This will be displayed to other Popcart users';
+
+  @override
+  String get your_details => 'Your details';
+
+  @override
+  String get your_details_sub => 'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart';
+
+  @override
+  String get business_details => 'Business details';
+
+  @override
+  String get business_details_sub => 'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart';
 }

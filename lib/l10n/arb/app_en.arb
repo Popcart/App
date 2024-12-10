@@ -8,5 +8,17 @@
     "buyer" : "Buyer",
     "buyer_sub" : "Find and purchase products",
     "seller" : "Seller",
-    "seller_sub" : "List and sell Your products with ease"
+    "seller_sub" : "List and sell Your products with ease",
+    "are_you_a_registered_business": "Are you a registered business?",
+    "yes" : "Yes",
+    "no" : "No",
+    "proceed" : "Proceed",
+    "input_the_otp_code" : "Input the OTP code",
+    "otp_code_sub" : "We sent an Otp code to your phone number",
+    "choose_a_username" : "Choose a username",
+    "choose_a_username_sub" : "This will be displayed to other Popcart users",
+    "your_details" : "Your details",
+    "your_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart",
+    "business_details" : "Business details",
+    "business_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart"
 }

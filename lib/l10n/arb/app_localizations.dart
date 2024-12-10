@@ -148,6 +148,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List and sell Your products with ease'**
   String get seller_sub;
+
+  /// No description provided for @are_you_a_registered_business.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you a registered business?'**
+  String get are_you_a_registered_business;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @proceed.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed'**
+  String get proceed;
+
+  /// No description provided for @input_the_otp_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Input the OTP code'**
+  String get input_the_otp_code;
+
+  /// No description provided for @otp_code_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent an Otp code to your phone number'**
+  String get otp_code_sub;
+
+  /// No description provided for @choose_a_username.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a username'**
+  String get choose_a_username;
+
+  /// No description provided for @choose_a_username_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'This will be displayed to other Popcart users'**
+  String get choose_a_username_sub;
+
+  /// No description provided for @your_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details'**
+  String get your_details;
+
+  /// No description provided for @your_details_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart'**
+  String get your_details_sub;
+
+  /// No description provided for @business_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Business details'**
+  String get business_details;
+
+  /// No description provided for @business_details_sub.
+  ///
+  /// In en, this message translates to:
+  /// **'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart'**
+  String get business_details_sub;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,28 +1,36 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
-class EnterPhoneNumberScreen extends StatefulWidget {
-  const EnterPhoneNumberScreen({super.key});
+class CompleteIndividualBusinessSignupScreen extends StatefulWidget {
+  const CompleteIndividualBusinessSignupScreen({super.key});
 
   @override
-  State<EnterPhoneNumberScreen> createState() => _EnterPhoneNumberScreenState();
+  State<CompleteIndividualBusinessSignupScreen> createState() =>
+      _CompleteIndividualBusinessSignupScreenState();
 }
 
-class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
+class _CompleteIndividualBusinessSignupScreenState
+    extends State<CompleteIndividualBusinessSignupScreen>
     with SingleTickerProviderStateMixin {
+  late final TextEditingController _bvnController;
+  late final TextEditingController _businessNameController;
+  File? _idDocument;
+  late final FocusNode _bvnFocusNode;
   late AnimationController _controller;
   late Animation<Offset> _firstSlideAnimation;
   late Animation<Offset> _secondSlideAnimation;
   late Animation<Offset> _thirdSlideAnimation;
-  late FocusNode _focusNode;
-  late TextEditingController _textEditingController;
+  late Animation<Offset> _fourthSlideAnimation;
+  late Animation<Offset> _fifthSlideAnimation;
   @override
   void initState() {
-    _textEditingController = TextEditingController(text: '+234');
+    _bvnController = TextEditingController();
+    _businessNameController = TextEditingController();
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 700),
@@ -57,18 +65,27 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
         curve: Curves.linear,
       ),
     );
-    _focusNode = FocusNode();
-    _controller.forward().then((_) => _focusNode.requestFocus());
+    _fourthSlideAnimation = Tween<Offset>(
+      begin: const Offset(0.4, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.4, 0.6, curve: Curves.easeOut),
+      ),
+    );
+    _fifthSlideAnimation = Tween<Offset>(
+      begin: const Offset(0.4, 0),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.4, 0.6, curve: Curves.easeOut),
+      ),
+    );
+    _bvnFocusNode = FocusNode();
+    _controller.forward().then((_) => _bvnFocusNode.requestFocus());
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _textEditingController.dispose();
-    _controller.dispose();
-    _focusNode.dispose();
-
-    super.dispose();
   }
 
   @override
@@ -86,7 +103,7 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
               SlideTransition(
                 position: _firstSlideAnimation,
                 child: Text(
-                  l10n.enter_your_phone_number,
+                  l10n.business_details,
                   style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
@@ -98,7 +115,7 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
               SlideTransition(
                 position: _secondSlideAnimation,
                 child: Text(
-                  l10n.enter_your_phone_number_sub,
+                  l10n.business_details_sub,
                   style: const TextStyle(color: AppColors.white),
                 ),
               ),
@@ -106,40 +123,29 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
               SlideTransition(
                 position: _thirdSlideAnimation,
                 child: CustomTextFormField(
-                  focusNode: _focusNode,
-                  controller: _textEditingController,
-                  keyboardType: TextInputType.phone,
+                  focusNode: _bvnFocusNode,
+                  controller: _bvnController,
+                  keyboardType: TextInputType.number,
+                  hintText: 'BVN',
                 ),
               ),
+              const SizedBox(height: 16),
+              SlideTransition(
+                position: _fourthSlideAnimation,
+                child: CustomTextFormField(
+                  controller: _businessNameController,
+                  hintText: 'Business Name(Optional)',
+                ),
+              ),
+              const SizedBox(height: 16),
+              SlideTransition(
+                position: _fifthSlideAnimation,
+                child: CustomTextFormField(
+                  hintText: 'Email',
+                ),
+              ),
+              const Spacer(),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class AppBackButton extends StatelessWidget {
-  const AppBackButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BouncingEffect(
-      onTap: () {
-        context.pop();
-      },
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppColors.darkGrey,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: IconButton(
-            visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-            icon: const Icon(Icons.arrow_back_ios, color: AppColors.white),
-            onPressed: () {},
           ),
         ),
       ),
