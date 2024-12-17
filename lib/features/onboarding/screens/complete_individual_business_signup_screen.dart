@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/textfields.dart';
@@ -19,7 +17,6 @@ class _CompleteIndividualBusinessSignupScreenState
     with SingleTickerProviderStateMixin {
   late final TextEditingController _bvnController;
   late final TextEditingController _businessNameController;
-  File? _idDocument;
   late final FocusNode _bvnFocusNode;
   late AnimationController _controller;
   late Animation<Offset> _firstSlideAnimation;

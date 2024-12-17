@@ -1,6 +1,7 @@
 analyzer:
   errors:
     library_private_types_in_public_api: ignore
+    use_late_for_private_fields_and_variables: ignore
   exclude: 
     - lib/l10n/
     - lib/**/*.g.dart

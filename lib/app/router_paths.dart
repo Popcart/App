@@ -35,6 +35,8 @@ class SellerSignupPath extends Path<SellerSignupPath> {
 class BusinessSignupPath extends Path<BusinessSignupPath> {
   BusinessSignupPath() : super('/business-signup');
 
-  Path get completeRegisteredBusinessSignup => Path('complete-registered-business-signup');
-  Path get completeIndividualBusinessSignup => Path('complete-individual-business-signup');
+  Path get completeRegisteredBusinessSignup =>
+      Path('complete-registered-business-signup');
+  Path get completeIndividualBusinessSignup =>
+      Path('complete-individual-business-signup');
 }
