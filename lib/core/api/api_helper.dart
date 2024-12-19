@@ -93,7 +93,6 @@ class ApiError {
     this.message,
     this.code,
     this.error,
-   
   });
 
   factory ApiError.unknown() => ApiError(message: 'Unknown error occurred');
@@ -103,15 +102,13 @@ class ApiError {
       message: json['message'] as String?,
       code: json['statusCode'] as int?,
       error: json['error'] as String?,
-      
     );
   }
 
   String? message;
   int? code;
-  
+
   String? error;
- 
 
   @override
   String toString() {
@@ -255,23 +252,12 @@ class ApiHandler {
       return finalResponse;
     } on dio.DioException catch (e) {
       log('Error: $e', name: 'DioError');
-      // log('StackTrace: $s', name: 'DioError');
-      final errorData = ((e.response?.data != null && e.response?.data is Map)
-              ? ((e.response?.data as Map)['data']) as dynamic
-              : '')
-          .toString()
-          .replaceAll('{', '')
-          .replaceAll('}', '')
-          .split(':')
-          .last
-          .replaceAll('[', '')
-          .replaceAll(']', '');
       final error = ApiResponse<T>.error(
         ApiError(
           message: (e.response?.data != null && e.response?.data is Map)
               ? ((e.response?.data as Map)['message']) as String?
               : 'Internal server error',
-        error: e.response?.data?['error'] as String?,
+          error: e.response?.data?['error'] as String?,
         )..code = e.response?.statusCode ?? 500,
       );
 
