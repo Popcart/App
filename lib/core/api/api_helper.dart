@@ -92,9 +92,8 @@ class ApiError {
   ApiError({
     this.message,
     this.code,
-    this.success,
-    this.detail,
-    this.data,
+    this.error,
+   
   });
 
   factory ApiError.unknown() => ApiError(message: 'Unknown error occurred');
@@ -102,22 +101,21 @@ class ApiError {
   factory ApiError.fromJson(Map<String, dynamic> json) {
     return ApiError(
       message: json['message'] as String?,
-      code: json['code'] as int?,
-      success: json['success'] as bool?,
-      detail: json['data']['detail'] as String?,
-      data: json['data'] as String?,
+      code: json['statusCode'] as int?,
+      error: json['error'] as String?,
+      
     );
   }
 
   String? message;
   int? code;
-  bool? success;
-  String? detail;
-  dynamic data;
+  
+  String? error;
+ 
 
   @override
   String toString() {
-    return '''ApiError(message: $message, code: $code, success: $success, detail: $detail, data: $data)''';
+    return '''ApiError(message: $message, code: $code)''';
   }
 }
 
@@ -273,14 +271,7 @@ class ApiHandler {
           message: (e.response?.data != null && e.response?.data is Map)
               ? ((e.response?.data as Map)['message']) as String?
               : 'Internal server error',
-          data: errorData,
-          // ignore: avoid_bool_literals_in_conditional_expressions
-          success: (e.response?.data != null && e.response?.data is Map)
-              ? ((e.response?.data as Map)['success']) as bool
-              : false,
-          detail: (e.response?.data != null && e.response?.data is Map)
-              ? ((e.response?.data as Map)['detail']) as String?
-              : null,
+        error: e.response?.data?['error'] as String?,
         )..code = e.response?.statusCode ?? 500,
       );
 

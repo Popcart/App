@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/onboarding/repository/onboarding_repo.dart';
 // import 'package:twilio_flutter/twilio_flutter.dart';
 
 GetIt locator = GetIt.instance;
@@ -12,12 +14,19 @@ Future<void> setupLocator({
 }) async {
   locator
     ..registerLazySingleton<AppEnvironment>(() => environment)
-    ..registerSingleton<SharedPrefs>(SharedPrefs());
+    ..registerSingleton<SharedPrefs>(SharedPrefs())
+    ..registerLazySingleton<ApiHandler>(
+      () => ApiHandler(baseUrl: '${Env().baseUrl}/auth/'),
+      instanceName: ApiService.auth.name,
+    )
+    ..registerLazySingleton<OnboardingRepo>(
+      () => OnboardingRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.auth.name,
+        ),
+      ),
+    );
 
-  // ..registerLazySingleton<ApiHandler>(
-  //   () => ApiHandler(baseUrl: Env().baseUrl),
-  //   instanceName: ApiService.auth.name,
-  // )
   // ..registerLazySingleton<BiometricsHelper>(BiometricsHelper.new)
   // ..registerLazySingleton<AuthService>(
   //   () => AuthImplementation(

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
@@ -73,70 +76,92 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
     super.dispose();
   }
 
+  void sendOtp() {
+    context.read<OnboardingCubit>()
+      ..phoneNumber = _textEditingController.text
+      ..registerBuyer();
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AppBackButton(),
-              const SizedBox(height: 32),
-              SlideTransition(
-                position: _firstSlideAnimation,
-                child: Text(
-                  l10n.enter_your_phone_number,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.white,
+    final onboardingCubit = context.watch<OnboardingCubit>();
+    return BlocListener<OnboardingCubit, OnboardingState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          onboardingFailure: (message) => context.showError(message),
+          onboardingSuccess: () => context.pushNamed(
+            AppPath.auth.buyerSignup.verifyPhoneNumber.path,
+          ),
+        );
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppBackButton(),
+                const SizedBox(height: 32),
+                SlideTransition(
+                  position: _firstSlideAnimation,
+                  child: Text(
+                    l10n.enter_your_phone_number,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SlideTransition(
-                position: _secondSlideAnimation,
-                child: Text(
-                  l10n.enter_your_phone_number_sub,
-                  style: const TextStyle(color: AppColors.white),
+                const SizedBox(height: 8),
+                SlideTransition(
+                  position: _secondSlideAnimation,
+                  child: Text(
+                    l10n.enter_your_phone_number_sub,
+                    style: const TextStyle(color: AppColors.white),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              SlideTransition(
-                position: _thirdSlideAnimation,
-                child: CustomTextFormField(
-                  focusNode: _focusNode,
-                  controller: _textEditingController,
-                  keyboardType: TextInputType.phone,
+                const SizedBox(height: 24),
+                SlideTransition(
+                  position: _thirdSlideAnimation,
+                  child: CustomTextFormField(
+                    focusNode: _focusNode,
+                    controller: _textEditingController,
+                    keyboardType: TextInputType.phone,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              ListenableBuilder(
-                listenable: _textEditingController,
-                builder: (_, __) {
-                  return IgnorePointer(
-                    ignoring: _textEditingController.text.length != 14,
-                    child: BouncingEffect(
-                      onTap: () {
-                        context.pushNamed(
-                          AppPath.auth.buyerSignup.verifyPhoneNumber.path,
-                        );
-                      },
-                      child: AnimatedOpacity(
-                        opacity:
-                            _textEditingController.text.length == 14 ? 1 : 0,
-                        duration: const Duration(milliseconds: 300),
-                        child: CustomElevatedButton(text: l10n.proceed),
+                const Spacer(),
+                ListenableBuilder(
+                  listenable: _textEditingController,
+                  builder: (_, __) {
+                    return IgnorePointer(
+                      ignoring: _textEditingController.text.length != 14 ||
+                          onboardingCubit.state.maybeWhen(
+                            orElse: () => false,
+                            loading: () => true,
+                          ),
+                      child: BouncingEffect(
+                        onTap: sendOtp,
+                        child: AnimatedOpacity(
+                          opacity:
+                              _textEditingController.text.length == 14 ? 1 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: CustomElevatedButton(
+                            text: l10n.proceed,
+                            loading: onboardingCubit.state.maybeWhen(
+                              orElse: () => false,
+                              loading: () => true,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

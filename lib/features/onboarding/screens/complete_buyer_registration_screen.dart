@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
@@ -29,9 +33,11 @@ class _CompleteBuyerRegistrationScreenState
   late TextEditingController _firstNameController;
   late TextEditingController _lastNameController;
   late TextEditingController _emailController;
+  late final GlobalKey<FormState> _formKey;
 
   @override
   void initState() {
+    _formKey = GlobalKey<FormState>();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -97,7 +103,17 @@ class _CompleteBuyerRegistrationScreenState
     _lastNameController.dispose();
     _emailController.dispose();
     _focusNode.dispose();
+    _formKey.currentState?.dispose();
     super.dispose();
+  }
+
+  void _onProceed() {
+    if (!_formKey.currentState!.validate()) return;
+    context.read<OnboardingCubit>()
+      ..firstName = _firstNameController.text
+      ..lastName = _lastNameController.text
+      ..email = _emailController.text;
+    context.pushNamed(AppPath.auth.buyerSignup.chooseUsername.path);
   }
 
   @override
@@ -107,65 +123,78 @@ class _CompleteBuyerRegistrationScreenState
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AppBackButton(),
-              const SizedBox(height: 32),
-              SlideTransition(
-                position: _firstSlideAnimation,
-                child: Text(
-                  l10n.your_details,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.white,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppBackButton(),
+                const SizedBox(height: 32),
+                SlideTransition(
+                  position: _firstSlideAnimation,
+                  child: Text(
+                    l10n.your_details,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SlideTransition(
-                position: _secondSlideAnimation,
-                child: Text(
-                  l10n.your_details_sub,
-                  style: const TextStyle(color: AppColors.white),
+                const SizedBox(height: 8),
+                SlideTransition(
+                  position: _secondSlideAnimation,
+                  child: Text(
+                    l10n.your_details_sub,
+                    style: const TextStyle(color: AppColors.white),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              SlideTransition(
-                position: _thirdSlideAnimation,
-                child: CustomTextFormField(
-                  focusNode: _focusNode,
-                  controller: _firstNameController,
-                  hintText: 'First Name',
+                const SizedBox(height: 24),
+                SlideTransition(
+                  position: _thirdSlideAnimation,
+                  child: CustomTextFormField(
+                    focusNode: _focusNode,
+                    controller: _firstNameController,
+                    hintText: 'First Name',
+                    validator: ValidationBuilder().required().build(),
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _fourthSlideAnimation,
-                child: CustomTextFormField(
-                  controller: _lastNameController,
-                  hintText: 'Last Name',
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _fourthSlideAnimation,
+                  child: CustomTextFormField(
+                    controller: _lastNameController,
+                    hintText: 'Last Name',
+                    validator: ValidationBuilder().required().build(),
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _fifthSlideAnimation,
-                child: CustomTextFormField(
-                  controller: _emailController,
-                  hintText: 'Email',
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _fifthSlideAnimation,
+                  child: CustomTextFormField(
+                    controller: _emailController,
+                    hintText: 'Email',
+                    validator: ValidationBuilder()
+                        .required()
+                        .add(dotValidator)
+                        .build(),
+                    textInputAction: TextInputAction.done,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              BouncingEffect(
-                onTap: () {
-                 
-                  context
-                      .pushNamed(AppPath.auth.buyerSignup.chooseUsername.path);
-                },
-                child: CustomElevatedButton(text: l10n.proceed),
-              ),
-            ],
+                const Spacer(),
+                BouncingEffect(
+                  onTap: _onProceed,
+                  child: CustomElevatedButton(text: l10n.proceed),
+                ),
+              ],
+            ),
           ),
         ),
       ),

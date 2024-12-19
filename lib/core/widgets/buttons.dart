@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popcart/core/colors.dart';
 
@@ -5,10 +6,11 @@ class CustomElevatedButton extends ElevatedButton {
   CustomElevatedButton({
     // required VoidCallback super.onPressed,
     required String text,
+    bool loading = false,
     super.key,
   }) : super(
           onPressed: () {},
-          child: Text(
+          child: loading ? const CupertinoActivityIndicator() : Text(
             text,
             style: const TextStyle(
               color: AppColors.white,

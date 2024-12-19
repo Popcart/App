@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -67,6 +69,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
 
   @override
   Widget build(BuildContext context) {
+    final onboardingCubit = context.watch<OnboardingCubit>();
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: Stack(
@@ -100,7 +103,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        isBusinessSeller = true;
+                        onboardingCubit.isRegisteredSeller = true;
                         context.pushNamed(
                           AppPath.auth.buyerSignup.completeBuyerSignup.path,
                         );
@@ -157,7 +160,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        isBusinessSeller = false;
+                        onboardingCubit.isRegisteredSeller = false;
                         context.pushNamed(
                           AppPath.auth.buyerSignup.completeBuyerSignup.path,
                         );

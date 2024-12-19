@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
 class EnterPhoneNumberScreen extends StatefulWidget {
@@ -71,9 +73,12 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
     super.dispose();
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final onboardingCubit = context.watch<OnboardingCubit>();
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -109,6 +114,7 @@ class _EnterPhoneNumberScreenState extends State<EnterPhoneNumberScreen>
                   focusNode: _focusNode,
                   controller: _textEditingController,
                   keyboardType: TextInputType.phone,
+                  
                 ),
               ),
             ],

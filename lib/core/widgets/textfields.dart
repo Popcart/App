@@ -13,6 +13,9 @@ class CustomTextFormField extends TextFormField {
     super.keyboardType,
     String? hintText,
     super.enabled,
+    super.validator,
+    super.textInputAction,
+    super.textCapitalization,
   }) : super(
           onTapOutside: kDebugMode
               ? (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus()

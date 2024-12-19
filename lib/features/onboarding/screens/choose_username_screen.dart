@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
@@ -75,6 +77,7 @@ class _ChooseUsernameScreenState extends State<ChooseUsernameScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final onboardingCubit = context.watch<OnboardingCubit>();
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -116,14 +119,15 @@ class _ChooseUsernameScreenState extends State<ChooseUsernameScreen>
                 listenable: _textEditingController,
                 builder: (_, __) {
                   return IgnorePointer(
-                    ignoring: _textEditingController.text.length < 5,
+                    ignoring: _textEditingController.text.length < 2,
                     child: BouncingEffect(
                       onTap: () {
+                        onboardingCubit.username = _textEditingController.text;
                         context.pushNamed(AppPath.auth.buyerSignup.path);
                       },
                       child: AnimatedOpacity(
                         opacity:
-                            _textEditingController.text.length >= 5 ? 1 : 0,
+                            _textEditingController.text.length >= 2 ? 1 : 0,
                         duration: const Duration(milliseconds: 300),
                         child: CustomElevatedButton(text: l10n.proceed),
                       ),
