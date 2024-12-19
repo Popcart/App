@@ -112,4 +112,25 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       },
     );
   }
+
+  Future<void> verifyOtp({
+    required String otp,
+  }) async {
+    emit(const OnboardingState.loading());
+    final response = await _onboardingRepo.verifyOtp(
+      otp: otp,
+    );
+    response.when(
+      success: (data) {
+        emit(const OnboardingState.verifyOtpSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.verifyOtpFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
 }

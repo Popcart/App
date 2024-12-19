@@ -10,6 +10,8 @@ sealed class OnboardingRepo {
     required String email,
     required String userType,
   });
+
+  Future<ApiResponse<void>> verifyOtp({required String otp});
 }
 
 class OnboardingRepoImpl implements OnboardingRepo {
@@ -37,6 +39,17 @@ class OnboardingRepoImpl implements OnboardingRepo {
         'phone': phone,
         'email': email,
         'userType': userType,
+      },
+    );
+  }
+
+  @override
+ Future<ApiResponse<void>> verifyOtp({required String otp}) {
+    return _apiHelper.request<void>(
+      path: 'verify-phone',
+      method: MethodType.post,
+      payload: {
+        'code': otp,
       },
     );
   }

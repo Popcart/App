@@ -7,4 +7,7 @@ class OnboardingState with _$OnboardingState {
   const factory OnboardingState.onboardingSuccess() = _OnboardingSuccess;
   const factory OnboardingState.onboardingFailure(String message) =
       _OnboardingFailure;
+  const factory OnboardingState.verifyOtpSuccess() = _VerifyOtpSuccess;
+  const factory OnboardingState.verifyOtpFailure(String message) =
+      _VerifyOtpFailure;
 }
