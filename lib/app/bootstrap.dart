@@ -164,25 +164,13 @@ Future<void> bootstrap(
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
     };
-
     PlatformDispatcher.instance.onError = (error, stack) {
       FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       return true;
     };
-  
     await FirebaseMessaging.instance.requestPermission(provisional: true);
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-    // await PrivacyScreen.instance.enable(
-    //   iosOptions: const PrivacyIosOptions(
-    //     privacyImageName: 'LaunchImage',
-    //     autoLockAfterSeconds: 5,
-    //   ),
-    //   androidOptions: const PrivacyAndroidOptions(
-    //     autoLockAfterSeconds: 5,
-    //   ),
-    //   backgroundColor: Colors.white.withOpacity(0),
-    // );
     final isFirstTime = locator.get<SharedPrefs>().firstTime;
     if (isFirstTime == null) {
       await downloadSplashFromServer();
@@ -190,7 +178,6 @@ Future<void> bootstrap(
     }
     runApp(await builder());
   } catch (e, s) {
-    
     await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
   }
   FlutterNativeSplash.remove();

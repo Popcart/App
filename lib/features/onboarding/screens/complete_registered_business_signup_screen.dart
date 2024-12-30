@@ -2,8 +2,13 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:form_validator/form_validator.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
@@ -24,6 +29,7 @@ class _CompleteRegisteredBusinessSignupScreenState
   late final TextEditingController _businessAddressController;
   late final TextEditingController _utilityBillDocumentController;
   late final TextEditingController _idDocumentController;
+  late final GlobalKey<FormState> _formKey;
   File? _idDocument;
   File? _utilityBillDocument;
   late final FocusNode _bvnFocusNode;
@@ -66,6 +72,7 @@ class _CompleteRegisteredBusinessSignupScreenState
 
   @override
   void initState() {
+    _formKey = GlobalKey<FormState>();
     _businessNameController = TextEditingController();
     _rcNumberController = TextEditingController();
     _businessOwnerBvnController = TextEditingController();
@@ -165,102 +172,168 @@ class _CompleteRegisteredBusinessSignupScreenState
     _utilityBillDocumentController.dispose();
     _idDocumentController.dispose();
     _bvnFocusNode.dispose();
-
+    _formKey.currentState?.dispose();
     super.dispose();
   }
+
+  bool get _areAllFieldsFilled =>
+      _businessNameController.text.isNotEmpty &&
+      _rcNumberController.text.isNotEmpty &&
+      _businessOwnerBvnController.text.isNotEmpty &&
+      _businessAddressController.text.isNotEmpty &&
+      _utilityBillDocument != null &&
+      _idDocument != null;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final onboardingCubit = context.watch<OnboardingCubit>();
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const AppBackButton(),
-              const SizedBox(height: 32),
-              SlideTransition(
-                position: _firstSlideAnimation,
-                child: Text(
-                  l10n.business_details,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.white,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppBackButton(),
+                const SizedBox(height: 32),
+                SlideTransition(
+                  position: _firstSlideAnimation,
+                  child: Text(
+                    l10n.business_details,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.white,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              SlideTransition(
-                position: _secondSlideAnimation,
-                child: Text(
-                  l10n.business_details_sub,
-                  style: const TextStyle(color: AppColors.white),
+                const SizedBox(height: 8),
+                SlideTransition(
+                  position: _secondSlideAnimation,
+                  child: Text(
+                    l10n.business_details_sub,
+                    style: const TextStyle(color: AppColors.white),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              SlideTransition(
-                position: _thirdSlideAnimation,
-                child: CustomTextFormField(
-                  focusNode: _bvnFocusNode,
-                  controller: _businessNameController,
-                  keyboardType: TextInputType.number,
-                  hintText: 'Business Name',
-                ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _fourthSlideAnimation,
-                child: CustomTextFormField(
-                  controller: _rcNumberController,
-                  hintText: 'RC Number',
-                ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _fifthSlideAnimation,
-                child: CustomTextFormField(
-                  controller: _businessOwnerBvnController,
-                  hintText: 'Business Owner BVN',
-                ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _sixthSlideAnimation,
-                child: CustomTextFormField(
-                  controller: _businessAddressController,
-                  hintText: 'Business Address',
-                ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _seventhSlideAnimation,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: selectIdDocument,
+                const SizedBox(height: 24),
+                SlideTransition(
+                  position: _thirdSlideAnimation,
                   child: CustomTextFormField(
-                    controller: _idDocumentController,
-                    hintText: 'ID Document',
-                    enabled: false,
+                    focusNode: _bvnFocusNode,
+                    controller: _businessNameController,
+                    validator: ValidationBuilder().required().build(),
+                    hintText: 'Business Name',
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              SlideTransition(
-                position: _eightSlideAnimation,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: selectUtiltyBillDocument,
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _fourthSlideAnimation,
                   child: CustomTextFormField(
-                    controller: _utilityBillDocumentController,
-                    enabled: false,
-                    hintText: 'Utility Bill Document',
+                    validator: ValidationBuilder().required().build(),
+                    controller: _rcNumberController,
+                    hintText: 'RC Number',
+                    textInputAction: TextInputAction.next,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _fifthSlideAnimation,
+                  child: CustomTextFormField(
+                    controller: _businessOwnerBvnController,
+                    keyboardType: TextInputType.number,
+                    validator:
+                        ValidationBuilder().required().maxLength(11).build(),
+                    hintText: 'Business Owner BVN',
+                    textInputAction: TextInputAction.next,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _sixthSlideAnimation,
+                  child: CustomTextFormField(
+                    controller: _businessAddressController,
+                    validator: ValidationBuilder().required().build(),
+                    hintText: 'Business Address',
+                    textInputAction: TextInputAction.next,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _seventhSlideAnimation,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: selectIdDocument,
+                    child: CustomTextFormField(
+                      controller: _idDocumentController,
+                      hintText: 'ID Document',
+                      validator: ValidationBuilder().required().build(),
+                      enabled: false,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SlideTransition(
+                  position: _eightSlideAnimation,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: selectUtiltyBillDocument,
+                    child: CustomTextFormField(
+                      controller: _utilityBillDocumentController,
+                      enabled: false,
+                      hintText: 'Utility Bill Document',
+                      validator: ValidationBuilder().required().build(),
+                    ),
+                  ),
+                ),
+               const Spacer(),
+                ListenableBuilder(
+                  listenable: Listenable.merge([
+                    _businessNameController,
+                    _rcNumberController,
+                    _businessOwnerBvnController,
+                    _businessAddressController,
+                    _utilityBillDocumentController,
+                    _idDocumentController,
+                  ]),
+                  builder: (_, __) {
+                    return IgnorePointer(
+                      ignoring: onboardingCubit.state.maybeWhen(
+                        orElse: () => false,
+                        loading: () => true,
+                      ),
+                      child: BouncingEffect(
+                        onTap: () {
+                          onboardingCubit.submitRegisteredBusinessInformation(
+                            businessName: _businessNameController.text,
+                            rcNumber: _rcNumberController.text,
+                            businessOwnerBvn: _businessOwnerBvnController.text,
+                            businessAddress: _businessAddressController.text,
+                            utilityBillDocument: _utilityBillDocument!,
+                            idDocument: _idDocument!,
+                          );
+                        },
+                        child: AnimatedOpacity(
+                          opacity: _areAllFieldsFilled ? 1 : 0,
+                          duration: const Duration(milliseconds: 300),
+                          child: CustomElevatedButton(
+                            text: l10n.proceed,
+                            loading: onboardingCubit.state.maybeWhen(
+                              orElse: () => false,
+                              loading: () => true,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

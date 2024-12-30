@@ -1,13 +1,14 @@
 import 'package:get_it/get_it.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
+import 'package:popcart/core/repository/onboarding_repo.dart';
+import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/env/env.dart';
-import 'package:popcart/features/onboarding/repository/onboarding_repo.dart';
 // import 'package:twilio_flutter/twilio_flutter.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth }
+enum ApiService { auth, user }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -18,6 +19,17 @@ Future<void> setupLocator({
     ..registerLazySingleton<ApiHandler>(
       () => ApiHandler(baseUrl: '${Env().baseUrl}/auth/'),
       instanceName: ApiService.auth.name,
+    )
+    ..registerLazySingleton<ApiHandler>(
+          () => ApiHandler(baseUrl: '${Env().baseUrl}/user/'),
+      instanceName: ApiService.user.name,
+    )
+    ..registerLazySingleton<UserRepository>(
+          () => UserRepositoryImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.user.name,
+        ),
+      ),
     )
     ..registerLazySingleton<OnboardingRepo>(
       () => OnboardingRepoImpl(

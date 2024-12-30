@@ -10,4 +10,6 @@ class OnboardingState with _$OnboardingState {
   const factory OnboardingState.verifyOtpSuccess() = _VerifyOtpSuccess;
   const factory OnboardingState.verifyOtpFailure(String message) =
       _VerifyOtpFailure;
+  const factory OnboardingState.submitRegisteredBusinessInformationSuccess() =
+      _SubmitRegisteredBusinessInformationSuccess;
 }

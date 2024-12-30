@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
-import 'package:popcart/features/onboarding/repository/onboarding_repo.dart';
+import 'package:popcart/core/repository/onboarding_repo.dart';
+import 'package:popcart/core/repository/user_repo.dart';
 
 part 'onboarding_cubit.freezed.dart';
+
 part 'onboarding_state.dart';
 
 @JsonEnum()
@@ -17,9 +21,11 @@ enum UserType {
 class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit()
       : _onboardingRepo = locator.get<OnboardingRepo>(),
+        _userRepository = locator.get<UserRepository>(),
         super(const OnboardingState.initial());
 
   late final OnboardingRepo _onboardingRepo;
+  late final UserRepository _userRepository;
 
   late String _firstName;
   late String _lastName;
@@ -78,15 +84,25 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   }
 
   String get firstName => _firstName;
+
   String get lastName => _lastName;
+
   String get email => _email;
+
   UserType get userType => _userType;
+
   bool get isRegisteredSeller => _isRegisteredSeller;
+
   String get username => _username;
+
   String get phoneNumber => _phoneNumber;
+
   String get businessName => _businessName;
+
   String get rcNumber => _rcNumber;
+
   String get businessOwnerBvn => _businessOwnerBvn;
+
   String get businessAddress => _businessAddress;
 
   Future<void> registerBuyer() async {
@@ -127,6 +143,39 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       error: (e) {
         emit(
           OnboardingState.verifyOtpFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> submitRegisteredBusinessInformation({
+    required String businessName,
+    required String rcNumber,
+    required String businessOwnerBvn,
+    required String businessAddress,
+    required File utilityBillDocument,
+    required File idDocument,
+  }) async {
+    emit(const OnboardingState.loading());
+    final response = await _userRepository.submitRegisteredBusinessInformation(
+      businessName: businessName,
+      rcNumber: rcNumber,
+      businessOwnerBvn: businessOwnerBvn,
+      businessAddress: businessAddress,
+      utilityBillDocument: utilityBillDocument,
+      idDocument: idDocument,
+    );
+    response.when(
+      success: (data) {
+        emit(
+          const OnboardingState.submitRegisteredBusinessInformationSuccess(),
+        );
+      },
+      error: (e) {
+        emit(
+          OnboardingState.onboardingFailure(
             e.message ?? 'An error occurred',
           ),
         );

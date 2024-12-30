@@ -6,10 +6,13 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:firebase_performance_dio/firebase_performance_dio.dart';
 import 'package:flutter/foundation.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/core/compressor.dart';
+import 'package:popcart/env/env.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 part 'api_helper.freezed.dart';
@@ -19,6 +22,7 @@ enum MethodType { get, post, put, delete, patch }
 @Freezed()
 class ApiResponse<T> with _$ApiResponse<T> {
   const factory ApiResponse.success({ApiSuccess<T>? data}) = _Success<T>;
+
   const factory ApiResponse.error(ApiError error) = _Error<T>;
 }
 
@@ -26,6 +30,7 @@ class ApiResponse<T> with _$ApiResponse<T> {
 class ListApiResponse<T> with _$ListApiResponse<T> {
   const factory ListApiResponse.success({ListApiSuccess<T>? data}) =
       _ListSuccess<T>;
+
   const factory ListApiResponse.error(ApiError error) = _ListError<T>;
 }
 
@@ -155,37 +160,31 @@ class ApiHandler {
     Map<String, dynamic>? queryParameters,
     T? Function(Map<String, dynamic> json)? responseMapper,
     bool authenticate = true,
-    Map<String, dynamic>? files,
+    Map<String, File>? files,
   }) async {
-    final formData = dio.FormData.fromMap(payload ?? {});
+    Map<String, dynamic> modifiedPayload = {}..addAll(payload ?? {});
     if (files != null) {
-      for (final item in files.entries) {
-        if (item.value is List<File>) {
-          final fileList = item.value as List<File>;
-          formData.files.addAll(
-            List.generate(fileList.length, (i) {
-              final file = fileList[i];
-              return MapEntry(
-                item.key,
-                dio.MultipartFile.fromFileSync(
-                  file.path,
-                  filename: file.path.split('/').last,
-                ),
-              );
-            }),
-          );
-        } else if (item.value is File) {
-          final file = item.value as File;
-          formData.files.add(
-            MapEntry(
-              item.key,
-              dio.MultipartFile.fromFileSync(
-                file.path,
-                filename: file.path.split('/').last,
-              ),
+      for (final file in files.entries) {
+        final compressedFile = await FileCompressor.compressFile(file.value);
+        final data = dio.FormData.fromMap({
+          'files': await dio.MultipartFile.fromFile(compressedFile.path),
+        });
+        final uploadInstance = dio.Dio()
+          ..interceptors.add(
+            PrettyDioLogger(
+              requestBody: true,
+              requestHeader: true,
+              responseHeader: true,
+              logPrint: (value) {
+                if (kDebugMode) {
+                  log(value.toString(), name: 'Dio');
+                }
+              },
             ),
           );
-        }
+        final response =
+            await uploadInstance.post('${Env().baseUrl}/upload', data: data);
+        modifiedPayload[file.key] = (response.data['data'] as List<dynamic>).firstOrNull ?? '';
       }
     }
     try {
@@ -210,7 +209,7 @@ class ApiHandler {
         case MethodType.post:
           response = await _dio.post(
             path,
-            data: files != null ? formData : payload,
+            data: modifiedPayload,
             options: dio.Options(
               headers: headers,
             ),
@@ -218,7 +217,7 @@ class ApiHandler {
         case MethodType.put:
           response = await _dio.put(
             path,
-            data: files != null ? formData : payload,
+            data: modifiedPayload,
             queryParameters: queryParameters,
             options: dio.Options(
               headers: headers,
@@ -227,7 +226,7 @@ class ApiHandler {
         case MethodType.delete:
           response = await _dio.delete(
             path,
-            data: files != null ? formData : payload,
+            data: modifiedPayload,
             queryParameters: queryParameters,
             options: dio.Options(
               headers: headers,
@@ -236,7 +235,7 @@ class ApiHandler {
         case MethodType.patch:
           response = await _dio.patch(
             path,
-            data: files != null ? formData : payload,
+            data: modifiedPayload,
             queryParameters: queryParameters,
             options: dio.Options(
               headers: headers,

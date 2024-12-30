@@ -86,6 +86,7 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final onboardingCubit = context.watch<OnboardingCubit>();
+
     return BlocListener<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         state.whenOrNull(

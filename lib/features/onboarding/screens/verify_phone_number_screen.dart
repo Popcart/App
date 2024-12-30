@@ -84,18 +84,21 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
     if (onboardingCubit.userType == UserType.buyer) {
       return;
     }
+
     if (onboardingCubit.userType != UserType.buyer) {
-      if (!onboardingCubit.isRegisteredSeller) {
+      if (onboardingCubit.isRegisteredSeller) {
         context.pushNamed(
           AppPath.auth.sellerSignup.businessSignup
               .completeRegisteredBusinessSignup.path,
         );
+        return;
       }
-      if (onboardingCubit.isRegisteredSeller) {
+      if (!onboardingCubit.isRegisteredSeller) {
         context.pushNamed(
           AppPath.auth.sellerSignup.businessSignup
               .completeIndividualBusinessSignup.path,
         );
+        return;
       }
     }
   }
@@ -104,10 +107,14 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final onboardingCubit = context.watch<OnboardingCubit>();
+
     return BlocListener<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         state.whenOrNull(
-          verifyOtpFailure: (message) => context.showError(message),
+          verifyOtpFailure: (message) {
+            // context.showError(message);
+            _onProceed()  ;
+          },
           verifyOtpSuccess: _onProceed,
         );
       },

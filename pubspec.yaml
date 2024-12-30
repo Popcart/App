@@ -21,6 +21,7 @@ dependencies:
     sdk: flutter
   flutter_bloc: ^8.1.6
   flutter_gen: ^5.8.0
+  flutter_image_compress: ^2.3.0
   flutter_local_notifications: ^18.0.1
   flutter_localizations:
     sdk: flutter
@@ -35,7 +36,9 @@ dependencies:
   go_router_paths: ^0.2.2
   haptic_feedback: ^0.5.1+1
   intl: ^0.19.0
+  mime: ^2.0.0
   path_provider: ^2.1.5
+  pdf_compressor: ^0.2.0
   pinput: ^5.0.0
   pretty_dio_logger: ^1.4.0
   shared_preferences: ^2.3.3
