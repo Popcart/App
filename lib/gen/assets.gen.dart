@@ -31,20 +31,14 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
-  /// File path: assets/icons/buyer.svg
-  SvgGenImage get buyer => const SvgGenImage('assets/icons/buyer.svg');
-
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
   /// File path: assets/icons/error_icon.svg
   SvgGenImage get errorIcon => const SvgGenImage('assets/icons/error_icon.svg');
 
-  /// File path: assets/icons/seller.svg
-  SvgGenImage get seller => const SvgGenImage('assets/icons/seller.svg');
-
   /// List of all assets
-  List<SvgGenImage> get values => [buyer, checkicon, errorIcon, seller];
+  List<SvgGenImage> get values => [checkicon, errorIcon];
 }
 
 class $AssetsImagesGen {
@@ -57,12 +51,19 @@ class $AssetsImagesGen {
   /// File path: assets/images/auth_bg.png
   AssetGenImage get authBg => const AssetGenImage('assets/images/auth_bg.png');
 
+  /// File path: assets/images/buyer.png
+  AssetGenImage get buyer => const AssetGenImage('assets/images/buyer.png');
+
+  /// File path: assets/images/seller.png
+  AssetGenImage get seller => const AssetGenImage('assets/images/seller.png');
+
   /// File path: assets/images/splash_image.png
   AssetGenImage get splashImage =>
       const AssetGenImage('assets/images/splash_image.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [appLogo, authBg, splashImage];
+  List<AssetGenImage> get values =>
+      [appLogo, authBg, buyer, seller, splashImage];
 }
 
 class AppAssets {
