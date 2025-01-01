@@ -128,6 +128,7 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(20)),
                                   ),
+                                  child: AppAssets.icons.buyer.svg(),
                                 ),
                                 const SizedBox(width: 16),
                                 Column(
@@ -190,6 +191,7 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(20)),
                                   ),
+                                  child: AppAssets.icons.seller.svg(),
                                 ),
                                 const SizedBox(width: 16),
                                 Column(

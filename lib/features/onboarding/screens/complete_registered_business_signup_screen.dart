@@ -302,7 +302,7 @@ class _CompleteRegisteredBusinessSignupScreenState
                   ]),
                   builder: (_, __) {
                     return IgnorePointer(
-                      ignoring: onboardingCubit.state.maybeWhen(
+                      ignoring: !_areAllFieldsFilled || !onboardingCubit.state.maybeWhen(
                         orElse: () => false,
                         loading: () => true,
                       ),
@@ -322,7 +322,7 @@ class _CompleteRegisteredBusinessSignupScreenState
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
                             text: l10n.proceed,
-                            loading: onboardingCubit.state.maybeWhen(
+                            loading: !onboardingCubit.state.maybeWhen(
                               orElse: () => false,
                               loading: () => true,
                             ),

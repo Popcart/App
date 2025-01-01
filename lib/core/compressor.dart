@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:mime/mime.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 class FileCompressor {
   static Future<File> compressFile(File file) async {
     final mimeType = lookupMimeType(file.path) ?? '';
+    log(mimeType, name: 'Mime Type');
     if (mimeType.contains('image')) {
       final filePath = file.absolute.path;
       final lastIndex = filePath.lastIndexOf(RegExp(r'.jp|.png'));
@@ -22,15 +24,22 @@ class FileCompressor {
 
       return File(compressedFile!.path);
     } else if (mimeType.contains('pdf')) {
-      final tempdir = await getApplicationDocumentsDirectory();
-      final outPutPath = '${tempdir.path}/temp.pdf';
-      final compressedFile = await PdfCompressor.compressPdfFile(
-        file.path,
-        outPutPath,
-        CompressQuality.MEDIUM, // or LOW, HIGH
-      );
+      try {
+        // final tempdir = await getTemporaryDirectory();
+        // await  Directory('${tempdir.path}/compressed').create(recursive: true);
+        // final outPutPath = '${tempdir.path}/compressed/temp.pdf';
+        // log(outPutPath, name: 'Output Path');
+        final compressedFile = await PdfCompressor.compressPdfFile(
+          file.path,
+          file.path,
+          CompressQuality.MEDIUM, // or LOW, HIGH
+        );
 
-      return File(outPutPath);
+        return File(file.path);
+      }catch(e){
+        log(e.toString(), name:'Error');
+        return file;
+      }
     } else {
       return file;
     }

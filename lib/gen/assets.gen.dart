@@ -31,14 +31,20 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/buyer.svg
+  SvgGenImage get buyer => const SvgGenImage('assets/icons/buyer.svg');
+
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
   /// File path: assets/icons/error_icon.svg
   SvgGenImage get errorIcon => const SvgGenImage('assets/icons/error_icon.svg');
 
+  /// File path: assets/icons/seller.svg
+  SvgGenImage get seller => const SvgGenImage('assets/icons/seller.svg');
+
   /// List of all assets
-  List<SvgGenImage> get values => [checkicon, errorIcon];
+  List<SvgGenImage> get values => [buyer, checkicon, errorIcon, seller];
 }
 
 class $AssetsImagesGen {
