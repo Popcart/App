@@ -11,6 +11,7 @@ sealed class UserRepository{
     required File utilityBillDocument,
     required File idDocument,
   });
+  
 }
 
 class UserRepositoryImpl implements UserRepository {

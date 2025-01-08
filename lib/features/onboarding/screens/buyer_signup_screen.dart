@@ -91,9 +91,11 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
       listener: (context, state) {
         state.whenOrNull(
           onboardingFailure: (message) => context.showError(message),
-          onboardingSuccess: () => context.pushNamed(
+          onboardingSuccess: () => context.read<OnboardingCubit>().sendOtp(),
+          sendOtpSuccess: () => context.pushNamed(
             AppPath.auth.buyerSignup.verifyPhoneNumber.path,
           ),
+          sendOtpFailure: (message) => context.showError(message),
         );
       },
       child: Scaffold(

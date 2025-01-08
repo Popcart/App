@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 
 part 'onboarding_cubit.freezed.dart';
-
 part 'onboarding_state.dart';
 
 @JsonEnum()
@@ -135,9 +135,12 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.verifyOtp(
       otp: otp,
+      phone: _phoneNumber,
     );
     response.when(
       success: (data) {
+         locator<SharedPrefs>().accessToken = data?.data;
+        locator.setApiHandlerToken(data?.data ?? '');
         emit(const OnboardingState.verifyOtpSuccess());
       },
       error: (e) {
@@ -176,6 +179,26 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       error: (e) {
         emit(
           OnboardingState.onboardingFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> sendOtp() async {
+    emit(const OnboardingState.loading());
+    final response = await _onboardingRepo.sendOtp(
+      phone: _phoneNumber,
+    );
+    response.when(
+      success: (data) {
+       
+        emit(const OnboardingState.sendOtpSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.sendOtpFailure(
             e.message ?? 'An error occurred',
           ),
         );

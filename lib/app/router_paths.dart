@@ -3,6 +3,7 @@ import 'package:go_router_paths/go_router_paths.dart';
 class AppPath {
   static final splash = SplashPath();
   static final auth = AuthPath();
+  static final authorizedUser = AuthorizedUserPath();
 }
 
 class SplashPath extends Path<SplashPath> {
@@ -39,4 +40,24 @@ class BusinessSignupPath extends Path<BusinessSignupPath> {
       Path('complete-registered-business-signup');
   Path get completeIndividualBusinessSignup =>
       Path('complete-individual-business-signup');
+}
+
+class AuthorizedUserPath extends Path<AuthorizedUserPath> {
+  AuthorizedUserPath() : super('/authorized-user');
+
+  AuctionsPath get auctions => AuctionsPath();
+  LivePath get live => LivePath();
+  AccountPath get account => AccountPath();
+}
+
+class AuctionsPath extends Path<AuctionsPath> {
+  AuctionsPath() : super('/auctions');
+}
+
+class LivePath extends Path<LivePath> {
+  LivePath() : super('/live');
+}
+
+class AccountPath extends Path<AccountPath> {
+  AccountPath() : super('/account');
 }

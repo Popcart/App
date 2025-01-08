@@ -70,19 +70,19 @@ Future<void> setupLocator({
 }
 
 extension GetItExtensions on GetIt {
-  // void setApiHandlerToken(String token) {
-  //   for (final element in ApiService.values) {
-  //     get<ApiHandler>(
-  //       instanceName: element.name,
-  //     ).addToken(token);
-  //   }
-  // }
+  void setApiHandlerToken(String token) {
+    for (final element in ApiService.values) {
+      get<ApiHandler>(
+        instanceName: element.name,
+      ).addToken(token);
+    }
+  }
 
-  // void clearApiHandlerToken() {
-  //   for (final element in ApiService.values) {
-  //     get<ApiHandler>(
-  //       instanceName: element.name,
-  //     ).clearToken();
-  //   }
-  // }
+  void clearApiHandlerToken() {
+    for (final element in ApiService.values) {
+      get<ApiHandler>(
+        instanceName: element.name,
+      ).clearToken();
+    }
+  }
 }

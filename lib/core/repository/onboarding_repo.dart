@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 
@@ -13,9 +11,14 @@ sealed class OnboardingRepo {
     required String userType,
   });
 
-  Future<ApiResponse<void>> verifyOtp({required String otp});
+  Future<ApiResponse<void>> sendOtp({
+    required String phone,
+  });
 
-
+  Future<ApiResponse<String>> verifyOtp({
+    required String otp,
+    required String phone,
+  });
 }
 
 class OnboardingRepoImpl implements OnboardingRepo {
@@ -48,14 +51,32 @@ class OnboardingRepoImpl implements OnboardingRepo {
   }
 
   @override
-  Future<ApiResponse<void>> verifyOtp({required String otp}) {
-    return _apiHelper.request<void>(
+  Future<ApiResponse<String>> verifyOtp({
+    required String otp,
+    required String phone,
+  }) {
+    return _apiHelper.request<String>(
       path: 'verify-phone',
       method: MethodType.post,
       payload: {
         'code': otp,
+        'phone': phone,
+      }, responseMapper: (json) {
+        
+        return json['token'] as String;
       },
     );
   }
-
+  
+  @override
+  Future<ApiResponse<void>> sendOtp({required String phone}) {
+    return _apiHelper.request<void>(
+      path: 'send-otp',
+      method: MethodType.post,
+      payload: {
+        'phone': phone,
+      },
+     
+    );
+  }
 }

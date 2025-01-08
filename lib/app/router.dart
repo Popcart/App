@@ -150,5 +150,85 @@ final router = GoRouter(
         ),
       ],
     ),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) =>
+          ScaffoldWithNestedNavigation(
+        navigationShell: navigationShell,
+      ),
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppPath.authorizedUser.auctions.goRoute,
+              builder: (context, state) => const Scaffold(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes:  [
+            GoRoute(
+              path: AppPath.authorizedUser.live.goRoute,
+              builder: (context, state) => const Scaffold(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes:  [
+            GoRoute(
+              path: AppPath.authorizedUser.account.goRoute,
+              builder: (context, state) => const Scaffold(),
+            ),
+          ],
+        ),
+      ],
+    ),
   ],
 );
+
+class ScaffoldWithNestedNavigation extends StatelessWidget {
+  const ScaffoldWithNestedNavigation({
+    required this.navigationShell,
+    super.key,
+  });
+
+  final StatefulNavigationShell navigationShell;
+
+  void _goBranch(int index) => navigationShell.goBranch(
+        index,
+        initialLocation: index == navigationShell.currentIndex,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaffoldWithNavigationBar(
+      body: navigationShell,
+      selectedIndex: navigationShell.currentIndex,
+      onDestinationSelected: _goBranch,
+    );
+  }
+}
+
+class ScaffoldWithNavigationBar extends StatelessWidget {
+  const ScaffoldWithNavigationBar({
+    required this.body,
+    required this.selectedIndex,
+    required this.onDestinationSelected,
+    super.key,
+  });
+
+  final Widget body;
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: body,
+
+      // bottomNavigationBar: BottomNavWidget(
+      //   currentIndex: selectedIndex,
+      //   onTap: onDestinationSelected,
+      // ),
+    );
+  }
+}

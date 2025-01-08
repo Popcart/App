@@ -82,6 +82,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
     if (onboardingCubit.userType == UserType.buyer) {
+      context.go(AppPath.authorizedUser.auctions.goRoute);
       return;
     }
 
@@ -112,8 +113,8 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
       listener: (context, state) {
         state.whenOrNull(
           verifyOtpFailure: (message) {
-            // context.showError(message);
-            _onProceed()  ;
+            context.showError(message);
+            // _onProceed()  ;
           },
           verifyOtpSuccess: _onProceed,
         );
@@ -159,7 +160,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                   listenable: _textEditingController,
                   builder: (_, __) {
                     return IgnorePointer(
-                      ignoring: _textEditingController.text.length != 6 ||
+                      ignoring: _textEditingController.text.length != 4 ||
                           onboardingCubit.state.maybeWhen(
                             orElse: () => false,
                             loading: () => true,
@@ -172,7 +173,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                         },
                         child: AnimatedOpacity(
                           opacity:
-                              _textEditingController.text.length == 6 ? 1 : 0,
+                              _textEditingController.text.length == 4 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
                             text: l10n.proceed,

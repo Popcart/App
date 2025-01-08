@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:mime/mime.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:pdf_compressor/pdf_compressor.dart';
+
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:mime/mime.dart';
+import 'package:pdf_compressor/pdf_compressor.dart';
 
 class FileCompressor {
   static Future<File> compressFile(File file) async {
@@ -19,7 +19,7 @@ class FileCompressor {
         file.absolute.path,
         outPath,
         quality: 70, // adjust quality (0-100)
-        rotate: 0,
+
       );
 
       return File(compressedFile!.path);
@@ -29,15 +29,15 @@ class FileCompressor {
         // await  Directory('${tempdir.path}/compressed').create(recursive: true);
         // final outPutPath = '${tempdir.path}/compressed/temp.pdf';
         // log(outPutPath, name: 'Output Path');
-        final compressedFile = await PdfCompressor.compressPdfFile(
+        await PdfCompressor.compressPdfFile(
           file.path,
           file.path,
           CompressQuality.MEDIUM, // or LOW, HIGH
         );
 
         return File(file.path);
-      }catch(e){
-        log(e.toString(), name:'Error');
+      } catch (e) {
+        log(e.toString(), name: 'Error');
         return file;
       }
     } else {
