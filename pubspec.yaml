@@ -43,6 +43,7 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   shared_preferences: ^2.3.3
   toastification: ^2.3.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   bloc_test: ^9.1.7

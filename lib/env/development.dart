@@ -15,4 +15,8 @@ final class DevEnv implements Env, EnvFields {
   @override
   @EnviedField(varName: 'INTRO_GIF_URL')
   final String introGifUrl = _Env.introGifUrl;
+
+  @override
+  @EnviedField(varName: 'SELLER_DASHBOARD_URL')
+  final String sellerDashboardUrl = _Env.sellerDashboardUrl;
 }

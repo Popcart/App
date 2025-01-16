@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
+import 'package:popcart/env/env.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
@@ -14,6 +15,7 @@ import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -178,7 +180,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: AppPath.authorizedUser.account.goRoute,
-              builder: (context, state) => const Scaffold(),
+              builder: (context, state) => const AccountWebview(),
             ),
           ],
         ),
@@ -186,6 +188,42 @@ final router = GoRouter(
     ),
   ],
 );
+
+class AccountWebview extends StatefulWidget {
+  const AccountWebview({
+    super.key,
+  });
+
+  @override
+  State<AccountWebview> createState() => _AccountWebviewState();
+}
+
+class _AccountWebviewState extends State<AccountWebview> {
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xff111214))
+      ..setNavigationDelegate(
+        NavigationDelegate(),
+      )
+      ..loadRequest(Uri.parse(Env().sellerDashboardUrl));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: WebViewWidget(
+          controller: controller,
+        ),
+      ),
+    );
+  }
+}
 
 class ScaffoldWithNestedNavigation extends StatelessWidget {
   const ScaffoldWithNestedNavigation({
@@ -227,17 +265,19 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
     return Scaffold(
       body: body,
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: selectedIndex,
         backgroundColor: const Color(0xff111214),
         onTap: onDestinationSelected,
         selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 12,
-          color: Colors.white,
         ),
+        showUnselectedLabels: false,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white,
         unselectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 12,
-          color: Colors.white,
         ),
         items: [
           BottomNavigationBarItem(
@@ -257,19 +297,6 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class BottomNavWidget extends StatelessWidget {
-  const BottomNavWidget({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: const [
-        // BottomNavigationBarItem(icon: icon)
-      ],
     );
   }
 }
