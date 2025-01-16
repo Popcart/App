@@ -31,14 +31,47 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/auctions_selected.svg
+  SvgGenImage get auctionsSelected =>
+      const SvgGenImage('assets/icons/auctions_selected.svg');
+
+  /// File path: assets/icons/auctions_unselected.svg
+  SvgGenImage get auctionsUnselected =>
+      const SvgGenImage('assets/icons/auctions_unselected.svg');
+
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
   /// File path: assets/icons/error_icon.svg
   SvgGenImage get errorIcon => const SvgGenImage('assets/icons/error_icon.svg');
 
+  /// File path: assets/icons/live_selected.svg
+  SvgGenImage get liveSelected =>
+      const SvgGenImage('assets/icons/live_selected.svg');
+
+  /// File path: assets/icons/live_unselected.svg
+  SvgGenImage get liveUnselected =>
+      const SvgGenImage('assets/icons/live_unselected.svg');
+
+  /// File path: assets/icons/profile_selected.svg
+  SvgGenImage get profileSelected =>
+      const SvgGenImage('assets/icons/profile_selected.svg');
+
+  /// File path: assets/icons/profile_unselected.svg
+  SvgGenImage get profileUnselected =>
+      const SvgGenImage('assets/icons/profile_unselected.svg');
+
   /// List of all assets
-  List<SvgGenImage> get values => [checkicon, errorIcon];
+  List<SvgGenImage> get values => [
+        auctionsSelected,
+        auctionsUnselected,
+        checkicon,
+        errorIcon,
+        liveSelected,
+        liveUnselected,
+        profileSelected,
+        profileUnselected
+      ];
 }
 
 class $AssetsImagesGen {

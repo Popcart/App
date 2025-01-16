@@ -13,12 +13,14 @@ import 'package:popcart/features/onboarding/screens/select_seller_type_screen.da
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
+import 'package:popcart/gen/assets.gen.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final router = GoRouter(
   debugLogDiagnostics: kDebugMode,
   navigatorKey: rootNavigatorKey,
+  initialLocation: AppPath.authorizedUser.live.path,
   observers: [
     // FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
   ],
@@ -165,7 +167,7 @@ final router = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          routes:  [
+          routes: [
             GoRoute(
               path: AppPath.authorizedUser.live.goRoute,
               builder: (context, state) => const Scaffold(),
@@ -173,7 +175,7 @@ final router = GoRouter(
           ],
         ),
         StatefulShellBranch(
-          routes:  [
+          routes: [
             GoRoute(
               path: AppPath.authorizedUser.account.goRoute,
               builder: (context, state) => const Scaffold(),
@@ -224,11 +226,50 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: body,
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: const Color(0xff111214),
+        onTap: onDestinationSelected,
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          color: Colors.white,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 12,
+          color: Colors.white,
+        ),
+        items: [
+          BottomNavigationBarItem(
+            activeIcon: AppAssets.icons.auctionsSelected.svg(),
+            icon: AppAssets.icons.auctionsUnselected.svg(),
+            label: 'Auctions',
+          ),
+          BottomNavigationBarItem(
+            activeIcon: AppAssets.icons.liveSelected.svg(),
+            icon: AppAssets.icons.liveUnselected.svg(),
+            label: 'Live',
+          ),
+          BottomNavigationBarItem(
+            activeIcon: AppAssets.icons.profileSelected.svg(),
+            icon: AppAssets.icons.profileUnselected.svg(),
+            label: 'Account',
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-      // bottomNavigationBar: BottomNavWidget(
-      //   currentIndex: selectedIndex,
-      //   onTap: onDestinationSelected,
-      // ),
+class BottomNavWidget extends StatelessWidget {
+  const BottomNavWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      items: const [
+        // BottomNavigationBarItem(icon: icon)
+      ],
     );
   }
 }
