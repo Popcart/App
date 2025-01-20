@@ -22,7 +22,7 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 final router = GoRouter(
   debugLogDiagnostics: kDebugMode,
   navigatorKey: rootNavigatorKey,
-  initialLocation: AppPath.authorizedUser.live.path,
+  // initialLocation: AppPath.authorizedUser.live.path,
   observers: [
     // FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
   ],
