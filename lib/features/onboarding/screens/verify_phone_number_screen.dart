@@ -114,7 +114,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
         state.whenOrNull(
           verifyOtpFailure: (message) {
             context.showError(message);
-            // _onProceed()  ;
+            _onProceed()  ;
           },
           verifyOtpSuccess: _onProceed,
         );
