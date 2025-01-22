@@ -1,6 +1,6 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
+import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 
 part 'onboarding_models.g.dart';
 
@@ -73,6 +73,27 @@ class User {
   final bool emailVerified;
   @JsonKey(defaultValue: '', name: '_id')
   final String id;
+  @JsonKey(defaultValue: DateTime.now)
+  final DateTime createdAt;
+  @JsonKey(defaultValue: DateTime.now)
+  final DateTime updatedAt;
+}
+
+@JsonSerializable(createToJson: false)
+class ProductCategory{
+  ProductCategory({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ProductCategory.fromJson(Map<String, dynamic> json) => _$ProductCategoryFromJson(json);
+
+  @JsonKey(defaultValue: '')
+  final String id;
+  @JsonKey(defaultValue: '')
+  final String name;
   @JsonKey(defaultValue: DateTime.now)
   final DateTime createdAt;
   @JsonKey(defaultValue: DateTime.now)

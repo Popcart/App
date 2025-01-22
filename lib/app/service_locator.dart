@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
+import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/env/env.dart';
@@ -8,7 +9,7 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user }
+enum ApiService { auth, user, inventory }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -21,13 +22,24 @@ Future<void> setupLocator({
       instanceName: ApiService.auth.name,
     )
     ..registerLazySingleton<ApiHandler>(
-          () => ApiHandler(baseUrl: '${Env().baseUrl}/user/'),
+      () => ApiHandler(baseUrl: '${Env().baseUrl}/user/'),
       instanceName: ApiService.user.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () => ApiHandler(baseUrl: '${Env().baseUrl}/inventory/'),
+      instanceName: ApiService.inventory.name,
+    )
     ..registerLazySingleton<UserRepository>(
-          () => UserRepositoryImpl(
+      () => UserRepositoryImpl(
         locator.get<ApiHandler>(
           instanceName: ApiService.user.name,
+        ),
+      ),
+    )
+    ..registerLazySingleton<InventoryRepo>(
+      () => InventoryRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.inventory.name,
         ),
       ),
     )

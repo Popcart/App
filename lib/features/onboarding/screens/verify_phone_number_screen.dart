@@ -7,7 +7,7 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
-import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
+import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
@@ -82,7 +82,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
     if (onboardingCubit.userType == UserType.buyer) {
-      context.go(AppPath.authorizedUser.auctions.goRoute);
+      context.pushNamed(AppPath.auth.buyerSignup.selectInterests.path);
       return;
     }
 
@@ -114,7 +114,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
         state.whenOrNull(
           verifyOtpFailure: (message) {
             context.showError(message);
-            _onProceed()  ;
+            // _onProceed()  ;
           },
           verifyOtpSuccess: _onProceed,
         );

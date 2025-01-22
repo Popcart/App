@@ -9,6 +9,7 @@ import 'package:popcart/features/onboarding/screens/choose_username_screen.dart'
 import 'package:popcart/features/onboarding/screens/complete_buyer_registration_screen.dart';
 import 'package:popcart/features/onboarding/screens/complete_individual_business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/complete_registered_business_signup_screen.dart';
+import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_seller_type_screen.dart';
 // import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
@@ -144,6 +145,17 @@ final router = GoRouter(
               name: AppPath.auth.buyerSignup.completeBuyerSignup.path,
               pageBuilder: (context, state) => CustomTransitionPage(
                 child: const CompleteBuyerRegistrationScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            ),
+            GoRoute(
+              path: AppPath.auth.buyerSignup.selectInterests.goRoute,
+              name: AppPath.auth.buyerSignup.selectInterests.path,
+              pageBuilder: (context, state) => CustomTransitionPage(
+                child: const SelectInterestsScreen(),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   return FadeTransition(opacity: animation, child: child);

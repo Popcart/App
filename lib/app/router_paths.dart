@@ -25,6 +25,7 @@ class BuyerSignupPath extends Path<BuyerSignupPath> {
   Path get verifyPhoneNumber => Path('verify-phone-number');
   Path get chooseUsername => Path('choose-username');
   Path get completeBuyerSignup => Path('complete-buyer-signup');
+  Path get selectInterests => Path('select-interests');
 }
 
 class SellerSignupPath extends Path<SellerSignupPath> {

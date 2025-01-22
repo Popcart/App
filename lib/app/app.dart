@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:popcart/app/router.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/features/onboarding/cubits/cubit/onboarding_cubit.dart';
+import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
+import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
 
@@ -15,8 +16,15 @@ class PopCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OnboardingCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => OnboardingCubit(),
+        ),
+        BlocProvider(
+          create: (context) => InterestListCubit(),
+        ),
+      ],
       child: ToastificationWrapper(
         child: ScreenUtilInit(
           designSize: const Size(393, 852),
