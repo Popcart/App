@@ -20,5 +20,6 @@
     "your_details" : "Your details",
     "your_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart",
     "business_details" : "Business details",
-    "business_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart"
+    "business_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart",
+    "select_interests" : "Select interests"
 }

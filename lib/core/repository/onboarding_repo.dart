@@ -15,7 +15,7 @@ sealed class OnboardingRepo {
     required String phone,
   });
 
-  Future<ApiResponse<String>> verifyOtp({
+  Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
     required String phone,
   });
@@ -51,20 +51,17 @@ class OnboardingRepoImpl implements OnboardingRepo {
   }
 
   @override
-  Future<ApiResponse<String>> verifyOtp({
+  Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
     required String phone,
   }) {
-    return _apiHelper.request<String>(
+    return _apiHelper.request<TokenPair>(
       path: 'verify-phone',
       method: MethodType.post,
       payload: {
         'code': otp,
         'phone': phone,
-      }, responseMapper: (json) {
-        
-        return json['token'] as String;
-      },
+      }, responseMapper:  TokenPair.fromJson,
     );
   }
   

@@ -139,8 +139,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
     response.when(
       success: (data) {
-         locator<SharedPrefs>().accessToken = data?.data;
-        locator.setApiHandlerToken(data?.data ?? '');
+         locator<SharedPrefs>()..accessToken = data?.data?.token ?? ''
+         ..refreshToken = data?.data?.refreshToken ?? '';
+        locator.setApiHandlerToken(data?.data?.token ?? '');
         emit(const OnboardingState.verifyOtpSuccess());
       },
       error: (e) {

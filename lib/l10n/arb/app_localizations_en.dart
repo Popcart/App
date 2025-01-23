@@ -68,4 +68,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get business_details_sub => 'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart';
+
+  @override
+  String get select_interests => 'Select interests';
 }

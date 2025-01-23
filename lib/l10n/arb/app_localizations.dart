@@ -220,6 +220,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart'**
   String get business_details_sub;
+
+  /// No description provided for @select_interests.
+  ///
+  /// In en, this message translates to:
+  /// **'Select interests'**
+  String get select_interests;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

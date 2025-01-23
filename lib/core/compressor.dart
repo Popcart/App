@@ -11,15 +11,14 @@ class FileCompressor {
     log(mimeType, name: 'Mime Type');
     if (mimeType.contains('image')) {
       final filePath = file.absolute.path;
-      final lastIndex = filePath.lastIndexOf(RegExp(r'.jp|.png'));
+      final lastIndex = filePath.lastIndexOf(RegExp('.jp|.png'));
       final splitted = filePath.substring(0, lastIndex);
-      final outPath = "${splitted}_compressed.jpg";
+      final outPath = '${splitted}_compressed.jpg';
 
       final compressedFile = await FlutterImageCompress.compressAndGetFile(
         file.absolute.path,
         outPath,
         quality: 70, // adjust quality (0-100)
-
       );
 
       return File(compressedFile!.path);

@@ -1,4 +1,3 @@
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 
@@ -80,7 +79,7 @@ class User {
 }
 
 @JsonSerializable(createToJson: false)
-class ProductCategory{
+class ProductCategory {
   ProductCategory({
     required this.id,
     required this.name,
@@ -88,7 +87,8 @@ class ProductCategory{
     required this.updatedAt,
   });
 
-  factory ProductCategory.fromJson(Map<String, dynamic> json) => _$ProductCategoryFromJson(json);
+  factory ProductCategory.fromJson(Map<String, dynamic> json) =>
+      _$ProductCategoryFromJson(json);
 
   @JsonKey(defaultValue: '')
   final String id;
@@ -98,4 +98,30 @@ class ProductCategory{
   final DateTime createdAt;
   @JsonKey(defaultValue: DateTime.now)
   final DateTime updatedAt;
+
+  @override
+  String toString() {
+    return '''ProductCategory(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)''';
+  }
+}
+
+@JsonSerializable(createToJson: false)
+class TokenPair {
+  TokenPair({
+    required this.token,
+    required this.refreshToken,
+  });
+
+  factory TokenPair.fromJson(Map<String, dynamic> json) =>
+      _$TokenPairFromJson(json);
+
+  @JsonKey(defaultValue: '')
+  final String token;
+  @JsonKey(defaultValue: '')
+  final String refreshToken;
+
+  @override
+  String toString() {
+    return 'TokenPair(token: $token, refreshToken: $refreshToken)';
+  }
 }

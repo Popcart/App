@@ -10,6 +10,7 @@ class SharedPrefs {
 
   bool? get firstTime => _sharedPrefs.getBool('firstTime');
   String? get accessToken => _sharedPrefs.getString('accessToken');
+  String? get refreshToken => _sharedPrefs.getString('refreshToken');
 
   set firstTime(bool? value) {
     _sharedPrefs.setBool('firstTime', value!);
@@ -17,6 +18,10 @@ class SharedPrefs {
 
   set accessToken(String? value) {
     _sharedPrefs.setString('accessToken', value!);
+  }
+
+  set refreshToken(String? value) {
+    _sharedPrefs.setString('refreshToken', value!);
   }
 
 }
