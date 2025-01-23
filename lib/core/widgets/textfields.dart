@@ -27,7 +27,7 @@ class CustomTextFormField extends TextFormField {
           ),
           decoration: InputDecoration.collapsed(
             hintText: hintText ?? '',
-            hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
+            hintStyle: TextStyle(color: AppColors.white.withValues(alpha: 0.2)),
           ),
         );
 }

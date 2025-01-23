@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:firebase_performance_dio/firebase_performance_dio.dart';
 import 'package:flutter/foundation.dart';
-
 // ignore: depend_on_referenced_packages
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -162,7 +161,7 @@ class ApiHandler {
     bool authenticate = true,
     Map<String, File>? files,
   }) async {
-    Map<String, dynamic> modifiedPayload = {}..addAll(payload ?? {});
+    final modifiedPayload = <String, dynamic>{}..addAll(payload ?? {});
     if (files != null) {
       for (final file in files.entries) {
         final compressedFile = await FileCompressor.compressFile(file.value);
@@ -184,7 +183,8 @@ class ApiHandler {
           );
         final response =
             await uploadInstance.post('${Env().baseUrl}/upload', data: data);
-        modifiedPayload[file.key] = (response.data['data'] as List<dynamic>).firstOrNull ?? '';
+        modifiedPayload[file.key] =
+            (response.data['data'] as List<dynamic>).firstOrNull ?? '';
       }
     }
     try {

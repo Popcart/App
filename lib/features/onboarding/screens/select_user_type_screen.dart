@@ -123,16 +123,15 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                 Container(
                                   width: 64,
                                   height: 64,
-                                  decoration:  BoxDecoration(
-                                    color: Color(0xfff97316),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                    image: DecorationImage(
-                                      image:AppAssets.images.buyer.provider(),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xfff97316),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(20),
                                     ),
-
+                                    image: DecorationImage(
+                                      image: AppAssets.images.buyer.provider(),
+                                    ),
                                   ),
-
                                 ),
                                 const SizedBox(width: 16),
                                 Column(
@@ -190,17 +189,16 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                 Container(
                                   width: 64,
                                   height: 64,
-                                  decoration:  BoxDecoration(
-                                    color: Color(0xfff97316),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xfff97316),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(20),
+                                    ),
                                     image: DecorationImage(
-                                      image:AppAssets.images.seller.provider(),
-                                     ),
+                                      image: AppAssets.images.seller.provider(),
+                                    ),
                                   ),
-
                                 ),
-
                                 const SizedBox(width: 16),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
