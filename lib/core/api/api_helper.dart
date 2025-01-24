@@ -181,8 +181,11 @@ class ApiHandler {
               },
             ),
           );
-        final response =
-            await uploadInstance.post('${Env().baseUrl}/upload', data: data);
+        // ignore: inference_failure_on_function_invocation
+        final response = await uploadInstance.post(
+          '${Env().baseUrl}/upload',
+          data: data,
+        );
         modifiedPayload[file.key] =
             (response.data['data'] as List<dynamic>).firstOrNull ?? '';
       }

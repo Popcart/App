@@ -71,4 +71,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get select_interests => 'Select interests';
+
+  @override
+  String get already_have_an_account => 'Already have an account?';
+
+  @override
+  String get sign_in => 'Sign in';
 }

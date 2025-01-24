@@ -14,7 +14,7 @@ class AuthPath extends Path<AuthPath> {
   AuthPath() : super('/auth');
 
   Path get selectSellerType => Path('select-seller-type');
-
+  Path get login => Path('/login');
   BuyerSignupPath get buyerSignup => BuyerSignupPath();
   SellerSignupPath get sellerSignup => SellerSignupPath();
 }

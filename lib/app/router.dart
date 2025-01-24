@@ -2,13 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
 import 'package:popcart/features/onboarding/screens/complete_buyer_registration_screen.dart';
 import 'package:popcart/features/onboarding/screens/complete_individual_business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/complete_registered_business_signup_screen.dart';
+import 'package:popcart/features/onboarding/screens/login_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_seller_type_screen.dart';
 // import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
@@ -38,9 +42,9 @@ final router = GoRouter(
         },
       ),
       redirect: (context, state) {
-        // if (locator<SharedPrefs>().firstTime ?? true) {
-        //   return null;
-        // }
+        if (locator<SharedPrefs>().loggedIn) {
+          return AppPath.authorizedUser.live.path;
+        }
         return null;
       },
     ),
@@ -66,6 +70,17 @@ final router = GoRouter(
             },
           ),
           routes: [
+            GoRoute(
+              path: AppPath.auth.login.goRoute,
+              name: AppPath.auth.login.path,
+              pageBuilder: (context, state) => CustomTransitionPage(
+                child: const LoginScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            ),
             GoRoute(
               path: AppPath.auth.sellerSignup.businessSignup.goRoute,
               name: AppPath.auth.sellerSignup.businessSignup.path,
@@ -184,7 +199,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: AppPath.authorizedUser.live.goRoute,
-              builder: (context, state) => const Scaffold(),
+              builder: (context, state) => const LiveScreen(),
             ),
           ],
         ),
@@ -219,9 +234,9 @@ class _AccountWebviewState extends State<AccountWebview> {
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xff111214))
-      ..setNavigationDelegate(
-        NavigationDelegate(),
-      )
+      // ..setNavigationDelegate(
+      //   NavigationDelegate(),
+      // )
       ..loadRequest(Uri.parse(Env().sellerDashboardUrl));
   }
 

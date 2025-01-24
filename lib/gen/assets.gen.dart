@@ -87,6 +87,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/buyer.png
   AssetGenImage get buyer => const AssetGenImage('assets/images/buyer.png');
 
+  /// File path: assets/images/search.png
+  AssetGenImage get search => const AssetGenImage('assets/images/search.png');
+
   /// File path: assets/images/seller.png
   AssetGenImage get seller => const AssetGenImage('assets/images/seller.png');
 
@@ -96,7 +99,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values =>
-      [appLogo, authBg, buyer, seller, splashImage];
+      [appLogo, authBg, buyer, search, seller, splashImage];
 }
 
 class AppAssets {

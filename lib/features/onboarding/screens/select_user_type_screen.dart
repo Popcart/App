@@ -232,6 +232,38 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                         ),
                       ),
                     ),
+                    const Spacer(),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          context.pushNamed(
+                            AppPath.auth.login.path,
+                          );
+                        },
+                        child: Text.rich(
+                          TextSpan(
+                            text: l10n.already_have_an_account,
+                            style: const TextStyle(
+                              color: AppColors.orange,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            children: [
+                              const TextSpan(
+                                text: ' ',
+                              ),
+                              TextSpan(
+                                text: l10n.sign_in,
+                                style: const TextStyle(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),

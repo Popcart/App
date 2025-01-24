@@ -36,7 +36,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   late String _rcNumber;
   late String _businessOwnerBvn;
   late String _businessAddress;
-  late UserType _userType;
+   UserType? _userType;
   late bool _isRegisteredSeller;
 
   set firstName(String value) {
@@ -51,7 +51,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     _email = value;
   }
 
-  set userType(UserType value) {
+  set userType(UserType? value) {
     _userType = value;
   }
 
@@ -89,7 +89,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   String get email => _email;
 
-  UserType get userType => _userType;
+  UserType? get userType => _userType;
 
   bool get isRegisteredSeller => _isRegisteredSeller;
 
@@ -140,6 +140,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     response.when(
       success: (data) {
          locator<SharedPrefs>()..accessToken = data?.data?.token ?? ''
+         ..loggedIn = true
          ..refreshToken = data?.data?.refreshToken ?? '';
         locator.setApiHandlerToken(data?.data?.token ?? '');
         emit(const OnboardingState.verifyOtpSuccess());

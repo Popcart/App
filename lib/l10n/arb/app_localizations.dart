@@ -226,6 +226,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select interests'**
   String get select_interests;
+
+  /// No description provided for @already_have_an_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get already_have_an_account;
+
+  /// No description provided for @sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get sign_in;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
