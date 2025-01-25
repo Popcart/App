@@ -31,6 +31,9 @@ class $AssetsFontsGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/Search.svg
+  SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
   /// File path: assets/icons/auctions_selected.svg
   SvgGenImage get auctionsSelected =>
       const SvgGenImage('assets/icons/auctions_selected.svg');
@@ -63,6 +66,7 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+        search,
         auctionsSelected,
         auctionsUnselected,
         checkicon,
@@ -87,9 +91,6 @@ class $AssetsImagesGen {
   /// File path: assets/images/buyer.png
   AssetGenImage get buyer => const AssetGenImage('assets/images/buyer.png');
 
-  /// File path: assets/images/search.png
-  AssetGenImage get search => const AssetGenImage('assets/images/search.png');
-
   /// File path: assets/images/seller.png
   AssetGenImage get seller => const AssetGenImage('assets/images/seller.png');
 
@@ -99,7 +100,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values =>
-      [appLogo, authBg, buyer, search, seller, splashImage];
+      [appLogo, authBg, buyer, seller, splashImage];
 }
 
 class AppAssets {

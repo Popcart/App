@@ -22,7 +22,7 @@ class PopCart extends StatelessWidget {
           create: (context) => OnboardingCubit(),
         ),
         BlocProvider(
-          create: (context) => InterestListCubit(),
+          create: (context) => InterestListCubit()..getInterests(),
         ),
       ],
       child: ToastificationWrapper(

@@ -103,6 +103,13 @@ class ProductCategory {
   String toString() {
     return '''ProductCategory(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)''';
   }
+
+  factory ProductCategory.init() => ProductCategory(
+        id: '',
+        name: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
 }
 
 @JsonSerializable(createToJson: false)
