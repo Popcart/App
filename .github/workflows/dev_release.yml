@@ -1,0 +1,129 @@
+name: Android CI
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      # - name: Update version
+      #   run: |
+      #     chmod +x ./update_version.sh
+      #     ./update_version.sh
+        
+      # - name: Check for changes
+      #   id: check_changes
+      #   run: |
+      #       if [[ -n $(git status --porcelain) ]]; then
+      #         echo "has_changes=true" >> $GITHUB_OUTPUT
+      #       fi
+      
+      # - name: Deploy SSH key
+      #   uses: webfactory/ssh-agent@v0.8.0
+      #   with:
+      #     ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      # - name: Commit changes
+      #   if: steps.check_changes.outputs.has_changes == 'true'
+      #   run: |
+      #       git config --global user.email "stagingbuild@sendmonee.com"
+      #       git config --global user.name "CI Bot"
+      #       git add pubspec.yaml android/app/build.gradle
+      #       git commit -m "chore: automated version update [skip ci]"
+      #       git push origin staging
+      
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Cache Android SDK components
+        uses: actions/cache@v3
+        with:
+          path: ~/.android/cache
+          key: ${{ runner.os }}-android-sdk-${{ hashFiles('android/sdkmanager.properties') }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "21"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.5"
+          channel: "stable"
+          cache: true
+
+      - name: Verify Flutter installation
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      - name: Get dependencies
+        run: |
+          flutter pub get
+          flutter pub upgrade
+
+
+      - name: Create assets/env directory
+        run: mkdir -p assets/env
+  
+      - name: Create and populate env
+        run: |
+          echo "${{secrets.DEV_ENV_VARIABLE}}" | base64 --decode > assets/env/development.env
+          echo "${{secrets.STAG_ENV_VARIABLE}}" | base64 --decode > assets/env/staging.env
+          echo "${{secrets.PROD_ENV_VARIABLE}}" | base64 --decode > assets/env/production.env
+
+      - name: Run code generation
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+      
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.SIGNING_KEY_STORE_BASE64 }}" | base64 --decode > android/app/sendmonee-release-key.jks
+          echo "${{ secrets.KEY_PROPERTIES }}" | base64 --decode > android/key.properties
+
+      - name: Build Flutter App Bundle
+        run: |
+          flutter build appbundle --flavor staging --target lib/app/main.staging.dart
+
+      - name: Sign App Bundle
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+            releaseDirectory: build/app/outputs/bundle/stagingRelease
+            signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+            alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+            keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+            keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+
+      - name: Upload app to Google Play
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+          packageName: com.sendmonee.app.stg
+          releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
+          track: internal  # Can be production, beta, alpha, internal
+          status: draft
