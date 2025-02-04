@@ -100,7 +100,9 @@ android {
         release {
             signingConfig signingConfigs.release
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Add R8 specific configuration
+            proguardFile 'proguard-rules.pro'
         }
         debug {
             signingConfig signingConfigs.debug
