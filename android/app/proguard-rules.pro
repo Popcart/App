@@ -1,0 +1,4 @@
+-keep class kotlin.** { *; }
+-keep class kotlinx.** { *; }
+-keepattributes *Annotation*
+-dontwarn kotlinx.**
