@@ -107,23 +107,23 @@ jobs:
 
       - name: Build Flutter App Bundle
         run: |
-          flutter build appbundle --flavor staging --target lib/app/main.staging.dart
+          flutter build appbundle --flavor development --target lib/app/main.dev.dart
 
-      - name: Sign App Bundle
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-            releaseDirectory: build/app/outputs/bundle/stagingRelease
-            signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
-            alias: ${{ secrets.SIGNING_KEY_ALIAS }}
-            keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
-            keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
+      # - name: Sign App Bundle
+      #   uses: r0adkll/sign-android-release@v1
+      #   id: sign_app
+      #   with:
+      #       releaseDirectory: build/app/outputs/bundle/stagingRelease
+      #       signingKeyBase64: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+      #       alias: ${{ secrets.SIGNING_KEY_ALIAS }}
+      #       keyStorePassword: ${{ secrets.SIGNING_STORE_PASSWORD }}
+      #       keyPassword: ${{ secrets.SIGNING_KEY_PASSWORD }}
 
-      - name: Upload app to Google Play
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
-          packageName: com.sendmonee.app.stg
-          releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
-          track: internal  # Can be production, beta, alpha, internal
-          status: draft
+      # - name: Upload app to Google Play
+      #   uses: r0adkll/upload-google-play@v1
+      #   with:
+      #     serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_CONFIG_JSON }}
+      #     packageName: com.sendmonee.app.stg
+      #     releaseFiles: ${{ steps.sign_app.outputs.signedReleaseFile }}
+      #     track: internal  # Can be production, beta, alpha, internal
+      #     status: draft
