@@ -9,7 +9,7 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory }
+enum ApiService { auth, user, inventory , seller}
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -29,10 +29,21 @@ Future<void> setupLocator({
       () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/inventory/'),
       instanceName: ApiService.inventory.name,
     )
+     ..registerLazySingleton<ApiHandler>(
+      () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/sellers/'),
+      instanceName: ApiService.seller.name,
+    )
     ..registerLazySingleton<UserRepository>(
       () => UserRepositoryImpl(
         locator.get<ApiHandler>(
           instanceName: ApiService.user.name,
+        ),
+      ),
+    )
+     ..registerLazySingleton<UserRepository>(
+      () => UserRepositoryImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.seller.name,
         ),
       ),
     )
