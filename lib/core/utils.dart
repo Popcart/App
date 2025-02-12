@@ -84,3 +84,28 @@ extension BuildContextExtension on BuildContext {
     );
   }
 }
+
+extension StringExtension on String {
+  String addQueryParameters(Map<String, dynamic> params) {
+    if (params.isEmpty) {
+      return this;
+    }
+
+    final buffer = StringBuffer(this);
+
+    if (!contains('?')) {
+      buffer.write('?');
+    } else {
+      if (!endsWith('&')) {
+        buffer.write('&');
+      }
+    }
+
+    params.forEach((key, value) {
+      buffer.write('$key=$value&');
+    });
+
+    final result = buffer.toString();
+    return result.substring(0, result.length - 1);
+  }
+}

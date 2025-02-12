@@ -236,6 +236,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign in'**
   String get sign_in;
+
+  /// No description provided for @start_a_livestream.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a livestream'**
+  String get start_a_livestream;
+
+  /// No description provided for @livestream_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Livestream title'**
+  String get livestream_title;
+
+  /// No description provided for @schedule_livestream.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule livestream'**
+  String get schedule_livestream;
+
+  /// No description provided for @go_live.
+  ///
+  /// In en, this message translates to:
+  /// **'Go live'**
+  String get go_live;
+
+  /// No description provided for @start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Start time'**
+  String get start_time;
+
+  /// No description provided for @select_start_time.
+  ///
+  /// In en, this message translates to:
+  /// **'Select start time'**
+  String get select_start_time;
+
+  /// No description provided for @select_products.
+  ///
+  /// In en, this message translates to:
+  /// **'Select products'**
+  String get select_products;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

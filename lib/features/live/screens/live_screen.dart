@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class LiveScreen extends HookWidget {
@@ -16,185 +19,202 @@ class LiveScreen extends HookWidget {
     final interestListCubit = context.watch<InterestListCubit>();
     final profileCubit = context.watch<ProfileCubit>();
     final selectedInterest = useState<ProductCategory?>(null);
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SearchTextField(),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 40,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const ClampingScrollPhysics(),
-                itemCount: interestListCubit.state.maybeWhen(
-                  orElse: () => 0,
-                  loaded: (interests) => interests.length,
-                ),
-                itemBuilder: (context, index) {
-                  final interest = interestListCubit.state.maybeWhen(
-                    orElse: ProductCategory.init,
-                    loaded: (interests) => interests[index],
-                  );
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        selectedInterest.value = interest;
-                      },
-                      child: Chip(
-                        label: Text(interest.name),
-                        labelStyle: TextStyle(
-                          color: selectedInterest.value == interest
-                              ? Colors.white
-                              : const Color(0xff676C75),
-                          fontWeight: selectedInterest.value == interest
-                              ? FontWeight.w500
-                              : FontWeight.normal,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(80),
-                        ),
-                        backgroundColor: selectedInterest.value == interest
-                            ? const Color(0xff676C75)
-                            : const Color(0xff111214),
-                      ),
-                    ),
-                  );
-                },
-              ),
+    return Scaffold(
+      floatingActionButton: profileCubit.state.maybeWhen(
+        orElse: () => null,
+        loaded: (user) => switch (user.userType) {
+          UserType.seller => FloatingActionButton.extended(
+              onPressed: () {
+                context.pushNamed(
+                  AppPath.authorizedUser.live.scheduleSession.path,
+                );
+              },
+              label: const Text('Go Live'),
+              icon: const Icon(Icons.live_tv),
             ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.6,
-              width: double.infinity,
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xff24262B),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Spacer(),
-                    Text(
-                      'JOGGERS',
-                      style: TextStyle(
-                        fontSize: 28,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
+          UserType.buyer => null,
+        },
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              const SearchTextField(),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  physics: const ClampingScrollPhysics(),
+                  itemCount: interestListCubit.state.maybeWhen(
+                    orElse: () => 0,
+                    loaded: (interests) => interests.length,
+                  ),
+                  itemBuilder: (context, index) {
+                    final interest = interestListCubit.state.maybeWhen(
+                      orElse: ProductCategory.init,
+                      loaded: (interests) => interests[index],
+                    );
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                        onTap: () {
+                          selectedInterest.value = interest;
+                        },
+                        child: Chip(
+                          label: Text(interest.name),
+                          labelStyle: TextStyle(
+                            color: selectedInterest.value == interest
+                                ? Colors.white
+                                : const Color(0xff676C75),
+                            fontWeight: selectedInterest.value == interest
+                                ? FontWeight.w500
+                                : FontWeight.normal,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(80),
+                          ),
+                          backgroundColor: selectedInterest.value == interest
+                              ? const Color(0xff676C75)
+                              : const Color(0xff111214),
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: const Color(0xff3B3C40),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: const Color(0xff24262B),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Column(
-                      children: [
-                        Text(
-                          'Your Rewards',
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          '₦0',
-                          style: TextStyle(
-                            fontSize: 32,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
-                    ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                width: double.infinity,
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff24262B),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Want to earn cash?',
-                    style: TextStyle(
-                      fontSize: 22,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Flexible(
-                        flex: 3,
-                        child: Text(
-                          'Earn up to ₦2000 when your friends sign up to Popcart and make a purchase',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w400,
-                          ),
+                      Spacer(),
+                      Text(
+                        'JOGGERS',
+                        style: TextStyle(
+                          fontSize: 28,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
-                      Flexible(
-                        child: BouncingEffect(
-                          onTap: () {},
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: AppColors.orange,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Center(
-                              child: IconButton(
-                                visualDensity: const VisualDensity(
-                                  horizontal: -4,
-                                  vertical: -4,
-                                ),
-                                icon: const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: AppColors.white,
-                                ),
-                                onPressed: () {},
-                              ),
-                            ),
-                          ),
+                      SizedBox(height: 8),
+                      Text(
+                        '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xff3B3C40),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color(0xff24262B),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Column(
+                        children: [
+                          Text(
+                            'Your Rewards',
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            '₦0',
+                            style: TextStyle(
+                              fontSize: 32,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Want to earn cash?',
+                      style: TextStyle(
+                        fontSize: 22,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Flexible(
+                          flex: 3,
+                          child: Text(
+                            '''Earn up to ₦2000 when your friends sign up to Popcart and make a purchase''',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          child: BouncingEffect(
+                            onTap: () {},
+                            child: Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                color: AppColors.orange,
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: Center(
+                                child: IconButton(
+                                  visualDensity: const VisualDensity(
+                                    horizontal: -4,
+                                    vertical: -4,
+                                  ),
+                                  icon: const Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: AppColors.white,
+                                  ),
+                                  onPressed: () {},
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

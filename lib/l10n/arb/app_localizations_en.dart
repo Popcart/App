@@ -77,4 +77,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sign_in => 'Sign in';
+
+  @override
+  String get start_a_livestream => 'Start a livestream';
+
+  @override
+  String get livestream_title => 'Livestream title';
+
+  @override
+  String get schedule_livestream => 'Schedule livestream';
+
+  @override
+  String get go_live => 'Go live';
+
+  @override
+  String get start_time => 'Start time';
+
+  @override
+  String get select_start_time => 'Select start time';
+
+  @override
+  String get select_products => 'Select products';
 }

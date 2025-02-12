@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 
 part 'onboarding_models.g.dart';
 
@@ -87,6 +87,13 @@ class ProductCategory {
     required this.updatedAt,
   });
 
+  factory ProductCategory.init() => ProductCategory(
+        id: '',
+        name: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       _$ProductCategoryFromJson(json);
 
@@ -103,13 +110,6 @@ class ProductCategory {
   String toString() {
     return '''ProductCategory(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)''';
   }
-
-  factory ProductCategory.init() => ProductCategory(
-        id: '',
-        name: '',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      );
 }
 
 @JsonSerializable(createToJson: false)

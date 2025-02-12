@@ -176,10 +176,17 @@ Future<void> bootstrap(
       await downloadSplashFromServer();
       locator.get<SharedPrefs>().firstTime = false;
     }
-    runApp(await builder());
+    final isLoggedIn = locator.get<SharedPrefs>().loggedIn;
+    if (isLoggedIn) {
+      final token = locator.get<SharedPrefs>().accessToken ?? '';
+      if (token.isNotEmpty) {
+        locator.get<SharedPrefs>().accessToken = token;
+      }
+    }
   } catch (e, s) {
     await FirebaseCrashlytics.instance.recordError(e, s, fatal: true);
   }
+  runApp(await builder());
   FlutterNativeSplash.remove();
 }
 

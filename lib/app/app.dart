@@ -25,10 +25,9 @@ class PopCart extends StatelessWidget {
         BlocProvider(
           create: (context) => InterestListCubit()..getInterests(),
         ),
-         BlocProvider(
+        BlocProvider(
           create: (context) => ProfileCubit()..fetchUserProfile(),
         ),
-        
       ],
       child: ToastificationWrapper(
         child: ScreenUtilInit(
@@ -40,9 +39,28 @@ class PopCart extends StatelessWidget {
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
+                bottomAppBarTheme: const BottomAppBarTheme(
+                  color: Color(0xff111214),
+                ),
                 fontFamily: 'WorkSans',
                 textSelectionTheme: const TextSelectionThemeData(
                   cursorColor: AppColors.orange,
+                ),
+                radioTheme: RadioThemeData(
+                  fillColor: WidgetStateProperty.all(AppColors.orange),
+                ),
+                listTileTheme: const ListTileThemeData(
+                  contentPadding: EdgeInsets.zero,
+                  titleTextStyle: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  selectedTileColor: AppColors.orange,
+                ),
+                floatingActionButtonTheme: const FloatingActionButtonThemeData(
+                  backgroundColor: AppColors.orange,
+                  foregroundColor: Colors.white,
                 ),
                 scaffoldBackgroundColor: const Color(0xff111214),
                 elevatedButtonTheme: ElevatedButtonThemeData(

@@ -23,5 +23,12 @@
     "business_details_sub" : "We just need a few more details to set up your account. This information is private and cannot be seen by others on Popcart",
     "select_interests" : "Select interests",
     "already_have_an_account" : "Already have an account?",
-    "sign_in" : "Sign in"
+    "sign_in" : "Sign in",
+    "start_a_livestream" : "Start a livestream",
+    "livestream_title" : "Livestream title",
+    "schedule_livestream" : "Schedule livestream",
+    "go_live" : "Go live",
+    "start_time" : "Start time",
+    "select_start_time" : "Select start time",
+    "select_products" : "Select products"
 }

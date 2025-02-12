@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,8 +8,10 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
+import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
@@ -21,6 +26,7 @@ import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -202,6 +208,29 @@ final router = GoRouter(
             GoRoute(
               path: AppPath.authorizedUser.live.goRoute,
               builder: (context, state) => const LiveScreen(),
+              routes: [
+                GoRoute(
+                  path: AppPath.authorizedUser.live.scheduleSession.goRoute,
+                  name: AppPath.authorizedUser.live.scheduleSession.path,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    child: const ScheduleSessionScreen(),
+                    // implement a slide up transition
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(0, 1);
+                      const end = Offset.zero;
+                      const curve = Curves.ease;
+                      final tween = Tween(begin: begin, end: end)
+                          .chain(CurveTween(curve: curve));
+                      final offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -229,26 +258,62 @@ class AccountWebview extends StatefulWidget {
 
 class _AccountWebviewState extends State<AccountWebview> {
   late final WebViewController controller;
-
+  bool loading = true;
   @override
   void initState() {
     super.initState();
+    final url = Env().sellerDashboardUrl.addQueryParameters({
+      'state': 'app',
+      'accessToken': locator<SharedPrefs>().accessToken,
+    });
+    log(url, name: 'AccountWebview');
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xff111214))
-      // ..setNavigationDelegate(
-      //   NavigationDelegate(),
-      // )
-      ..loadRequest(Uri.parse(Env().sellerDashboardUrl));
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) {
+            setState(() {
+              loading = true;
+            });
+          },
+          onPageFinished: (url) {
+            setState(() {
+              loading = false;
+            });
+          },
+        ),
+      )
+      ..loadRequest(
+        Uri.parse(
+          Env().sellerDashboardUrl.addQueryParameters({
+            'state': 'app',
+            'accessToken': locator<SharedPrefs>().accessToken,
+          }),
+        ),
+      );
   }
 
   @override
   Widget build(BuildContext context) {
-    final profileCubit = context.watch<ProfileCubit>();
     return Scaffold(
       body: SafeArea(
-        child: WebViewWidget(
-          controller: controller,
+        child: BlocBuilder<ProfileCubit, ProfileState>(
+          builder: (context, state) {
+            return state.maybeWhen(
+              orElse: CupertinoActivityIndicator.new,
+              loaded: (user) => switch (user.userType) {
+                UserType.seller => loading
+                    ? const Center(
+                        child: CupertinoActivityIndicator(color: Colors.white),
+                      )
+                    : WebViewWidget(
+                        controller: controller,
+                      ),
+                UserType.buyer => const SizedBox(),
+              },
+            );
+          },
         ),
       ),
     );

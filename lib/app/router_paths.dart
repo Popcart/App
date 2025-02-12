@@ -57,6 +57,8 @@ class AuctionsPath extends Path<AuctionsPath> {
 
 class LivePath extends Path<LivePath> {
   LivePath() : super('/live');
+
+  Path get scheduleSession => Path('schedule-session');
 }
 
 class AccountPath extends Path<AccountPath> {
