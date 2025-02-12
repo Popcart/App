@@ -6,11 +6,9 @@ import 'package:popcart/env/env_fields.dart';
 
 part 'development.g.dart';
 
-@Envied(path: 'assets/env/development.env', name: 'Env', obfuscate: true)
+@Envied(path: 'assets/env/dev.env', name: 'Env', obfuscate: true)
 final class DevEnv implements Env, EnvFields {
-  @override
-  @EnviedField(varName: 'BASE_URL')
-  final String baseUrl = _Env.baseUrl;
+  
 
   @override
   @EnviedField(varName: 'INTRO_GIF_URL')
@@ -19,4 +17,12 @@ final class DevEnv implements Env, EnvFields {
   @override
   @EnviedField(varName: 'SELLER_DASHBOARD_URL')
   final String sellerDashboardUrl = _Env.sellerDashboardUrl;
+  
+  @override
+  @EnviedField(varName: 'AUTH_SERVICE_BASE_URL')
+  final String authServiceBaseUrl =  _Env.authServiceBaseUrl;
+  
+  @override
+  @EnviedField(varName: 'LIVESTREAM_SERVICE_BASE_URL')
+  final String livestreamServiceBaseUrl = _Env.livestreamServiceBaseUrl;
 }

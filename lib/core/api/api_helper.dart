@@ -183,7 +183,7 @@ class ApiHandler {
           );
         // ignore: inference_failure_on_function_invocation
         final response = await uploadInstance.post(
-          '${Env().baseUrl}/upload',
+          '${Env().authServiceBaseUrl}/upload',
           data: data,
         );
         modifiedPayload[file.key] =

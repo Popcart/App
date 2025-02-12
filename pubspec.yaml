@@ -9,7 +9,7 @@ environment:
 dependencies:
   bloc: ^8.1.4
   dio: ^5.7.0
-  envied: ^1.0.0
+  envied: ^1.1.1
   equatable: ^2.0.7
   file_picker: ^8.1.4
   firebase_analytics: ^11.3.5
@@ -50,7 +50,7 @@ dependencies:
 dev_dependencies:
   bloc_test: ^9.1.7
   build_runner: ^2.4.13
-  envied_generator: ^1.0.0
+  envied_generator: ^1.1.1
   flutter_gen_runner: ^5.8.0
   flutter_test:
     sdk: flutter
@@ -82,8 +82,6 @@ flutter_gen:
     outputs:
       class_name: AppAssets
 
-  style:
-    filename: snake_case
 
 
 targets:

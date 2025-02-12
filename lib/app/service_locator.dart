@@ -18,15 +18,15 @@ Future<void> setupLocator({
     ..registerLazySingleton<AppEnvironment>(() => environment)
     ..registerSingleton<SharedPrefs>(SharedPrefs())
     ..registerLazySingleton<ApiHandler>(
-      () => ApiHandler(baseUrl: '${Env().baseUrl}/auth/'),
+      () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/auth/'),
       instanceName: ApiService.auth.name,
     )
     ..registerLazySingleton<ApiHandler>(
-      () => ApiHandler(baseUrl: '${Env().baseUrl}/user/'),
+      () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/user/'),
       instanceName: ApiService.user.name,
     )
     ..registerLazySingleton<ApiHandler>(
-      () => ApiHandler(baseUrl: '${Env().baseUrl}/inventory/'),
+      () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/inventory/'),
       instanceName: ApiService.inventory.name,
     )
     ..registerLazySingleton<UserRepository>(
