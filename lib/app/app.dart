@@ -6,6 +6,7 @@ import 'package:popcart/app/router.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
+import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
 
@@ -24,6 +25,10 @@ class PopCart extends StatelessWidget {
         BlocProvider(
           create: (context) => InterestListCubit()..getInterests(),
         ),
+         BlocProvider(
+          create: (context) => ProfileCubit()..fetchUserProfile(),
+        ),
+        
       ],
       child: ToastificationWrapper(
         child: ScreenUtilInit(

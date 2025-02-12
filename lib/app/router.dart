@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -19,6 +20,7 @@ import 'package:popcart/features/onboarding/screens/select_seller_type_screen.da
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
+import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -242,6 +244,7 @@ class _AccountWebviewState extends State<AccountWebview> {
 
   @override
   Widget build(BuildContext context) {
+    final profileCubit = context.watch<ProfileCubit>();
     return Scaffold(
       body: SafeArea(
         child: WebViewWidget(

@@ -5,6 +5,7 @@ import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
+import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class LiveScreen extends HookWidget {
@@ -13,6 +14,7 @@ class LiveScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final interestListCubit = context.watch<InterestListCubit>();
+    final profileCubit = context.watch<ProfileCubit>();
     final selectedInterest = useState<ProductCategory?>(null);
     return SafeArea(
       child: SingleChildScrollView(
