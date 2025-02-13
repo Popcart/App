@@ -1,9 +1,13 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
+import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
@@ -59,6 +63,19 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
   Widget build(BuildContext context) {
     final productIds = useState<List<String>>([]);
     return Scaffold(
+      bottomNavigationBar: productIds.value.isEmpty
+          ? null
+          : BottomAppBar(
+              child: BouncingEffect(
+                onTap: () {
+                  context.pop(productIds.value);
+                },
+                child: CustomElevatedButton(
+                  text: 'Select ${productIds.value.length} Products'
+                      .replaceAll('1 Products', '1 Product'),
+                ),
+              ),
+            ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -68,27 +85,76 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
               const AppBackButton(),
               const SizedBox(height: 32),
               Expanded(
-                child: PagedListView.separated(
+                child: PagedGridView(
                   pagingController: _pagingController,
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
                   builderDelegate: PagedChildBuilderDelegate<Product>(
                     noItemsFoundIndicatorBuilder: (context) => const Center(
                       child: Text(
                         'No items found',
-                        style: TextStyle(fontSize: 24, color: Colors.white),
+                        style: TextStyle(fontSize: 24),
                       ),
                     ),
                     itemBuilder: (context, item, index) {
-                      return ListTile(
-                        title: Text(item.name),
+                      return GestureDetector(
                         onTap: () {
                           if (productIds.value.contains(item.id)) {
-                            productIds.value.remove(item.id);
+                            productIds.value = productIds.value
+                                .where((element) => element != item.id)
+                                .toList();
                           } else {
-                            productIds.value.add(item.id);
+                            productIds.value = [...productIds.value, item.id];
                           }
                         },
+                        child: Stack(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: ExtendedImage.network(
+                                    item.images.first,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: 140,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  item.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: CircleAvatar(
+                                backgroundColor:
+                                    productIds.value.contains(item.id)
+                                        ? Colors.green
+                                        : Colors.white,
+                                child: Icon(
+                                  productIds.value.contains(item.id)
+                                      ? Icons.check
+                                      : Icons.add,
+                                  color: productIds.value.contains(item.id)
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     },
                   ),
