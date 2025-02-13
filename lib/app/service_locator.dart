@@ -3,6 +3,7 @@ import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
+import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/env/env.dart';
 // import 'package:twilio_flutter/twilio_flutter.dart';
@@ -40,8 +41,8 @@ Future<void> setupLocator({
         ),
       ),
     )
-     ..registerLazySingleton<UserRepository>(
-      () => UserRepositoryImpl(
+     ..registerLazySingleton<SellersRepo>(
+      () => SellersRepoImpl(
         locator.get<ApiHandler>(
           instanceName: ApiService.seller.name,
         ),

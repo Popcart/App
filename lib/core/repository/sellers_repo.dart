@@ -2,7 +2,7 @@ import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/api/pagination.dart';
 import 'package:popcart/features/live/models/products.dart';
 
-sealed class InventoryRepo {
+sealed class SellersRepo {
   Future<ApiResponse<PaginationResponse<Product>>> getProducts({
     required String userId,
     required int page,
@@ -10,8 +10,8 @@ sealed class InventoryRepo {
   });
 }
 
-class InventoryRepoImpl implements InventoryRepo {
-  InventoryRepoImpl(this._apiHelper);
+class SellersRepoImpl implements SellersRepo {
+  SellersRepoImpl(this._apiHelper);
 
   final ApiHandler _apiHelper;
 

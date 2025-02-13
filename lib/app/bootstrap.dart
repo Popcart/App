@@ -144,8 +144,10 @@ Future<void> bootstrap(
 }) async {
   try {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+        await Firebase.initializeApp();
+
     await setupLocator(environment: environment);
-    await locator.get<SharedPrefs>().init();
+    await locator<SharedPrefs>().init();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
     FlutterError.onError = (details) {
       log(
@@ -158,7 +160,6 @@ Future<void> bootstrap(
       Bloc.observer = AppBlocObserver();
     }
     await notificationPlugin.initialize(initializationSettings);
-    await Firebase.initializeApp();
     await FirebaseCrashlytics.instance
         .setCrashlyticsCollectionEnabled(!kDebugMode);
     FlutterError.onError = (errorDetails) {
@@ -171,10 +172,10 @@ Future<void> bootstrap(
     await FirebaseMessaging.instance.requestPermission(provisional: true);
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-    final isFirstTime = locator.get<SharedPrefs>().firstTime;
+    final isFirstTime = locator<SharedPrefs>().firstTime;
     if (isFirstTime == null) {
       await downloadSplashFromServer();
-      locator.get<SharedPrefs>().firstTime = false;
+      locator<SharedPrefs>().firstTime = false;
     }
     final isLoggedIn = locator.get<SharedPrefs>().loggedIn;
     if (isLoggedIn) {

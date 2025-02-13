@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
@@ -17,6 +19,7 @@ class ScheduleSessionScreen extends HookWidget {
     final startTimeController = useTextEditingController();
     final isScheduled = useState(true);
     final startTime = useState<DateTime?>(null);
+    final productIds = useState<List<String>>([]);
     final selectDate = useCallback(() async {
       final selectedDate = await showDatePicker(
         context: context,
@@ -41,11 +44,26 @@ class ScheduleSessionScreen extends HookWidget {
         }
       }
     });
+    final selectProducts = useCallback(() async {
+      final ids = await context.pushNamed<List<String>>(
+        AppPath.authorizedUser.live.selectProducts.path,
+      );
+      if (ids != null) {
+        productIds.value = ids;
+        print(ids);
+      }
+    });
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
         child: BouncingEffect(
-          child: CustomElevatedButton(text: l10n.select_products),
-          onTap: () {},
+          onTap: selectProducts,
+          child: CustomElevatedButton(
+            text: productIds.value.isEmpty
+                ? l10n.select_products
+                : isScheduled.value
+                    ? l10n.schedule_livestream
+                    : l10n.go_live,
+          ),
         ),
       ),
       body: SafeArea(

@@ -12,6 +12,7 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
+import 'package:popcart/features/live/screens/select_products_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
@@ -227,6 +228,18 @@ final router = GoRouter(
                         position: offsetAnimation,
                         child: child,
                       );
+                    },
+                  ),
+                ),
+                 GoRoute(
+                  path: AppPath.authorizedUser.live.selectProducts.goRoute,
+                  name: AppPath.authorizedUser.live.selectProducts.path,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    child: const SelectProductsScreen(),
+                    // implement a slide up transition
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
                     },
                   ),
                 ),
