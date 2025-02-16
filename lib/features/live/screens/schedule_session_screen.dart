@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
@@ -47,6 +48,14 @@ class ScheduleSessionScreen extends HookWidget {
       }
     });
     final selectProducts = useCallback(() async {
+      if (livestreamTitleController.text.isEmpty) {
+        await context.showError('Please enter a title');
+        return;
+      }
+      if (isScheduled.value && startTime.value == null) {
+        await context.showError('Please select a start time');
+        return;
+      }
       final ids = await context.pushNamed<List<String>>(
         AppPath.authorizedUser.live.selectProducts.path,
       );
