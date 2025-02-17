@@ -11,6 +11,7 @@ import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
+import 'package:popcart/features/live/screens/livestream_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
@@ -231,11 +232,28 @@ final router = GoRouter(
                     },
                   ),
                 ),
-                 GoRoute(
+                GoRoute(
                   path: AppPath.authorizedUser.live.selectProducts.goRoute,
                   name: AppPath.authorizedUser.live.selectProducts.path,
                   pageBuilder: (context, state) => CustomTransitionPage(
                     child: const SelectProductsScreen(),
+                    // implement a slide up transition
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
+                ),
+                GoRoute(
+                  path: AppPath.authorizedUser.live.livestream.goRoute,
+                  name: AppPath.authorizedUser.live.livestream.path,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    child: LivestreamScreen(
+                      channelName:
+                          state.uri.queryParameters['channelName'] ?? '',
+                      token: state.uri.queryParameters['token'] ?? '',
+                      isBroadcaster: state.extra! as bool,
+                    ),
                     // implement a slide up transition
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {

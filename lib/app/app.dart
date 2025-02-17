@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:popcart/app/router.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
@@ -27,6 +28,10 @@ class PopCart extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ProfileCubit()..fetchUserProfile(),
+        ),
+        
+        BlocProvider(
+          create: (context) => OpenLivestreamCubit(),
         ),
       ],
       child: ToastificationWrapper(

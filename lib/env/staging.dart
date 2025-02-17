@@ -23,4 +23,8 @@ final class QaEnv implements Env, EnvFields {
   @override
   @EnviedField(varName: 'LIVESTREAM_SERVICE_BASE_URL')
   final String livestreamServiceBaseUrl = _Env.livestreamServiceBaseUrl;
+
+  @override
+  @EnviedField(varName: 'AGORA_APP_ID')
+  final String agoraAppId = _Env.agoraAppId;
 }
