@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 
 class LivestreamScreen extends StatefulWidget {
@@ -65,6 +67,13 @@ class _LivestreamScreenState extends State<LivestreamScreen> {
           onUserOffline: (connection, remoteUid, reason) {
             debugPrint('Remote user left: $remoteUid');
             setState(() {});
+          },
+          onError: (err, msg) async {
+            log('Error: $err, $msg', name: 'Agora Error');
+            await context.showError(msg);
+            if (mounted) {
+              context.pop();
+            }
           },
         ),
       );
