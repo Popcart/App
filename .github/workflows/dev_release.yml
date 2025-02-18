@@ -40,13 +40,13 @@ jobs:
       #       git push origin staging
       
       - name: Cache Flutter dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.pub-cache
           key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.lock') }}
 
       - name: Cache Gradle dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -56,7 +56,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Cache Android SDK components
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.android/cache
           key: ${{ runner.os }}-android-sdk-${{ hashFiles('android/sdkmanager.properties') }}
