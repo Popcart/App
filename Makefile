@@ -18,9 +18,9 @@ clean: ## Cleans Flutter project.  dart run build_runner build --delete-conflict
 	dart run build_runner build --delete-conflicting-outputs
 
 encode: ## Encode all .env files to base64 string
-	base64 -i assets/env/development.env -o encodedDevEnvBase64.txt
-	base64 -i assets/env/staging.env -o encodedStagEnvBase64.txt
-	base64 -i assets/env/production.env -o encodedProdEnvBase64.txt
+	base64 -i assets/env/dev.env -o encodedDevEnvBase64.txt
+	base64 -i assets/env/stag.env -o encodedStagEnvBase64.txt
+	base64 -i assets/env/prod.env -o encodedProdEnvBase64.txt
 
 ipa-dev: ## Builds ipa
 	flutter build ipa --flavor=development --target=lib/app/main.dev.dart --verbose
