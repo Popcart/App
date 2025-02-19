@@ -41,8 +41,16 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
     );
   }
 
-  Future<void> generateAgoraToken() async {
-    final response = await _livestreamsRepo.generateAgoraToken();
+  Future<void> generateAgoraToken({
+   required String channelName,
+   required int agoraRole,
+   required int uid,
+  }) async {
+    final response = await _livestreamsRepo.generateAgoraToken(
+      channelName: channelName,
+      agoraRole: agoraRole,
+      uid: uid,
+    );
     response.when(
       success: (data) {
         emit(OpenLivestreamState.generateTokenSuccess(data?.data ?? ''));

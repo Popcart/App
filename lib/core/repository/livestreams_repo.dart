@@ -8,7 +8,12 @@ sealed class LivestreamsRepo {
     required bool scheduled,
     String? startTime,
   });
-  Future<ApiResponse<String>> generateAgoraToken();
+  Future<ApiResponse<String>> generateAgoraToken({
+    required String channelName,
+    required int agoraRole,
+    required int uid,
+  });
+  Future<ListApiResponse<LiveStream>> getActiveLivestreams();
 }
 
 class LivestreamsRepoImpl extends LivestreamsRepo {
@@ -36,11 +41,29 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
   }
 
   @override
-  Future<ApiResponse<String>> generateAgoraToken() {
+  Future<ApiResponse<String>> generateAgoraToken({
+    required String channelName,
+    required int agoraRole,
+    required int uid,
+  }) {
     return _apiHandler.request<String>(
       path: 'generate-token',
+      payload: {
+        'channelName': channelName,
+        'agoraRole': agoraRole,
+        'uid': uid,
+      },
       method: MethodType.post,
       responseMapper: (json) => json['token'] as String,
+    );
+  }
+
+  @override
+  Future<ListApiResponse<LiveStream>> getActiveLivestreams() {
+    return _apiHandler.requestList<LiveStream>(
+      path: 'active',
+      method: MethodType.get,
+      responseMapper: LiveStream.fromJson,
     );
   }
 }

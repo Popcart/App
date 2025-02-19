@@ -60,7 +60,9 @@ class LivePath extends Path<LivePath> {
 
   Path get scheduleSession => Path('schedule-session');
   Path get selectProducts => Path('select-products');
-  Path get livestream => Path('livestream');
+  Path get sellerLivestream => Path('seller-livestream');
+  Path get buyerLivestream => Path('buyer-livestream');
+  
 }
 
 class AccountPath extends Path<AccountPath> {

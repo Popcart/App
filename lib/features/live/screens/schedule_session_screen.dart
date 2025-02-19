@@ -93,14 +93,18 @@ class ScheduleSessionScreen extends HookWidget {
           state.whenOrNull(
             success: (liveStream) {
               generatedLiveStream.value = liveStream;
-              openLivestream.generateAgoraToken();
+              openLivestream.generateAgoraToken(
+                channelName: liveStream.id,
+                agoraRole: 0,
+                uid: 0,
+              );
             },
             error: (message) {
               context.showError(message);
             },
             generateTokenSuccess: (token) {
-              context.pushNamed(
-                AppPath.authorizedUser.live.livestream.path,
+              context.pushReplacementNamed(
+                AppPath.authorizedUser.live.sellerLivestream.path,
                 extra: true,
                 queryParameters: {
                   'token': token,

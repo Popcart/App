@@ -10,10 +10,11 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
-import 'package:popcart/features/live/screens/livestream_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
+import 'package:popcart/features/live/screens/seller_livestream_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
 import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
@@ -245,16 +246,31 @@ final router = GoRouter(
                   ),
                 ),
                 GoRoute(
-                  path: AppPath.authorizedUser.live.livestream.goRoute,
-                  name: AppPath.authorizedUser.live.livestream.path,
+                  path: AppPath.authorizedUser.live.sellerLivestream.goRoute,
+                  name: AppPath.authorizedUser.live.sellerLivestream.path,
+                  parentNavigatorKey: rootNavigatorKey,
                   pageBuilder: (context, state) => CustomTransitionPage(
-                    child: LivestreamScreen(
+                    child: SellerLivestreamScreen(
                       channelName:
                           state.uri.queryParameters['channelName'] ?? '',
                       token: state.uri.queryParameters['token'] ?? '',
-                      isBroadcaster: state.extra! as bool,
                     ),
-                    // implement a slide up transition
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
+                ),
+                GoRoute(
+                  path: AppPath.authorizedUser.live.buyerLivestream.goRoute,
+                  name: AppPath.authorizedUser.live.buyerLivestream.path,
+                  parentNavigatorKey: rootNavigatorKey,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    child: BuyerLivestreamScreen(
+                      channelName:
+                          state.uri.queryParameters['channelName'] ?? '',
+                      token: state.uri.queryParameters['token'] ?? '',
+                    ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       return FadeTransition(opacity: animation, child: child);
