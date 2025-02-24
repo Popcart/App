@@ -48,7 +48,7 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   shared_preferences: ^2.3.3
   skeletonizer: ^1.4.3
-  toastification: ^2.3.0
+  toastification: ^3.0.1
   webview_flutter: ^4.10.0
 
 dev_dependencies:
