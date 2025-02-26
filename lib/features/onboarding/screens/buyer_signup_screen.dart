@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
@@ -133,6 +134,9 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
                     focusNode: _focusNode,
                     controller: _textEditingController,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      PhonePrefixFormatter(),
+                    ],
                   ),
                 ),
                 const Spacer(),
@@ -152,7 +156,7 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
                               _textEditingController.text.length == 14 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
-                            text: l10n.proceed,
+                            text: l10n.next,
                             loading: onboardingCubit.state.maybeWhen(
                               orElse: () => false,
                               loading: () => true,

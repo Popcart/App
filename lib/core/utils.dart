@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:toastification/toastification.dart';
@@ -107,5 +108,47 @@ extension StringExtension on String {
 
     final result = buffer.toString();
     return result.substring(0, result.length - 1);
+  }
+}
+
+class PhonePrefixFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    const prefix = '+234';
+
+    // If the new value doesn't start with the prefix, restore it
+    if (!newValue.text.startsWith(prefix)) {
+      // If user is trying to delete the prefix
+      // keep the prefix and what was after it
+      if (oldValue.text.startsWith(prefix) &&
+          newValue.text.length < prefix.length) {
+        return oldValue.copyWith(
+          text: prefix,
+          selection: const TextSelection.collapsed(offset: prefix.length),
+        );
+      }
+
+      // Otherwise, ensure the prefix is always there
+      var newText = prefix;
+      if (newValue.text.isNotEmpty) {
+        // If they're typing elsewhere, try to preserve what they typed
+        if (!oldValue.text.startsWith(prefix)) {
+          newText += newValue.text;
+        } else if (newValue.text.length >= oldValue.text.length) {
+          // They're adding text
+          newText += newValue.text.substring(newValue.text.length - 1);
+        }
+      }
+
+      return TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
+    }
+
+    return newValue;
   }
 }

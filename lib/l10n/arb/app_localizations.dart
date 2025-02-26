@@ -278,6 +278,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select products'**
   String get select_products;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

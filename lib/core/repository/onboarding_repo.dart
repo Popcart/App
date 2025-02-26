@@ -46,6 +46,7 @@ class OnboardingRepoImpl implements OnboardingRepo {
         'phone': phone,
         'email': email,
         'userType': userType,
+        'businessName': 'business',
       },
     );
   }

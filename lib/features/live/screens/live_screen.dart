@@ -294,13 +294,17 @@ class ActiveLiveStream extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final openLivestreamCubit = useMemoized(OpenLivestreamCubit.new);
+    final userId = context.read<ProfileCubit>().state.maybeWhen(
+          orElse: () => '',
+          loaded: (user) => user.id,
+        );
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
         openLivestreamCubit.generateAgoraToken(
           channelName: liveStream.id,
-          agoraRole: 1,
-          uid: 1,
+          agoraRole: userId == liveStream.user.id ? 0 : 1,
+          uid: userId == liveStream.user.id ? 0 : 1,
         );
       },
       child: BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
@@ -308,14 +312,27 @@ class ActiveLiveStream extends HookWidget {
         listener: (context, state) {
           state.whenOrNull(
             error: (message) => context.showError(message),
-            generateTokenSuccess: (token) => context.pushNamed(
-              AppPath.authorizedUser.live.buyerLivestream.path,
-              extra: false,
-              queryParameters: {
-                'token': token,
-                'channelName': liveStream.id,
-              },
-            ),
+            generateTokenSuccess: (token) {
+              if (userId == liveStream.user.id) {
+                context.pushNamed(
+                  AppPath.authorizedUser.live.sellerLivestream.path,
+                  extra: true,
+                  queryParameters: {
+                    'token': token,
+                    'channelName': liveStream.id,
+                  },
+                );
+              }
+              context.pushNamed(
+                AppPath.authorizedUser.live.buyerLivestream.path,
+                extra: false,
+                queryParameters: {
+                  'token': token,
+                  'channelName': liveStream.id,
+                  'sellerAgoraId': liveStream.agoraId,
+                },
+              );
+            },
           );
         },
         child: Container(

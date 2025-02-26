@@ -14,6 +14,13 @@ sealed class LivestreamsRepo {
     required int uid,
   });
   Future<ListApiResponse<LiveStream>> getActiveLivestreams();
+  Future<ApiResponse<void>> setSellerAgoraId({
+    required String agoraId,
+    required String livestreamId,
+  });
+  Future<ApiResponse<void>> endLivestreamSession({
+    required String livestreamId,
+  });
 }
 
 class LivestreamsRepoImpl extends LivestreamsRepo {
@@ -64,6 +71,31 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
       path: 'active',
       method: MethodType.get,
       responseMapper: LiveStream.fromJson,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> setSellerAgoraId({
+    required String agoraId,
+    required String livestreamId,
+  }) {
+    return _apiHandler.request<void>(
+      path: 'save-agora-id',
+      method: MethodType.post,
+      payload: {
+        'agoraId': agoraId,
+        'livestreamId': livestreamId,
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> endLivestreamSession({
+    required String livestreamId,
+  }) {
+    return _apiHandler.request<void>(
+      path: '$livestreamId/end',
+      method: MethodType.put,
     );
   }
 }

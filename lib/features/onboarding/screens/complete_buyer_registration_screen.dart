@@ -191,7 +191,7 @@ class _CompleteBuyerRegistrationScreenState
                 const Spacer(),
                 BouncingEffect(
                   onTap: _onProceed,
-                  child: CustomElevatedButton(text: l10n.proceed),
+                  child: CustomElevatedButton(text: l10n.next),
                 ),
               ],
             ),

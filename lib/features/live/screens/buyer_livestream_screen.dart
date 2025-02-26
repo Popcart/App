@@ -12,12 +12,13 @@ class BuyerLivestreamScreen extends StatefulWidget {
   const BuyerLivestreamScreen({
     required this.channelName,
     required this.token,
+    required this.sellerAgoraId,
     super.key,
   });
 
   final String channelName;
   final String token;
-
+  final String sellerAgoraId;
   @override
   State<BuyerLivestreamScreen> createState() => _BuyerLivestreamScreenState();
 }
@@ -124,9 +125,9 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         ? AgoraVideoView(
             controller: VideoViewController(
               rtcEngine: _engine,
-              canvas: const VideoCanvas(
+              canvas:  VideoCanvas(
                 renderMode: RenderModeType.renderModeHidden,
-                uid: 1944506866,
+                uid: int.parse(widget.sellerAgoraId),
               ),
             ),
           )

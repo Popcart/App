@@ -108,7 +108,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       username: _username,
       phone: _phoneNumber,
       email: _email,
-      userType: 'buyer',
+      userType: _userType?.name ?? 'buyer',
     );
     response.when(
       success: (data) {

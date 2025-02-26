@@ -52,20 +52,20 @@ class SelectInterestsScreen extends HookWidget {
                           padding: const EdgeInsets.all(8),
                           child: ChoiceChip(
                             selectedColor: AppColors.orange,
-                            backgroundColor: AppColors.orange,
+                            showCheckmark: false,
+                            backgroundColor: const Color(0xff24262b),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              side: const BorderSide(
-                                color: AppColors.orange,
+                              borderRadius: BorderRadius.circular(100),
+                              side: BorderSide(
+                                color: selectedInterests.value.contains(e)
+                                    ? AppColors.orange
+                                    : const Color(0xff50535b),
                               ),
                             ),
                             labelStyle: const TextStyle(
                               color: AppColors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: 20,
-                            ),
-                            iconTheme: const IconThemeData(
-                              color: AppColors.white,
                             ),
                             label: Text(
                               e.name,
@@ -100,7 +100,7 @@ class SelectInterestsScreen extends HookWidget {
                   child: BouncingEffect(
                     onTap: () => context.go(AppPath.authorizedUser.live.path),
                     child: CustomElevatedButton(
-                      text: l10n.proceed,
+                      text: l10n.next,
                     ),
                   ),
                 ),

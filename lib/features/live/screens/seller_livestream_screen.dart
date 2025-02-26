@@ -4,6 +4,8 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
@@ -25,7 +27,6 @@ class SellerLivestreamScreen extends StatefulWidget {
 class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
   late RtcEngine _engine;
   bool _localUserJoined = false;
-  int _remoteUid = 0;
   @override
   void initState() {
     super.initState();
@@ -37,7 +38,21 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
     _engine
       ..leaveChannel()
       ..release();
+    endLivestream();
     super.dispose();
+  }
+
+  Future<void> setAgoraId(int id) async {
+    await locator<LivestreamsRepo>().setSellerAgoraId(
+      agoraId: id.toString(),
+      livestreamId: widget.channelName,
+    );
+  }
+
+  Future<void> endLivestream() async {
+    await locator<LivestreamsRepo>().endLivestreamSession(
+      livestreamId: widget.channelName,
+    );
   }
 
   Future<void> initAgora() async {
@@ -59,9 +74,9 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
               connection.toJson().toString(),
               name: 'AGORA onJoinChannelSuccess connection',
             );
+            setAgoraId(connection.localUid ?? 0);
             setState(() {
               _localUserJoined = true;
-              _remoteUid = connection.localUid ?? 0;
             });
           },
           onUserJoined: (connection, remoteUid, elapsed) {

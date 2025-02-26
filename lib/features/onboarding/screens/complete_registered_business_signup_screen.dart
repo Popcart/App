@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
@@ -196,6 +197,9 @@ class _CompleteRegisteredBusinessSignupScreenState
         state.whenOrNull(
           onboardingFailure: (message) => context.showError(message),
           onboardingSuccess: () => context.go(AppPath.authorizedUser.live.path),
+          submitRegisteredBusinessInformationSuccess: () {
+            context.go(AppPath.authorizedUser.live.path);
+          },
         );
       },
       child: Scaffold(
@@ -256,6 +260,9 @@ class _CompleteRegisteredBusinessSignupScreenState
                     child: CustomTextFormField(
                       controller: _businessOwnerBvnController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                       validator:
                           ValidationBuilder().required().maxLength(11).build(),
                       hintText: 'Business Owner BVN',
@@ -275,29 +282,37 @@ class _CompleteRegisteredBusinessSignupScreenState
                   const SizedBox(height: 16),
                   SlideTransition(
                     position: _seventhSlideAnimation,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: selectIdDocument,
-                      child: CustomTextFormField(
-                        controller: _idDocumentController,
-                        hintText: 'ID Document',
-                        validator: ValidationBuilder().required().build(),
-                        enabled: false,
-                      ),
+                    child: CustomFileField(
+                      hintText: 'ID Document',
+                      onFileSelected: (file) {
+                        setState(() {
+                          _idDocument = file;
+                          if (file != null) {
+                            _idDocumentController.text =
+                                file.path.split('/').last;
+                          } else {
+                            _idDocumentController.clear();
+                          }
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(height: 16),
                   SlideTransition(
                     position: _eightSlideAnimation,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: selectUtiltyBillDocument,
-                      child: CustomTextFormField(
-                        controller: _utilityBillDocumentController,
-                        enabled: false,
-                        hintText: 'Utility Bill Document',
-                        validator: ValidationBuilder().required().build(),
-                      ),
+                    child: CustomFileField(
+                      hintText: 'Utility Bill Document',
+                      onFileSelected: (file) {
+                        setState(() {
+                          _utilityBillDocument = file;
+                          if (file != null) {
+                            _utilityBillDocumentController.text =
+                                file.path.split('/').last;
+                          } else {
+                            _utilityBillDocumentController.clear();
+                          }
+                        });
+                      },
                     ),
                   ),
                   const Spacer(),
@@ -312,11 +327,12 @@ class _CompleteRegisteredBusinessSignupScreenState
                     ]),
                     builder: (_, __) {
                       return IgnorePointer(
-                        ignoring: !_areAllFieldsFilled ||
-                            !onboardingCubit.state.maybeWhen(
-                              orElse: () => false,
-                              loading: () => true,
-                            ),
+                        ignoring: false,
+                        // ignoring: !_areAllFieldsFilled ||
+                        //     !onboardingCubit.state.maybeWhen(
+                        //       orElse: () => false,
+                        //       loading: () => true,
+                        //     ),
                         child: BouncingEffect(
                           onTap: () {
                             onboardingCubit.submitRegisteredBusinessInformation(
@@ -333,8 +349,8 @@ class _CompleteRegisteredBusinessSignupScreenState
                             opacity: _areAllFieldsFilled ? 1 : 0,
                             duration: const Duration(milliseconds: 300),
                             child: CustomElevatedButton(
-                              text: l10n.proceed,
-                              loading: !onboardingCubit.state.maybeWhen(
+                              text: l10n.next,
+                              loading: onboardingCubit.state.maybeWhen(
                                 orElse: () => false,
                                 loading: () => true,
                               ),

@@ -98,4 +98,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get select_products => 'Select products';
+
+  @override
+  String get next => 'Next';
 }

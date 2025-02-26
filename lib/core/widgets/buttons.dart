@@ -10,12 +10,25 @@ class CustomElevatedButton extends ElevatedButton {
     super.key,
   }) : super(
           onPressed: () {},
-          child: loading ? const CupertinoActivityIndicator() : Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.white,
-            ),
-          ),
+          child: loading
+              ? const CupertinoActivityIndicator()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      text,
+                      style: const TextStyle(
+                        color: AppColors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const Icon(
+                      Icons.arrow_forward_ios,
+                      color: AppColors.white,
+                      size: 16,
+                    ),
+                  ],
+                ),
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all<TextStyle>(
               const TextStyle(

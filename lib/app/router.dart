@@ -270,6 +270,8 @@ final router = GoRouter(
                       channelName:
                           state.uri.queryParameters['channelName'] ?? '',
                       token: state.uri.queryParameters['token'] ?? '',
+                      sellerAgoraId:
+                          state.uri.queryParameters['sellerAgoraId'] ?? '',
                     ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {

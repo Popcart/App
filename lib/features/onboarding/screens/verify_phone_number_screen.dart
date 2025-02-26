@@ -181,7 +181,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                               _textEditingController.text.length == 4 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
-                            text: l10n.proceed,
+                            text: l10n.next,
                             loading: onboardingCubit.state.maybeWhen(
                               orElse: () => false,
                               loading: () => true,

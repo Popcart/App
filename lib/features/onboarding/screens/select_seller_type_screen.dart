@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
-class SelectSellerTypeScreen extends StatefulWidget {
+class SelectSellerTypeScreen extends StatefulHookWidget {
   const SelectSellerTypeScreen({super.key});
 
   @override
@@ -70,6 +73,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
   Widget build(BuildContext context) {
     final onboardingCubit = context.watch<OnboardingCubit>();
     final l10n = AppLocalizations.of(context);
+    final isRegistered = useState<bool?>(null);
     return Scaffold(
       body: Stack(
         children: [
@@ -102,10 +106,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        onboardingCubit.isRegisteredSeller = true;
-                        context.pushNamed(
-                          AppPath.auth.buyerSignup.completeBuyerSignup.path,
-                        );
+                        isRegistered.value = true;
                       },
                       child: FadeTransition(
                         opacity: _controller,
@@ -117,17 +118,18 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                               borderRadius:
                                   BorderRadius.all(Radius.circular(24)),
                             ),
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 36,
+                            ),
                             child: Row(
                               children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xfff97316),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
+                                Radio<bool?>.adaptive(
+                                  value: true,
+                                  groupValue: isRegistered.value,
+                                  onChanged: (onChanged) {
+                                    isRegistered.value = onChanged;
+                                  },
                                 ),
                                 const SizedBox(width: 16),
                                 Column(
@@ -159,10 +161,7 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        onboardingCubit.isRegisteredSeller = false;
-                        context.pushNamed(
-                          AppPath.auth.buyerSignup.completeBuyerSignup.path,
-                        );
+                        isRegistered.value = false;
                       },
                       child: FadeTransition(
                         opacity: _controller,
@@ -174,17 +173,18 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                               borderRadius:
                                   BorderRadius.all(Radius.circular(24)),
                             ),
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 36,
+                            ),
                             child: Row(
                               children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xfff97316),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
+                                Radio<bool?>.adaptive(
+                                  value: false,
+                                  groupValue: isRegistered.value,
+                                  onChanged: (onChanged) {
+                                    isRegistered.value = onChanged;
+                                  },
                                 ),
                                 const SizedBox(width: 16),
                                 Column(
@@ -208,6 +208,34 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                                 ),
                               ],
                             ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    IgnorePointer(
+                      ignoring: isRegistered.value == null,
+                      child: AnimatedOpacity(
+                        opacity: isRegistered.value == null ? 0 : 1,
+                        duration: const Duration(milliseconds: 300),
+                        child: BouncingEffect(
+                          onTap: () {
+                            if (isRegistered.value!) {
+                              onboardingCubit.isRegisteredSeller = true;
+                              context.pushNamed(
+                                AppPath
+                                    .auth.buyerSignup.completeBuyerSignup.path,
+                              );
+                            } else {
+                              onboardingCubit.isRegisteredSeller = false;
+                              context.pushNamed(
+                                AppPath
+                                    .auth.buyerSignup.completeBuyerSignup.path,
+                              );
+                            }
+                          },
+                          child: CustomElevatedButton(
+                            text: l10n.next,
                           ),
                         ),
                       ),

@@ -129,7 +129,7 @@ class _ChooseUsernameScreenState extends State<ChooseUsernameScreen>
                         opacity:
                             _textEditingController.text.length >= 2 ? 1 : 0,
                         duration: const Duration(milliseconds: 300),
-                        child: CustomElevatedButton(text: l10n.proceed),
+                        child: CustomElevatedButton(text: l10n.next),
                       ),
                     ),
                   );

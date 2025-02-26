@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 
 part 'products.g.dart';
 
@@ -89,11 +90,12 @@ class LiveStream {
     required this.createdAt,
     required this.updatedAt,
     required this.v,
+    required this.agoraId,
   });
 
   factory LiveStream.empty() => LiveStream(
         id: '',
-        user: '',
+        user: UserModel.empty(),
         title: '',
         products: [],
         startTime: null,
@@ -101,6 +103,7 @@ class LiveStream {
         active: true,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        agoraId: '',
         v: 0,
       );
 
@@ -108,8 +111,8 @@ class LiveStream {
       _$LiveStreamFromJson(json);
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
-  @JsonKey(name: 'user', defaultValue: '')
-  final String user;
+  @JsonKey(name: 'user', defaultValue: UserModel.empty)
+  final UserModel user;
   @JsonKey(name: 'title', defaultValue: '')
   final String title;
   @JsonKey(name: 'products', defaultValue: [])
@@ -126,9 +129,11 @@ class LiveStream {
   final DateTime updatedAt;
   @JsonKey(name: '__v', defaultValue: 0)
   final int v;
+  @JsonKey(name: 'agoraId', defaultValue: '')
+  final String agoraId;
 
   @override
   String toString() {
-    return '''LiveStream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)''';
+    return '''LiveStream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
   }
 }

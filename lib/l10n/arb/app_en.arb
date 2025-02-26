@@ -30,5 +30,6 @@
     "go_live" : "Go live",
     "start_time" : "Start time",
     "select_start_time" : "Select start time",
-    "select_products" : "Select products"
+    "select_products" : "Select products",
+    "next" : "Next"
 }

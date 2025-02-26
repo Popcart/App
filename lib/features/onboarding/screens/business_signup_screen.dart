@@ -10,12 +10,10 @@ class BusinessSignupScreen extends StatefulWidget {
   const BusinessSignupScreen({super.key});
 
   @override
-  State<BusinessSignupScreen> createState() =>
-      _BusinessSignupScreenState();
+  State<BusinessSignupScreen> createState() => _BusinessSignupScreenState();
 }
 
-class _BusinessSignupScreenState
-    extends State<BusinessSignupScreen>
+class _BusinessSignupScreenState extends State<BusinessSignupScreen>
     with TickerProviderStateMixin {
   late Animation<Offset> _firstSlideAnimation;
   late Animation<Offset> _secondSlideAnimation;
@@ -157,7 +155,7 @@ class _BusinessSignupScreenState
               const Spacer(),
               BouncingEffect(
                 onTap: () {},
-                child: CustomElevatedButton(text: l10n.proceed),
+                child: CustomElevatedButton(text: l10n.next),
               ),
             ],
           ),
