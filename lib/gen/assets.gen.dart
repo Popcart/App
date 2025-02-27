@@ -64,6 +64,10 @@ class $AssetsIconsGen {
   SvgGenImage get profileUnselected =>
       const SvgGenImage('assets/icons/profile_unselected.svg');
 
+  /// File path: assets/icons/storefront.svg
+  SvgGenImage get storefront =>
+      const SvgGenImage('assets/icons/storefront.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
         search,
@@ -74,7 +78,8 @@ class $AssetsIconsGen {
         liveSelected,
         liveUnselected,
         profileSelected,
-        profileUnselected
+        profileUnselected,
+        storefront
       ];
 }
 

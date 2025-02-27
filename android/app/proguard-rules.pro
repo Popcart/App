@@ -6,3 +6,5 @@
 -keep class org.bouncycastle.** { *; }
 -keepnames class org.bouncycastle.** { *; }
 -dontwarn org.bouncycastle.**
+-keep class com.hyphenate.** {*;}
+-dontwarn  com.hyphenate.**
