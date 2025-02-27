@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';

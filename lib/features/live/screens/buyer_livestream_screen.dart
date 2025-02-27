@@ -2,23 +2,24 @@ import 'dart:developer';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 
 class BuyerLivestreamScreen extends StatefulWidget {
   const BuyerLivestreamScreen({
-    required this.channelName,
+    required this.liveStream,
     required this.token,
-    required this.sellerAgoraId,
     super.key,
   });
 
-  final String channelName;
+  final LiveStream liveStream;
   final String token;
-  final String sellerAgoraId;
   @override
   State<BuyerLivestreamScreen> createState() => _BuyerLivestreamScreenState();
 }
@@ -26,6 +27,7 @@ class BuyerLivestreamScreen extends StatefulWidget {
 class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
   late RtcEngine _engine;
   bool _localUserJoined = false;
+  int userJoined = 0;
 
   @override
   void initState() {
@@ -84,7 +86,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
             );
             log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
             log(reason.toString(), name: 'AGORA onUserOffline reason');
-            if (remoteUid.toString() == widget.sellerAgoraId) {
+            if (remoteUid.toString() == widget.liveStream.agoraId) {
               closeLivestream();
             }
           },
@@ -111,7 +113,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
       await _engine.joinChannel(
         token: widget.token,
-        channelId: widget.channelName,
+        channelId: widget.liveStream.id,
         uid: 1,
         options: const ChannelMediaOptions(
           publishMicrophoneTrack: false,
@@ -131,24 +133,155 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(child: _renderVideo()),
-        const Positioned.fill(
-          child: Padding(
-            padding: EdgeInsets.all(16),
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppBackButton(),
-                  SizedBox(height: 32),
-                ],
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _renderVideo(),
+          ),
+          Positioned.fill(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AppBackButton(),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 12,
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.liveStream.user.username,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const Text(
+                              '0 followers',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xfff97316),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'Follow',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(0xff4B4444)
+                                    .withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.remove_red_eye_outlined,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    userJoined.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 4,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xffcc0000),
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: const Text(
+                                      'Live',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      ],
+          const Positioned.fill(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: SafeArea(
+                maintainBottomViewPadding: true,
+                child: FooterLayout(
+                  footer: KeyboardAttachable(
+                    child: Row(
+                      children: [
+                        Flexible(flex: 7, child: TextField()),
+                        Flexible(
+                          child: CircleAvatar(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -160,7 +293,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
               rtcEngine: _engine,
               canvas: VideoCanvas(
                 renderMode: RenderModeType.renderModeHidden,
-                uid: int.parse(widget.sellerAgoraId),
+                uid: int.tryParse(widget.liveStream.agoraId) ?? 0,
               ),
             ),
           )

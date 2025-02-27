@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:popcart/app/router_paths.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
 class VideoSplashScreen extends StatefulWidget {

@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -46,8 +46,6 @@ class LiveScreen extends HookWidget {
       body: SafeArea(
         child: RefreshIndicator.adaptive(
           onRefresh: () async {
-            // unawaited(interestListCubit.getInterests());
-            // unawaited(profileCubit.fetchUserProfile());
             unawaited(activeLivestreamsCubit.getActiveLivestreams());
           },
           child: SingleChildScrollView(
@@ -325,11 +323,10 @@ class ActiveLiveStream extends HookWidget {
               }
               context.pushNamed(
                 AppPath.authorizedUser.live.buyerLivestream.path,
-                extra: false,
+                extra: liveStream,
                 queryParameters: {
                   'token': token,
-                  'channelName': liveStream.id,
-                  'sellerAgoraId': liveStream.agoraId,
+                  
                 },
               );
             },
@@ -397,13 +394,13 @@ class ActiveLiveStream extends HookWidget {
                 ],
               ),
               const Spacer(),
-              const Row(
+              Row(
                 children: [
-                  CircleAvatar(radius: 12),
-                  SizedBox(width: 12),
+                  const CircleAvatar(radius: 12),
+                  const SizedBox(width: 12),
                   Text(
-                    'Fatherjay345',
-                    style: TextStyle(
+                    liveStream.user.username,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                       color: Colors.white,

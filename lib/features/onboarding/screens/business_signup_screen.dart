@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';

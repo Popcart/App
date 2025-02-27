@@ -48,6 +48,7 @@ class PopCart extends StatelessWidget {
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
+                
                 progressIndicatorTheme: const ProgressIndicatorThemeData(
                   color: AppColors.white,
                 ),

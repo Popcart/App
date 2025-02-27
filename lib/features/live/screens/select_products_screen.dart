@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
-import 'package:popcart/core/widgets/bouncing_effect_widget.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';

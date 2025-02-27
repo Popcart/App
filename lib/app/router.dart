@@ -10,6 +10,7 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
@@ -267,11 +268,8 @@ final router = GoRouter(
                   parentNavigatorKey: rootNavigatorKey,
                   pageBuilder: (context, state) => CustomTransitionPage(
                     child: BuyerLivestreamScreen(
-                      channelName:
-                          state.uri.queryParameters['channelName'] ?? '',
+                      liveStream: state.extra! as LiveStream,
                       token: state.uri.queryParameters['token'] ?? '',
-                      sellerAgoraId:
-                          state.uri.queryParameters['sellerAgoraId'] ?? '',
                     ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
