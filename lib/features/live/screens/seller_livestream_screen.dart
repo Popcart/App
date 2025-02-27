@@ -74,9 +74,10 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
               connection.toJson().toString(),
               name: 'AGORA onJoinChannelSuccess connection',
             );
-            setAgoraId(connection.localUid ?? 0);
+
             setState(() {
               _localUserJoined = true;
+              setAgoraId(connection.localUid ?? 0);
             });
           },
           onUserJoined: (connection, remoteUid, elapsed) {
@@ -85,7 +86,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
               name: 'AGORA onUserJoined connection',
             );
             log(remoteUid.toString(), name: 'AGORA onUserJoined remoteUid');
-            setState(() {});
+            
           },
           onUserOffline: (connection, remoteUid, reason) {
             log(
@@ -143,7 +144,19 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(child: _renderVideo()),
+        Positioned.fill(
+          child: _localUserJoined
+              ? AgoraVideoView(
+                  controller: VideoViewController(
+                    rtcEngine: _engine,
+                    canvas: const VideoCanvas(
+                      renderMode: RenderModeType.renderModeHidden,
+                      uid: 0,
+                    ),
+                  ),
+                )
+              : const CupertinoActivityIndicator(),
+        ),
         const Positioned.fill(
           child: Padding(
             padding: EdgeInsets.all(16),
@@ -162,18 +175,4 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
     );
   }
 
-  Widget _renderVideo() {
-    // if (widget.isBroadcaster) {
-    return _localUserJoined
-        ? AgoraVideoView(
-            controller: VideoViewController(
-              rtcEngine: _engine,
-              canvas: const VideoCanvas(
-                renderMode: RenderModeType.renderModeHidden,
-                uid: 0,
-              ),
-            ),
-          )
-        : const CupertinoActivityIndicator();
-  }
 }

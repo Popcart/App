@@ -46,8 +46,8 @@ class LiveScreen extends HookWidget {
       body: SafeArea(
         child: RefreshIndicator.adaptive(
           onRefresh: () async {
-            unawaited(interestListCubit.getInterests());
-            unawaited(profileCubit.fetchUserProfile());
+            // unawaited(interestListCubit.getInterests());
+            // unawaited(profileCubit.fetchUserProfile());
             unawaited(activeLivestreamsCubit.getActiveLivestreams());
           },
           child: SingleChildScrollView(

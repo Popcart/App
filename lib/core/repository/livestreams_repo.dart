@@ -2,7 +2,7 @@ import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/features/live/models/products.dart';
 
 sealed class LivestreamsRepo {
-  Future<ApiResponse<LiveStream>> createLivestreamSession({
+  Future<ApiResponse<Stream>> createLivestreamSession({
     required String name,
     required List<String> products,
     required bool scheduled,
@@ -28,13 +28,13 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
   final ApiHandler _apiHandler;
 
   @override
-  Future<ApiResponse<LiveStream>> createLivestreamSession({
+  Future<ApiResponse<Stream>> createLivestreamSession({
     required String name,
     required List<String> products,
     required bool scheduled,
     String? startTime,
   }) async {
-    return _apiHandler.request<LiveStream>(
+    return _apiHandler.request<Stream>(
       path: '',
       method: MethodType.post,
       payload: {
@@ -43,7 +43,7 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
         'scheduled': scheduled,
         if (startTime != null) 'startTime': startTime,
       },
-      responseMapper: LiveStream.fromJson,
+      responseMapper: Stream.fromJson,
     );
   }
 

@@ -31,7 +31,7 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
       success: (data) {
         emit(
           OpenLivestreamState.success(
-            liveStream: data?.data ?? LiveStream.empty(),
+            stream: data?.data ?? Stream.empty(),
           ),
         );
       },

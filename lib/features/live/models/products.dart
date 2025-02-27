@@ -137,3 +137,64 @@ class LiveStream {
     return '''LiveStream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
   }
 }
+
+@JsonSerializable(createToJson: false)
+class Stream {
+  Stream({
+    required this.id,
+    required this.user,
+    required this.title,
+    required this.products,
+    required this.startTime,
+    required this.scheduled,
+    required this.active,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
+    required this.agoraId,
+  });
+
+  factory Stream.empty() => Stream(
+        id: '',
+        user: '',
+        title: '',
+        products: [],
+        startTime: null,
+        scheduled: false,
+        active: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        agoraId: '',
+        v: 0,
+      );
+
+  factory Stream.fromJson(Map<String, dynamic> json) =>
+      _$StreamFromJson(json);
+  @JsonKey(name: '_id', defaultValue: '')
+  final String id;
+  @JsonKey(name: 'user', defaultValue: '')
+  final String user;
+  @JsonKey(name: 'title', defaultValue: '')
+  final String title;
+  @JsonKey(name: 'products', defaultValue: [])
+  final List<String> products;
+  @JsonKey(name: 'startTime', defaultValue: null)
+  final String? startTime;
+  @JsonKey(name: 'scheduled', defaultValue: false)
+  final bool scheduled;
+  @JsonKey(name: 'active', defaultValue: true)
+  final bool active;
+  @JsonKey(name: 'createdAt', defaultValue: DateTime.now)
+  final DateTime createdAt;
+  @JsonKey(name: 'updatedAt', defaultValue: DateTime.now)
+  final DateTime updatedAt;
+  @JsonKey(name: '__v', defaultValue: 0)
+  final int v;
+  @JsonKey(name: 'agoraId', defaultValue: '')
+  final String agoraId;
+
+  @override
+  String toString() {
+    return '''Stream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
+  }
+}

@@ -20,7 +20,7 @@ class ScheduleSessionScreen extends HookWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final openLivestream = context.watch<OpenLivestreamCubit>();
-    final generatedLiveStream = useState<LiveStream?>(null);
+    final generatedLiveStream = useState<Stream?>(null);
     final livestreamTitleController = useTextEditingController();
     final startTimeController = useTextEditingController();
     final isScheduled = useState(false);

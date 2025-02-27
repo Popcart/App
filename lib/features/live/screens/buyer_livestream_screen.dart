@@ -41,6 +41,28 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     super.dispose();
   }
 
+  void closeLivestream() {
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (_) => CupertinoAlertDialog(
+        title: const Text('Livestream Ended'),
+        content: const Text('The seller has ended the livestream'),
+        actions: [
+          CupertinoDialogAction(
+            child: const Text('OK'),
+            onPressed: () {
+              context.pop();
+            },
+          ),
+        ],
+      ),
+    ).then((_) {
+      if (mounted) {
+        context.pop();
+      }
+    });
+  }
+
   Future<void> initAgora() async {
     try {
       await [Permission.camera, Permission.microphone].request();
@@ -55,6 +77,17 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       // Set up event handlers
       _engine.registerEventHandler(
         RtcEngineEventHandler(
+          onUserOffline: (connection, remoteUid, reason) {
+            log(
+              connection.toJson().toString(),
+              name: 'AGORA onUserOffline connection',
+            );
+            log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
+            log(reason.toString(), name: 'AGORA onUserOffline reason');
+            if (remoteUid.toString() == widget.sellerAgoraId) {
+              closeLivestream();
+            }
+          },
           onJoinChannelSuccess: (connection, elapsed) {
             log(
               connection.toJson().toString(),
@@ -125,7 +158,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         ? AgoraVideoView(
             controller: VideoViewController(
               rtcEngine: _engine,
-              canvas:  VideoCanvas(
+              canvas: VideoCanvas(
                 renderMode: RenderModeType.renderModeHidden,
                 uid: int.parse(widget.sellerAgoraId),
               ),
