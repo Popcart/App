@@ -4,7 +4,7 @@ import 'package:popcart/env/env_fields.dart';
 
 part 'staging.g.dart';
 
-@Envied(path: 'assets/env/stag.env', name: 'Env', obfuscate: true)
+@Envied(path: 'assets/env/staging.env', name: 'Env', obfuscate: true)
 final class QaEnv implements Env, EnvFields {
   
 
