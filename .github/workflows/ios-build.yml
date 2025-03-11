@@ -3,62 +3,61 @@ name: iOS Build and Deploy to TestFlight
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
+      - main
 
 jobs:
   build:
-    runs-on: macos-latest  # Use macOS runner for Xcode
+    runs-on: macos-latest
     steps:
-      # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Set up Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.29.1'  # Matches your specified version
+          flutter-version: '3.29.1'
 
-      # Install dependencies
       - name: Install dependencies
         run: flutter pub get
 
-      # Set up Ruby for Fastlane
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'  # Fastlane requires Ruby
+          ruby-version: '3.2'
 
-      # Set up keychain and certificates
       - name: Setup keychain
         run: |
           security create-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
           security default-keychain -s ci-keychain
           security unlock-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
+          security set-key-partition-list -S apple-tool:,apple: -s -k ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
           echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
           security import certificate.p12 -k ci-keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/popcart_adhoc_distro.mobileprovision
 
-      # Build the iOS app
       - name: Build iOS
         run: |
-          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign
+          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
             CODE_SIGN_STYLE="Automatic" \
             CODE_SIGN_IDENTITY="iOS Distribution" \
-            PROVISIONING_PROFILE="com.popcart.africa" \
+            PROVISIONING_PROFILE_SPECIFIER="popcart_adhoc_distro" \
             DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
 
-      # Upload to TestFlight
-      - name: Deploy to TestFlight
-        env:
-          APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+      - name: Install Fastlane
         run: |
           cd ios
-          gem install fastlane
-          fastlane deliver --ipa "../build/ipa/Runner.ipa" --username "$APPLE_ID_USERNAME" --password "$APPLE_ID_PASSWORD" --skip_metadata true --skip_screenshots true
+          bundle install
+
+      - name: Deploy to TestFlight
+        env:
+          APP_STORE_API_KEY_ID: ${{ secrets.APP_STORE_API_KEY_ID }}
+          APP_STORE_API_ISSUER_ID: ${{ secrets.APP_STORE_API_ISSUER_ID }}
+          APP_STORE_API_KEY: ${{ secrets.APP_STORE_API_KEY }}
+        run: |
+          cd ios
+          fastlane deliver --ipa "../build/ipa/Runner.ipa" --api_key_path "fastlane/api_key.json" --skip_metadata true --skip_screenshots true
