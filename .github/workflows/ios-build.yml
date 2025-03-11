@@ -63,6 +63,7 @@ jobs:
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
             CODE_SIGN_STYLE="Manual" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
+	    PROVISIONING_PROFILE_SPECIFIER="popcart adhoc distro" \
             PROVISIONING_PROFILE="~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision" \
             DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
