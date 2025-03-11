@@ -1,0 +1,61 @@
+name: iOS Build and Deploy to TestFlight.
+
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+
+jobs:
+  build:
+    runs-on: macos-latest  # Use macOS runner for Xcode
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: '3.29.1'  # Use your preferred version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Set up Ruby for Fastlane
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'  # Fastlane requires Ruby
+
+      # Set up keychain and certificates
+      - name: Setup keychain
+        run: |
+          security create-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
+          security default-keychain -s ci-keychain
+          security unlock-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
+          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
+          security import certificate.p12 -k ci-keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      # Build the iOS app
+      - name: Build iOS
+        run: |
+          flutter build ios --release --no-codesign
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+
+      # Upload to TestFlight
+      - name: Deploy to TestFlight
+        env:
+          APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        run: |
+          cd ios
+          gem install fastlane
+          fastlane init  # Answer prompts or preconfigure Fastfile
+          fastlane deliver --ipa "../build/ipa/Runner.ipa" --username "$APPLE_ID_USERNAME" --password "$APPLE_ID_PASSWORD" --skip_metadata true --skip_screenshots true
