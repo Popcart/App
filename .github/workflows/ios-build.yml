@@ -1,4 +1,4 @@
-name: iOS Build and Deploy to TestFlight
+name: iOS Build and Deploy to TestFlight.
 
 on:
   push:
