@@ -44,7 +44,7 @@ jobs:
       # Build the iOS app
       - name: Build iOS
         run: |
-	  make ipa-dev
+	  flutter build ipa --flavor=development --target=lib/app/main.dev.dart --verbose
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
