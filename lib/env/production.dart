@@ -5,7 +5,7 @@ import 'package:popcart/env/env_fields.dart';
 
 part 'production.g.dart';
 
-@Envied(path: 'assets/env/prod.env', name: 'Env', obfuscate: true)
+@Envied(path: 'assets/env/production.env', name: 'Env', obfuscate: true)
 final class ProdEnv implements Env, EnvFields {
   @override
   
