@@ -17,6 +17,7 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.29.1' 
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -62,8 +63,8 @@ jobs:
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
             CODE_SIGN_STYLE="Manual" \
             CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE="${{ secrets.PROVISIONING_PROFILE_BASE64 }}" \
-  	    DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
+            PROVISIONING_PROFILE="~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision" \
+            DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
 
       - name: Install Fastlane
@@ -71,7 +72,6 @@ jobs:
           gem install bundler
           cd ios
           bundle install
-
 
       - name: Deploy to TestFlight
         run: |
