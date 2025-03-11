@@ -47,7 +47,7 @@ jobs:
           flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
-            CODE_SIGN_STYLE="Manual" \
+            CODE_SIGN_STYLE="Automatic" \
             CODE_SIGN_IDENTITY="iOS Distribution" \
             PROVISIONING_PROFILE="com.popcart.africa" \
             DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
