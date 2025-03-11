@@ -27,15 +27,35 @@ jobs:
           ruby-version: '3.2'
 
       - name: Setup keychain
-        run: |
-          security create-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
-          security default-keychain -s ci-keychain
-          security unlock-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
-          security set-key-partition-list -S apple-tool:,apple: -s -k ${{ secrets.KEYCHAIN_PASSWORD }} ci-keychain
-          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
-          security import certificate.p12 -k ci-keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/popcart_adhoc_distro.mobileprovision
+  	run: |
+          KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
+          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+
+     - name: Import certificate
+       run: |
+         KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
+         echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode -o certificate.p12
+         security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+         security list-keychains -d user -s "$KEYCHAIN_PATH"
+         security find-identity -p codesigning -v "$KEYCHAIN_PATH"
+
+     - name: Install provisioning profile
+       run: |
+         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+         echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+         ls -la ~/Library/MobileDevice/Provisioning\ Profiles
+
+     - name: Debug keychain and certificate
+       run: |
+         security list-keychains -d user
+         security find-identity -p codesigning -v
+         security find-certificate -a -Z
+
+
 
       - name: Build iOS
         run: |
