@@ -16,8 +16,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.19.1'  # Updated to a valid Flutter version (3.29.1 doesn’t exist yet as of March 2025)
-
+          flutter-version: '3.29.1' 
       - name: Install dependencies
         run: flutter pub get
 
@@ -73,11 +72,6 @@ jobs:
           cd ios
           bundle install
 
-      - name: Setup Fastlane API Key
-        run: |
-          cd ios
-          mkdir -p fastlane
-          echo "{\"key_id\": \"${{ secrets.APP_STORE_API_KEY_ID }}\", \"issuer_id\": \"${{ secrets.APP_STORE_API_ISSUER_ID }}\", \"key\": \"${{ secrets.APP_STORE_API_KEY }}\", \"in_house\": false}" > fastlane/api_key.json
 
       - name: Deploy to TestFlight
         run: |
