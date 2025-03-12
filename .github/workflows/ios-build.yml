@@ -26,39 +26,52 @@ jobs:
         with:
           ruby-version: '3.2'
 
-      - name: Setup keychain
+      
+      - name: Decode Certificates and Profiles
         run: |
-          KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
-          security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
-          security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
-          security default-keychain -s "$KEYCHAIN_PATH"
-          security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-
-      - name: Import certificate
-        run: |
-          KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
-          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 -d > certificate.p12
-          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
-          rm certificate.p12  # Clean up the temporary file
-          security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
-          security find-identity -p codesigning -v "$KEYCHAIN_PATH"
-
-      - name: Install provisioning profile
-        run: |
+          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ios/certificate.p12
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ios/profile.mobileprovision
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security import ios/certificate.p12 -k build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-          ls -la ~/Library/MobileDevice/Provisioning\ Profiles
+          cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Debug keychain and certificate
-        run: |
-          security list-keychains -d user
-          security find-identity -p codesigning -v
-          security find-certificate -a -Z
+      # - name: Setup keychain
+      #   run: |
+      #     KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
+      #     security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
+      #     security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
+      #     security default-keychain -s "$KEYCHAIN_PATH"
+      #     security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
+      #     security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+
+      # - name: Import certificate
+      #   run: |
+      #     KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
+      #     echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 -d > certificate.p12
+      #     security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+      #     rm certificate.p12  # Clean up the temporary file
+      #     security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
+      #     security find-identity -p codesigning -v "$KEYCHAIN_PATH"
+
+      # - name: Install provisioning profile
+      #   run: |
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+      #     ls -la ~/Library/MobileDevice/Provisioning\ Profiles
+
+      # - name: Debug keychain and certificate
+      #   run: |
+      #     security list-keychains -d user
+      #     security find-identity -p codesigning -v
+      #     security find-certificate -a -Z
 
       - name: Build iOS
         run: |
-          flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
+          flutter build ios --release --no-codesign
+          #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
