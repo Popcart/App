@@ -1,0 +1,8 @@
+app_identifier("com.popcart.africa.mine") # The bundle identifier of your app
+apple_id("odiadavid2@gmail.com") # Your Apple Developer Portal username
+
+itc_team_id("120155643") # App Store Connect Team ID
+team_id("LB5YMG5W6W") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

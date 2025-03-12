@@ -60,21 +60,26 @@ jobs:
         run: |
           flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
           cd ios
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
-            CODE_SIGN_STYLE="Manual" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="popcart adhoc distro" \
-            PROVISIONING_PROFILE="~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision" \
-            DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
 
-      - name: Install Fastlane
-        run: |
-          gem install bundler
-          cd ios
-          bundle install
+          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
+          #   CODE_SIGN_STYLE="Manual" \
+          #   CODE_SIGN_IDENTITY="Apple Distribution" \
+          #   PROVISIONING_PROFILE_SPECIFIER="popcart adhoc distro" \
+          #   PROVISIONING_PROFILE="~/Library/MobileDevice/Provisioning Profiles/profile.mobileprovision" \
+          #   DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
+          # xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+
+      # - name: Install Fastlane
+      #   run: |
+      #     gem install bundler
+      #     cd ios
+      #     bundle install
 
       - name: Deploy to TestFlight
         run: |
           cd ios
-          bundle exec fastlane deliver --ipa "../build/ipa/Runner.ipa" --api_key_path "fastlane/api_key.json" --skip_metadata true --skip_screenshots true
+          bundle install
+          fastlane pilot upload --api_key_path ../fastlane/api_key.json --skip_waiting_for_build_processing
+          # bundle exec fastlane deliver --ipa "../build/ipa/Runner.ipa" --api_key_path "fastlane/api_key.json" --skip_metadata true --skip_screenshots true
