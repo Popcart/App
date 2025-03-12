@@ -56,6 +56,12 @@ jobs:
       #     security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
       #     security find-identity -p codesigning -v "$KEYCHAIN_PATH"
 
+      - name: Setup provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+
       # - name: Install provisioning profile
       #   run: |
       #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -73,8 +79,9 @@ jobs:
           #flutter build ios --release --no-codesign
           flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
           cd ios
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
-          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive -allowProvisioningUpdates
+          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist -allowProvisioningUpdates
+          # xcodebuild -allowProvisioningUpdates -workspace ios/Runner.xcworkspace -scheme Runner -destination 'generic/platform=iOS'
 
           # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
           #   CODE_SIGN_STYLE="Manual" \
