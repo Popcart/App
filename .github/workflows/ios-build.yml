@@ -77,7 +77,7 @@ jobs:
       - name: Build iOS
         run: |
           #flutter build ios --release --no-codesign
-          flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
+          flutter build ios --release --flavor development --target lib/app/main.dev.dart --verbose
           cd ios
           xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
