@@ -5,6 +5,7 @@ GEM
       base64
       nkf
       rexml
+    abbrev (0.1.2)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     artifactory (3.0.17)
@@ -159,6 +160,7 @@ GEM
     json (2.10.2)
     jwt (2.10.1)
       base64
+    logger (1.6.6)
     mini_magick (4.13.2)
     mini_mime (1.1.5)
     multi_json (1.15.0)
@@ -219,7 +221,9 @@ PLATFORMS
   x86_64-darwin-23
 
 DEPENDENCIES
+  abbrev
   fastlane (>= 2.227.0)
+  logger
 
 RUBY VERSION
    ruby 3.4.2p28
