@@ -79,10 +79,12 @@ jobs:
 
       
       - name: Build & upload iOS binary
-        run: bundle exec fastlane ios beta
+        run: |
+          cd ios
+          bundle exec fastlane ios beta
+
           #flutter build ios --release --no-codesign
           #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
-
           # flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
           # cd ios
           # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive
