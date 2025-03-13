@@ -79,8 +79,7 @@ jobs:
       - name: Install Bundler & Fastlane dependencies
         run: |
           cd ios
-          bundle install  # Installs dependencies from Gemfile
-
+          gem install fastlane
       
       - name: Build & upload iOS binary
         run: |
