@@ -76,10 +76,11 @@ jobs:
       #     security list-keychains -d user
       #     security find-identity -p codesigning -v
       #     security find-certificate -a -Z
-      - name: Install Bundler & Fastlane dependencies
+      - name: Install Gems
         run: |
           cd ios
-          gem install fastlane
+          bundle install
+          bundle update
       
       - name: Build & upload iOS binary
         run: |
