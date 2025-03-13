@@ -129,3 +129,4 @@ encodedProdEnvBase64.txt
 .fvm/
 ios/Podfile.lock
 pubspec.lock
+.secrets

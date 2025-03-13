@@ -72,12 +72,26 @@ jobs:
       - name: Build iOS
         run: |
           #flutter build ios --release --no-codesign
-          flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
+          #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
+          
+          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign
           cd ios
-          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
-          make prod-ios-release
+          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive
+            CODE_SIGN_STYLE="Manual" \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE="com.popcart.africa.vax" \
+            DEVELOPMENT_TEAM="LB5YMG5W6W"
           xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
           
+          
+          #cd ios
+          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
+          #make prod-ios-release
+          #xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+        
+
+
+
       # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
       #   CODE_SIGN_STYLE="Manual" \
       #   CODE_SIGN_IDENTITY="Apple Distribution" \
