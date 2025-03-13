@@ -77,19 +77,20 @@ jobs:
       #     security find-identity -p codesigning -v
       #     security find-certificate -a -Z
 
-      - name: Build iOS
-        run: |
+      
+      - name: Build & upload iOS binary
+        run: bundle exec fastlane ios beta
           #flutter build ios --release --no-codesign
           #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
 
-          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
-          cd ios
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive
-            CODE_SIGN_STYLE="Manual" \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            PROVISIONING_PROFILE="com.popcart.africa.vax" \
-            DEVELOPMENT_TEAM="LB5YMG5W6W"
-          xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
+          # flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
+          # cd ios
+          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive
+          #   CODE_SIGN_STYLE="Manual" \
+          #   CODE_SIGN_IDENTITY="Apple Distribution" \
+          #   PROVISIONING_PROFILE="com.popcart.africa.vax" \
+          #   DEVELOPMENT_TEAM="LB5YMG5W6W"
+          # xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
           
           
           #cd ios
@@ -115,9 +116,9 @@ jobs:
       #     cd ios
       #     bundle install
 
-      - name: Deploy to TestFlight
-        run: |
-          cd ios
-          bundle install
-          fastlane pilot upload --api_key_path ../fastlane/api_key.json --skip_waiting_for_build_processing
-          # bundle exec fastlane deliver --ipa "../build/ipa/Runner.ipa" --api_key_path "fastlane/api_key.json" --skip_metadata true --skip_screenshots true
+      # - name: Deploy to TestFlight
+      #   run: |
+      #     cd ios
+      #     bundle install
+      #     fastlane pilot upload --api_key_path ../fastlane/api_key.json --skip_waiting_for_build_processing
+      #     # bundle exec fastlane deliver --ipa "../build/ipa/Runner.ipa" --api_key_path "fastlane/api_key.json" --skip_metadata true --skip_screenshots true

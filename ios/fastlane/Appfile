@@ -1,4 +1,4 @@
-app_identifier("com.popcart.africa.mine") # The bundle identifier of your app
+app_identifier("com.popcart.africa.vax") # The bundle identifier of your app
 apple_id("odiadavid2@gmail.com") # Your Apple Developer Portal username
 
 itc_team_id("120155643") # App Store Connect Team ID
