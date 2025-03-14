@@ -33,10 +33,14 @@ platform :ios do
   #####################################################
   desc "Load ASC API Key information to use in subsequent lanes"
   lane :load_asc_api_key do
+    key_id = ENV["APP_STORE_CONNECT_KEY_ID"]
+    issuer_id = ENV["APP_STORE_CONNECT_ISSUER_ID"]
+    key_content = ENV["APP_STORE_CONNECT_P8"]
+
     app_store_connect_api_key(
-      key_id: "K9AKBV7B7K",
-      issuer_id: "b2f0cbda-586d-4c72-a6bd-8391cf2a5082",
-      key_content: "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JR1RBZ0VBTUJNR0J5cUdTTTQ5QWdFR0NDcUdTTTQ5QXdFSEJIa3dkd0lCQVFRZ1dCSlBWNG5ZZThGTUFqVEUKV0xQVk1CcWxTN0ZZeTRxRzJocWRrck1qdk1xZ0NnWUlLb1pJemowREFRZWhSQU5DQUFUaVBTbHBqNEQ4RFY3cApmbVZrQVRkcWIyWEp6ZFdvQWw3U2xKRW5RU1gvWnlJL204ZWpIVVFkckJkK29TQ21WYnlSNjlpVStTVnhqNjMxCmhjUXBBVEdPCi0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0=",
+      key_id = key_id,
+      issuer_id = issuer_id,
+      key_content = key_content,
       is_key_content_base64: true,
       in_house: false # Set to true if using an in-house (enterprise) account
     )
@@ -52,7 +56,7 @@ platform :ios do
     UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
     # Hardcoded API key is insecure; consider using environment variables
-    api_key = "Aye5089mere@"
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
     UI.important("Using hardcoded API key. Move to environment variable for security.")
 
     current_version = get_version_number(
@@ -76,8 +80,8 @@ platform :ios do
     team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
     UI.user_error!("Team ID not found in Appfile") unless team_id
 
-    # Hardcoded API key and password are insecure; use environment variables
-    api_key = "Aye5089mere@"
+    # Hardcoded API key and password are insecure
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
     keychain_password = "Aye5089mere@"
     UI.important("Using hardcoded API key and password. Move to environment variables for security.")
 
@@ -97,7 +101,6 @@ platform :ios do
       timeout: 3600
     )
 
-    # Import certificate (assumes CERTIFICATE_BASE64 and CERTIFICATE_PASSWORD are set as env vars)
     import_certificate(
       certificate_path: ENV["CERTIFICATE_BASE64"],
       certificate_password: ENV["CERTIFICATE_PASSWORD"],
@@ -154,8 +157,7 @@ platform :ios do
   #####################################################
   desc "Upload to TestFlight / App Store Connect"
   lane :upload_release do
-    # Hardcoded API key is insecure; consider using environment variables
-    api_key = "Aye5089mere@"
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
     UI.important("Using hardcoded API key. Move to environment variable for security.")
 
     deliver(
