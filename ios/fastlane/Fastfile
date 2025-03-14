@@ -151,8 +151,7 @@ platform :ios do
     UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
     # Ensure Flutter and dependencies are set up
-    sh("flutter", "doctor")
-    sh("flutter", "pub get")
+    sh("make", "clean")
 
     # Execute the Makefile target for production iOS release
     sh("make", "prod-ios-release")
