@@ -37,7 +37,6 @@ platform :ios do
     issuer_id = ENV["APP_STORE_CONNECT_ISSUER_ID"]
     key_content = ENV["APP_STORE_CONNECT_P8"]
 
-
     app_store_connect_api_key(
       key_id: key_id,
       issuer_id: issuer_id,
@@ -102,28 +101,31 @@ platform :ios do
       timeout: 3600
     )
 
-
     # Import certificate if CERTIFICATE_BASE64 is set
-  unless ENV["CERTIFICATE_BASE64"].nil? || ENV["CERTIFICATE_BASE64"].empty?
-    require 'base64'
-    require 'tempfile'
+    unless ENV["CERTIFICATE_BASE64"].nil? || ENV["CERTIFICATE_BASE64"].empty?
+      require 'base64'
+      require 'tempfile'
 
-    # Validate certificate password
-    certificate_password = ENV["CERTIFICATE_PASSWORD"]
-    UI.user_error!("CERTIFICATE_PASSWORD environment variable not set") unless certificate_password
+      # Validate certificate password
+      certificate_password = ENV["CERTIFICATE_PASSWORD"]
+      UI.user_error!("CERTIFICATE_PASSWORD environment variable not set") unless certificate_password
 
-    # Decode the base64 content and write to a temporary file
-    Tempfile.create(['certificate', '.p12']) do |temp_file|
-      temp_file.binmode # Ensure binary mode to avoid encoding issues
-      temp_file.write(Base64.decode64(ENV["CERTIFICATE_BASE64"]))
-      temp_file.flush
+      # Decode the base64 content and write to a temporary file
+      Tempfile.create(['certificate', '.p12']) do |temp_file|
+        temp_file.binmode # Ensure binary mode to avoid encoding issues
+        temp_file.write(Base64.decode64(ENV["CERTIFICATE_BASE64"]))
+        temp_file.flush
 
-    import_certificate(
-      certificate_path: temp_file.path,
-      certificate_password: ENV["CERTIFICATE_PASSWORD"],
-      keychain_name: keychain_name,
-      keychain_password: keychain_password
-    ) unless ENV["CERTIFICATE_BASE64"].nil?
+        import_certificate(
+          certificate_path: temp_file.path,
+          certificate_password: certificate_password,
+          keychain_name: keychain_name,
+          keychain_password: keychain_password
+        ) unless ENV["CERTIFICATE_BASE64"].nil?
+      end
+    else
+      UI.important("CERTIFICATE_BASE64 environment variable not set. Skipping certificate import.")
+    end
 
     # Fetch and install provisioning profiles
     sigh(
@@ -131,9 +133,6 @@ platform :ios do
       api_key: api_key,
       readonly: true
     )
-   end
-  else
-    UI.important("CERTIFICATE_BASE64 environment variable not set. Skipping certificate import.")
   end
 
   #####################################################
