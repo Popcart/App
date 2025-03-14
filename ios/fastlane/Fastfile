@@ -160,7 +160,7 @@ platform :ios do
 
     # Build the app using gym
     gym(
-      scheme: "Runner", # Update with your scheme name
+      scheme: "production", # Update with your scheme name
       output_name: output_name,
       configuration: "Release",
       export_options: {
