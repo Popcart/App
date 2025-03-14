@@ -64,6 +64,9 @@ jobs:
           cd ios
           bundle install
           bundle update
+
+      - name: Build IPA
+        run: flutter build ipa --release --export-options-plist=ios/Runner/ExportOptions.plist --flavor=production --target=lib/app/main.prod.dart --verbose
       
       
       - name: Build & upload iOS binary
@@ -78,3 +81,20 @@ jobs:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
           FLUTTER_TARGET: "lib/app/main.prod.dart"
+    
+      - name: Clean up Keychain and Provisioning Profiles
+        if: always() # Runs even if previous steps fail
+        run: |
+          # Delete the keychain
+          security delete-keychain build.keychain || true
+          
+          # Remove certificate and provisioning profile files
+          rm -f ios/certificate.p12
+          rm -f ios/profile.mobileprovision
+          
+          # Remove provisioning profiles from the library
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+          
+          # Verify cleanup
+          ls -la ios/
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "Directory cleaned or not found"
