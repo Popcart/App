@@ -157,7 +157,7 @@ platform :ios do
     # sh("make", "prod-ios-release")
 
     Dir.chdir("..") do # Move up one directory from fastlane/ to project root
-      sh("make", "clean")
+      #sh("make", "clean")
       sh("make", "prod-ios-release")
     end
 
