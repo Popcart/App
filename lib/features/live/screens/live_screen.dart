@@ -141,7 +141,10 @@ class LiveScreen extends HookWidget {
                       ),
                       const SizedBox(height: 16),
                       SizedBox(
-                        height: 270,
+                        height: activeLivestreamsCubit.state.whenOrNull(
+                          success: (liveStreams) =>
+                              liveStreams.isEmpty ? 0 : 270,
+                        ),
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (_, index) => Skeletonizer(

@@ -30,11 +30,10 @@ class PopCart extends StatelessWidget {
         BlocProvider(
           create: (context) => ProfileCubit()..fetchUserProfile(),
         ),
-        
         BlocProvider(
           create: (context) => OpenLivestreamCubit(),
         ),
-         BlocProvider(
+        BlocProvider(
           create: (context) => ActiveLivestreamsCubit()..getActiveLivestreams(),
         ),
       ],
@@ -48,7 +47,6 @@ class PopCart extends StatelessWidget {
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
-                
                 progressIndicatorTheme: const ProgressIndicatorThemeData(
                   color: AppColors.white,
                 ),
@@ -89,13 +87,16 @@ class PopCart extends StatelessWidget {
                   ),
                 ),
                 appBarTheme: const AppBarTheme(
-                  centerTitle: false,
-                  surfaceTintColor: Colors.white,
-                  backgroundColor: Colors.white,
+                  centerTitle: true,
+                  surfaceTintColor: Color(0xff111214),
+                  iconTheme: IconThemeData(
+                    color: Colors.white,
+                  ),
+                  backgroundColor: Color(0xff111214),
                   elevation: 0.1,
                   shadowColor: Color(0xff091824),
                   titleTextStyle: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: 21,
                     fontWeight: FontWeight.w700,
                   ),

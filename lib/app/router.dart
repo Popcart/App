@@ -12,6 +12,8 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
+import 'package:popcart/features/live/screens/buyer_profile_screen.dart';
+import 'package:popcart/features/live/screens/buyer_setings_screen.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
@@ -287,6 +289,10 @@ final router = GoRouter(
               path: AppPath.authorizedUser.account.goRoute,
               builder: (context, state) => const AccountWebview(),
             ),
+            GoRoute(
+              path: AppPath.authorizedUser.account.settings.goRoute,
+              builder: (context, state) => const BuyerSetingsScreen(),
+            ),
           ],
         ),
       ],
@@ -358,7 +364,7 @@ class _AccountWebviewState extends State<AccountWebview> {
                     : WebViewWidget(
                         controller: controller,
                       ),
-                UserType.buyer => const SizedBox(),
+                UserType.buyer => const BuyerProfileScreen(),
               },
             );
           },

@@ -119,7 +119,6 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
         state.whenOrNull(
           verifyOtpFailure: (message) {
             context.showError(message);
-            // _onProceed()  ;
           },
           verifyOtpSuccess: _onProceed,
         );
@@ -165,7 +164,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                   listenable: _textEditingController,
                   builder: (_, __) {
                     return IgnorePointer(
-                      ignoring: _textEditingController.text.length != 4 ||
+                      ignoring: _textEditingController.text.length != 5 ||
                           onboardingCubit.state.maybeWhen(
                             orElse: () => false,
                             loading: () => true,
@@ -178,7 +177,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                         },
                         child: AnimatedOpacity(
                           opacity:
-                              _textEditingController.text.length == 4 ? 1 : 0,
+                              _textEditingController.text.length == 5 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
                             text: l10n.next,

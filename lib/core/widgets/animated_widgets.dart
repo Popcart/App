@@ -35,30 +35,8 @@ class _BouncingEffectState extends State<BouncingEffect>
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTapDown: (_) {
-        _controller.reverse();
-      },
-      onTapUp: (_) {
-        _controller.forward();
-      },
-      onTapCancel: () {
-        _controller.forward();
-      },
-      onTap: () {
-        _controller
-            .reverse()
-            .then(
-              (value) => _controller.forward(),
-            )
-            .then(
-              (value) => widget.onTap(),
-            );
-        // widget.onTap();
-      },
-      child: Transform.scale(
-        scale: _curvedAnimation.value,
-        child: IgnorePointer(child: widget.child),
-      ),
+      onTap: widget.onTap,
+      child: IgnorePointer(child: widget.child),
     );
   }
 
