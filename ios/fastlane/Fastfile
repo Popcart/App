@@ -191,14 +191,19 @@ platform :ios do
 
 
      # Disable automatic signing to ensure correct code signing identity
-     update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["Runner"], # Update if you have multiple targets
-      code_sign_identity: "Apple Distribution", # Verify this matches your certificate
-      bundle_identifier: app_identifier,
-      profile_name: profile_name,
-      build_configurations: ["Release"]
-    )
+    #  update_code_signing_settings(
+    #   use_automatic_signing: false,
+    #   targets: ["Runner"], # Update if you have multiple targets
+    #   code_sign_identity: "Apple Distribution", # Verify this matches your certificate
+    #   bundle_identifier: app_identifier,
+    #   profile_name: profile_name,
+    #   build_configurations: ["Release"]
+    # )
+
+    target_file = ENV["FLUTTER_TARGET"] || "lib/main.dart"
+
+    sh("flutter build ios --release --flavor=production --target=#{target_file} --verbose")
+
 
     # Build the app using gym
     gym(
