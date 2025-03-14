@@ -27,7 +27,6 @@ jobs:
           pod deintegrate
           pod cache clean --all
           pod install --verbose
-        #flutter pub get
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -51,24 +50,6 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      # - name: Setup keychain
-      #   run: |
-      #     KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
-      #     security create-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
-      #     security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
-      #     security default-keychain -s "$KEYCHAIN_PATH"
-      #     security unlock-keychain -p "${{ secrets.KEYCHAIN_PASSWORD }}" "$KEYCHAIN_PATH"
-      #     security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
-
-      # - name: Import certificate
-      #   run: |
-      #     KEYCHAIN_PATH="$RUNNER_TEMP/ci-keychain.keychain-db"
-      #     echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 -d > certificate.p12
-      #     security import certificate.p12 -k "$KEYCHAIN_PATH" -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
-      #     rm certificate.p12  # Clean up the temporary file
-      #     security list-keychains -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | tr -d '"')"
-      #     security find-identity -p codesigning -v "$KEYCHAIN_PATH"
-
 
       - name: Install provisioning profile
         run: |
@@ -76,11 +57,7 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-      # - name: Debug keychain and certificate
-      #   run: |
-      #     security list-keychains -d user
-      #     security find-identity -p codesigning -v
-      #     security find-certificate -a -Z
+      
       - name: Install Gems
         run: |
           cd ios
@@ -99,30 +76,11 @@ jobs:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
-      - name: Upload IPA artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ipa-prod
-          path: build/ios/ipa/Popcart-iOS.ipa
-
-          #flutter build ios --release --no-codesign
-          #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
-          # flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
-          # cd ios
-          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive
-          #   CODE_SIGN_STYLE="Manual" \
-          #   CODE_SIGN_IDENTITY="Apple Distribution" \
-          #   PROVISIONING_PROFILE="com.popcart.africa.vax" \
-          #   DEVELOPMENT_TEAM="LB5YMG5W6W"
-          # xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
-          
-          
-          #cd ios
-          # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
-          #make prod-ios-release
-          #xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
-        
-
+      # - name: Upload IPA artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ipa-prod
+      #     path: build/ios/ipa/Popcart-iOS.ipa
 
 
       # xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
@@ -133,12 +91,6 @@ jobs:
       #   DEVELOPMENT_TEAM="${{ secrets.DEVELOPMENT_TEAM }}"
       # xcodebuild -exportArchive -archivePath build/Runner.xcarchive -exportPath build/ipa -exportOptionsPlist ExportOptions.plist
 
-
-      # - name: Install Fastlane
-      #   run: |
-      #     gem install bundler
-      #     cd ios
-      #     bundle install
 
       # - name: Deploy to TestFlight
       #   run: |
