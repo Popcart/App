@@ -13,7 +13,7 @@ class BouncingEffect extends StatefulWidget {
 class _BouncingEffectState extends State<BouncingEffect>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late CurvedAnimation _curvedAnimation;
+  // late CurvedAnimation _curvedAnimation;
 
   @override
   void initState() {
@@ -24,11 +24,11 @@ class _BouncingEffectState extends State<BouncingEffect>
       value: 1,
       lowerBound: 0.8,
     );
-    _curvedAnimation =
-        CurvedAnimation(parent: _controller, curve: Curves.bounceIn);
-    _controller.addListener(() {
-      setState(() {});
-    });
+    // _curvedAnimation =
+    //     CurvedAnimation(parent: _controller, curve: Curves.bounceIn);
+    // _controller.addListener(() {
+    //   setState(() {});
+    // });
   }
 
   @override
