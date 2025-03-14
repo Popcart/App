@@ -158,7 +158,7 @@ platform :ios do
 
     Dir.chdir("..") do # Move up one directory from fastlane/ to project root
       #sh("make", "clean")
-      sh("make", "prod-ios-release")
+      sh("flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose")
     end
 
 
