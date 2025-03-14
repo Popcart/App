@@ -162,7 +162,7 @@ platform :ios do
     gym(
       scheme: "production", # Update with your scheme name
       output_name: output_name,
-      configuration: "Release",
+      configuration: "Release-production",
       export_options: {
         method: export_method,
         provisioningProfiles: {
