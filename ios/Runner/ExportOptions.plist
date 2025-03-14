@@ -5,12 +5,25 @@
     <key>method</key>
     <string>app-store</string>
     <key>teamID</key>
-    <string>LB5YMG5W6W</string> 
+    <string>LB5YMG5W6W</string>
     <key>uploadBitcode</key>
     <false/>
     <key>compileBitcode</key>
     <false/>
     <key>uploadSymbols</key>
     <true/>
+    <key>signingStyle</key>
+    <string>manual</string> <!-- Ensures manual signing with imported certificate -->
+    <key>signingCertificate</key>
+    <string>Apple Distribution</string> <!-- Matches your certificate in the keychain -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>com.popcart.africa.vax</key>
+        <string>Popcart provision profile MarchX</string> 
+    </dict>
+    <key>stripSwiftSymbols</key>
+    <true/> 
+    <key>destination</key>
+    <string>export</string> 
 </dict>
 </plist>
