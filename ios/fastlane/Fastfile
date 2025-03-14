@@ -147,7 +147,7 @@ platform :ios do
     output_name = "Popcart-iOS" # Name of the generated .ipa file
     export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
 
-    
+
     # Disable automatic signing to ensure correct code signing identity
     update_code_signing_settings(
       use_automatic_signing: false,
@@ -160,7 +160,7 @@ platform :ios do
 
     # Build the app using gym
     gym(
-      scheme: "production", # Update with your scheme name
+      scheme: "Runner", # Update with your scheme name
       output_name: output_name,
       configuration: "Release",
       export_options: {
