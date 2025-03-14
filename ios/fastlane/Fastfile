@@ -191,7 +191,7 @@ platform :ios do
   end
 
   #####################################################
-  # Full Build and Upload Workflow                    #
+  * Full Build and Upload Workflow                    *
   #####################################################
   desc "Build and upload to TestFlight"
   lane :ios_build_upload_testflight do
