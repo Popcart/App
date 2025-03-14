@@ -202,6 +202,7 @@ platform :ios do
 
     target_file = ENV["FLUTTER_TARGET"] || "lib/main.dart"
 
+    sh("bundle update")
     sh("flutter build ios --release --flavor=production --target=#{target_file} --verbose")
 
 

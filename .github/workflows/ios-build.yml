@@ -32,6 +32,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4.2'
+          bundler-cache: true
 
       - name: Install Build Tools
         run: |
@@ -63,6 +64,7 @@ jobs:
           cd ios
           bundle install
           bundle update
+      
       
       - name: Build & upload iOS binary
         run: |
