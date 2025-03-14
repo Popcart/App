@@ -55,12 +55,12 @@ platform :ios do
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
-    # Hardcoded API key is insecure; consider using environment variables
+    
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
     UI.important("Using hardcoded API key. Move to environment variable for security.")
 
     current_version = get_version_number(
-      target: "Runner" # Replace with your main target if different
+      target: "Runner" # main target
     )
     latest_build_number = latest_testflight_build_number(
       api_key: api_key,
@@ -80,9 +80,9 @@ platform :ios do
     team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
     UI.user_error!("Team ID not found in Appfile") unless team_id
 
-    # Hardcoded API key and password are insecure
+    
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    keychain_password = "Aye5089mere@"
+    keychain_password = "Aye5089mere@" # Hardcoded API key will be replaced
     UI.important("Using hardcoded API key and password. Move to environment variables for security.")
 
     keychain_name = "signing"
@@ -140,19 +140,30 @@ platform :ios do
   #####################################################
   desc "Build the iOS app for release"
   lane :build_release do |options|
+    # app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+    # UI.user_error!("App identifier not found in Appfile") unless app_identifier
+
+    # profile_name = "Popcart provision profile MarchX" # provisioning profile name
+    # output_name = "Popcart-iOS" # Name of the generated .ipa file
+    # export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
+
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
-    profile_name = "Popcart provision profile MarchX" # Update with your provisioning profile name
-    output_name = "Popcart-iOS" # Name of the generated .ipa file
-    export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
+    # Ensure Flutter and dependencies are set up
+    sh("flutter", "doctor")
+    sh("flutter", "pub get")
+
+    # Execute the Makefile target for production iOS release
+    sh("make", "prod-ios-release")
+
 
 
     # Disable automatic signing to ensure correct code signing identity
     update_code_signing_settings(
       use_automatic_signing: false,
-      targets: ["Runner"], # Update if you have multiple targets
-      code_sign_identity: "Apple Distribution", # Verify this matches your certificate
+      targets: ["Runner"], # Update if multiple targets
+      code_sign_identity: "Apple Distribution", #  certificate
       bundle_identifier: app_identifier,
       profile_name: profile_name,
       build_configurations: ["Release"]
@@ -160,16 +171,21 @@ platform :ios do
 
     # Build the app using gym
     gym(
-      scheme: "production", # Update with your scheme name
-      output_name: output_name,
+      scheme: "production",
+      output_name: "Popcart-iOS",
       configuration: "Release-production",
       export_options: {
-        method: export_method,
+        method: "app-store",
         provisioningProfiles: {
-          app_identifier => profile_name
+          app_identifier => "Popcart provision profile MarchX"
         }
-      }
+      },
+      workspace: "ios/Runner.xcworkspace"
     )
+
+    # Log the IPA path
+    ipa_path = "build/ios/ipa/Popcart-iOS.ipa"
+    UI.success("IPA built at: #{ipa_path}")
   end
 
   #####################################################

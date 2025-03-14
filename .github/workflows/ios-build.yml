@@ -99,6 +99,12 @@ jobs:
           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipa-prod
+          path: build/ios/ipa/Popcart-iOS.ipa
+
           #flutter build ios --release --no-codesign
           #flutter build ios --release --flavor production --target lib/app/main.prod.dart --verbose
           # flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
