@@ -140,34 +140,61 @@ platform :ios do
   #####################################################
   desc "Build the iOS app for release"
   lane :build_release do |options|
-    # app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    # UI.user_error!("App identifier not found in Appfile") unless app_identifier
-
-    # profile_name = "Popcart provision profile MarchX" # provisioning profile name
-    # output_name = "Popcart-iOS" # Name of the generated .ipa file
-    # export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
-
     app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
     UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
+    profile_name = "Popcart provision profile MarchX" # provisioning profile name
+    output_name = "Popcart-iOS" # Name of the generated .ipa file
+    export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
+
+    
     # Ensure Flutter and dependencies are set up
     
 
     # Execute the Makefile target for production iOS release
     # sh("make", "prod-ios-release")
 
-    Dir.chdir("..") do # Move up one directory from fastlane/ to project root
-      #sh("make", "clean")
-      sh("flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose")
-    end
+    # Dir.chdir("..") do # Move up one directory from fastlane/ to project root
+    #   #sh("make", "clean")
+    #   sh("flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose")
+    # end
 
 
 
     # Disable automatic signing to ensure correct code signing identity
-    update_code_signing_settings(
+    # update_code_signing_settings(
+    #   use_automatic_signing: false,
+    #   targets: ["Runner"], # Update if multiple targets
+    #   code_sign_identity: "Apple Distribution", #  certificate
+    #   bundle_identifier: app_identifier,
+    #   profile_name: profile_name,
+    #   build_configurations: ["Release"]
+    # )
+
+    # # Build the app using gym
+    # gym(
+    #   scheme: "production",
+    #   output_name: "Popcart-iOS",
+    #   configuration: "Release-production",
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       app_identifier => "Popcart provision profile MarchX"
+    #     }
+    #   },
+    #   workspace: "ios/Runner.xcworkspace"
+    # )
+
+    # # Log the IPA path
+    # ipa_path = "build/ios/ipa/Popcart-iOS.ipa"
+    # UI.success("IPA built at: #{ipa_path}")
+
+
+     # Disable automatic signing to ensure correct code signing identity
+     update_code_signing_settings(
       use_automatic_signing: false,
-      targets: ["Runner"], # Update if multiple targets
-      code_sign_identity: "Apple Distribution", #  certificate
+      targets: ["Runner"], # Update if you have multiple targets
+      code_sign_identity: "Apple Distribution", # Verify this matches your certificate
       bundle_identifier: app_identifier,
       profile_name: profile_name,
       build_configurations: ["Release"]
@@ -175,21 +202,16 @@ platform :ios do
 
     # Build the app using gym
     gym(
-      scheme: "production",
-      output_name: "Popcart-iOS",
+      scheme: "production", # Update with your scheme name
+      output_name: output_name,
       configuration: "Release-production",
       export_options: {
-        method: "app-store",
+        method: export_method,
         provisioningProfiles: {
-          app_identifier => "Popcart provision profile MarchX"
+          app_identifier => profile_name
         }
-      },
-      workspace: "ios/Runner.xcworkspace"
+      }
     )
-
-    # Log the IPA path
-    ipa_path = "build/ios/ipa/Popcart-iOS.ipa"
-    UI.success("IPA built at: #{ipa_path}")
   end
 
   #####################################################
