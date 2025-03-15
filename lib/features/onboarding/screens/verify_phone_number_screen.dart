@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
@@ -11,11 +12,12 @@ import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.d
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:timer_count_down/timer_count_down.dart';
 
 bool isSeller = false;
 bool isBusinessSeller = false;
 
-class VerifyPhoneNumberScreen extends StatefulWidget {
+class VerifyPhoneNumberScreen extends StatefulHookWidget {
   const VerifyPhoneNumberScreen({super.key});
 
   @override
@@ -113,13 +115,27 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final onboardingCubit = context.watch<OnboardingCubit>();
+    final otpSent = useState(false);
 
+    void handleResendOTP() {
+      // API call to resend OTP would go here
+      debugPrint('Resending OTP...');
+      otpSent.value = true;
+    }
+
+    useEffect(
+      () {
+        // Initialize by simulating an OTP sent when screen loads
+        otpSent.value = true;
+        return null;
+      },
+      const [],
+    );
     return BlocListener<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         state.whenOrNull(
           verifyOtpFailure: (message) {
             context.showError(message);
-            // _onProceed()  ;
           },
           verifyOtpSuccess: _onProceed,
         );
@@ -165,7 +181,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                   listenable: _textEditingController,
                   builder: (_, __) {
                     return IgnorePointer(
-                      ignoring: _textEditingController.text.length != 4 ||
+                      ignoring: _textEditingController.text.length != 5 ||
                           onboardingCubit.state.maybeWhen(
                             orElse: () => false,
                             loading: () => true,
@@ -178,7 +194,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                         },
                         child: AnimatedOpacity(
                           opacity:
-                              _textEditingController.text.length == 4 ? 1 : 0,
+                              _textEditingController.text.length == 5 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
                             text: l10n.next,
@@ -192,11 +208,83 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                     );
                   },
                 ),
+                if (otpSent.value)
+                  Center(
+                    child: OTPCountdownTimer(
+                      onResendPressed: handleResendOTP,
+                    ),
+                  ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+}
+
+class OTPCountdownTimer extends HookWidget {
+  const OTPCountdownTimer({
+    required this.onResendPressed,
+    super.key,
+    this.timerDuration = 120, // 2 minutes in seconds
+  });
+  final void Function() onResendPressed;
+  final int timerDuration;
+
+  @override
+  Widget build(BuildContext context) {
+    final isTimerRunning = useState(true);
+    final countdownKey = useState(UniqueKey());
+    void restartTimer() {
+      isTimerRunning.value = true;
+      countdownKey.value = UniqueKey();
+      onResendPressed();
+    }
+
+    return isTimerRunning.value
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Resend OTP in ',
+                style: TextStyle(
+                  color: AppColors.orange,
+                  fontSize: 14,
+                ),
+              ),
+              Countdown(
+                key: countdownKey.value,
+                seconds: timerDuration,
+                build: (BuildContext context, double time) {
+                  final minutes = (time ~/ 60).toString().padLeft(2, '0');
+                  final seconds =
+                      (time % 60).floor().toString().padLeft(2, '0');
+                  return Text(
+                    '$minutes:$seconds',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  );
+                },
+                onFinished: () {
+                  isTimerRunning.value = false;
+                },
+              ),
+            ],
+          )
+        : TextButton(
+            onPressed: restartTimer,
+            child: const Text(
+              'Resend OTP',
+              style: TextStyle(
+                color: AppColors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          );
   }
 }

@@ -36,6 +36,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/Search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/Search.svg');
 
+  /// File path: assets/icons/address_book.svg
+  SvgGenImage get addressBook =>
+      const SvgGenImage('assets/icons/address_book.svg');
+
   /// File path: assets/icons/auctions_selected.svg
   SvgGenImage get auctionsSelected =>
       const SvgGenImage('assets/icons/auctions_selected.svg');
@@ -44,11 +48,35 @@ class $AssetsIconsGen {
   SvgGenImage get auctionsUnselected =>
       const SvgGenImage('assets/icons/auctions_unselected.svg');
 
+  /// File path: assets/icons/become_a_seller.svg
+  SvgGenImage get becomeASeller =>
+      const SvgGenImage('assets/icons/become_a_seller.svg');
+
+  /// File path: assets/icons/bookmark.svg
+  SvgGenImage get bookmark => const SvgGenImage('assets/icons/bookmark.svg');
+
+  /// File path: assets/icons/boosts.svg
+  SvgGenImage get boosts => const SvgGenImage('assets/icons/boosts.svg');
+
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
+  /// File path: assets/icons/delete_account.svg
+  SvgGenImage get deleteAccount =>
+      const SvgGenImage('assets/icons/delete_account.svg');
+
   /// File path: assets/icons/error_icon.svg
   SvgGenImage get errorIcon => const SvgGenImage('assets/icons/error_icon.svg');
+
+  /// File path: assets/icons/find_friends.svg
+  SvgGenImage get findFriends =>
+      const SvgGenImage('assets/icons/find_friends.svg');
+
+  /// File path: assets/icons/gear.svg
+  SvgGenImage get gear => const SvgGenImage('assets/icons/gear.svg');
+
+  /// File path: assets/icons/interests.svg
+  SvgGenImage get interests => const SvgGenImage('assets/icons/interests.svg');
 
   /// File path: assets/icons/live_selected.svg
   SvgGenImage get liveSelected =>
@@ -58,6 +86,24 @@ class $AssetsIconsGen {
   SvgGenImage get liveUnselected =>
       const SvgGenImage('assets/icons/live_unselected.svg');
 
+  /// File path: assets/icons/log_out.svg
+  SvgGenImage get logOut => const SvgGenImage('assets/icons/log_out.svg');
+
+  /// File path: assets/icons/messages.svg
+  SvgGenImage get messages => const SvgGenImage('assets/icons/messages.svg');
+
+  /// File path: assets/icons/notifications.svg
+  SvgGenImage get notifications =>
+      const SvgGenImage('assets/icons/notifications.svg');
+
+  /// File path: assets/icons/payment_methods.svg
+  SvgGenImage get paymentMethods =>
+      const SvgGenImage('assets/icons/payment_methods.svg');
+
+  /// File path: assets/icons/personal_information.svg
+  SvgGenImage get personalInformation =>
+      const SvgGenImage('assets/icons/personal_information.svg');
+
   /// File path: assets/icons/profile_selected.svg
   SvgGenImage get profileSelected =>
       const SvgGenImage('assets/icons/profile_selected.svg');
@@ -66,6 +112,12 @@ class $AssetsIconsGen {
   SvgGenImage get profileUnselected =>
       const SvgGenImage('assets/icons/profile_unselected.svg');
 
+  /// File path: assets/icons/purchases.svg
+  SvgGenImage get purchases => const SvgGenImage('assets/icons/purchases.svg');
+
+  /// File path: assets/icons/rewards.svg
+  SvgGenImage get rewards => const SvgGenImage('assets/icons/rewards.svg');
+
   /// File path: assets/icons/storefront.svg
   SvgGenImage get storefront =>
       const SvgGenImage('assets/icons/storefront.svg');
@@ -73,14 +125,29 @@ class $AssetsIconsGen {
   /// List of all assets
   List<SvgGenImage> get values => [
     search,
+    addressBook,
     auctionsSelected,
     auctionsUnselected,
+    becomeASeller,
+    bookmark,
+    boosts,
     checkicon,
+    deleteAccount,
     errorIcon,
+    findFriends,
+    gear,
+    interests,
     liveSelected,
     liveUnselected,
+    logOut,
+    messages,
+    notifications,
+    paymentMethods,
+    personalInformation,
     profileSelected,
     profileUnselected,
+    purchases,
+    rewards,
     storefront,
   ];
 }

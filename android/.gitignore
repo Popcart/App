@@ -10,3 +10,4 @@ key.properties
 **/*.keystore
 **/*.jks
 /.kotlin/
+.cxx/

@@ -12,6 +12,8 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
+import 'package:popcart/features/live/screens/buyer_profile_screen.dart';
+import 'package:popcart/features/live/screens/buyer_setings_screen.dart';
 import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
@@ -287,6 +289,10 @@ final router = GoRouter(
               path: AppPath.authorizedUser.account.goRoute,
               builder: (context, state) => const AccountWebview(),
             ),
+            GoRoute(
+              path: AppPath.authorizedUser.account.settings.goRoute,
+              builder: (context, state) => const BuyerSetingsScreen(),
+            ),
           ],
         ),
       ],
@@ -338,7 +344,8 @@ class _AccountWebviewState extends State<AccountWebview> {
             'accessToken': locator<SharedPrefs>().accessToken,
           }),
         ),
-      );
+      )
+      ..enableZoom(false);
   }
 
   @override
@@ -357,7 +364,7 @@ class _AccountWebviewState extends State<AccountWebview> {
                     : WebViewWidget(
                         controller: controller,
                       ),
-                UserType.buyer => const SizedBox(),
+                UserType.buyer => const BuyerProfileScreen(),
               },
             );
           },
@@ -404,40 +411,46 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profileCubit = context.watch<ProfileCubit>();
     return Scaffold(
       body: body,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex,
-        backgroundColor: const Color(0xff111214),
-        onTap: onDestinationSelected,
-        selectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 12,
-        ),
-        showUnselectedLabels: false,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.white,
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 12,
-        ),
-        items: [
-          BottomNavigationBarItem(
-            activeIcon: AppAssets.icons.auctionsSelected.svg(),
-            icon: AppAssets.icons.auctionsUnselected.svg(),
-            label: 'Auctions',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: AppAssets.icons.liveSelected.svg(),
-            icon: AppAssets.icons.liveUnselected.svg(),
-            label: 'Live',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: AppAssets.icons.profileSelected.svg(),
-            icon: AppAssets.icons.profileUnselected.svg(),
-            label: 'Account',
-          ),
-        ],
+      bottomNavigationBar: profileCubit.state.whenOrNull(
+        loaded: (user) => switch (user.userType) {
+          UserType.seller => null,
+          UserType.buyer => BottomNavigationBar(
+              currentIndex: selectedIndex,
+              backgroundColor: const Color(0xff111214),
+              onTap: onDestinationSelected,
+              selectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+              showUnselectedLabels: false,
+              selectedItemColor: Colors.white,
+              unselectedItemColor: Colors.white,
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+              ),
+              items: [
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.auctionsSelected.svg(),
+                  icon: AppAssets.icons.auctionsUnselected.svg(),
+                  label: 'Auctions',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.liveSelected.svg(),
+                  icon: AppAssets.icons.liveUnselected.svg(),
+                  label: 'Live',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.profileSelected.svg(),
+                  icon: AppAssets.icons.profileUnselected.svg(),
+                  label: 'Account',
+                ),
+              ],
+            )
+        },
       ),
     );
   }
