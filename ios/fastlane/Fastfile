@@ -82,7 +82,7 @@ platform :ios do
 
     
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    keychain_password = "Aye5089mere@" # Hardcoded API key will be replaced
+    keychain_password = ENV["KEYCHAIN_PASSWORD"] # Hardcoded API key will be replaced
     UI.important("Using hardcoded API key and password. Move to environment variables for security.")
 
     keychain_name = "signing"
@@ -135,6 +135,12 @@ platform :ios do
     )
   end
 
+
+  lane :setup_flutter do
+    sh "flutter clean"
+    sh "flutter pub get"
+  end
+
   #####################################################
   # Build the iOS App for Release                     #
   #####################################################
@@ -149,63 +155,16 @@ platform :ios do
 
     
     # Ensure Flutter and dependencies are set up
-    
-
-    # Execute the Makefile target for production iOS release
-    # sh("make", "prod-ios-release")
-
-    # Dir.chdir("..") do # Move up one directory from fastlane/ to project root
-    #   #sh("make", "clean")
-    #   sh("flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose")
-    # end
-
-
 
     # Disable automatic signing to ensure correct code signing identity
-    # update_code_signing_settings(
-    #   use_automatic_signing: false,
-    #   targets: ["Runner"], # Update if multiple targets
-    #   code_sign_identity: "Apple Distribution", #  certificate
-    #   bundle_identifier: app_identifier,
-    #   profile_name: profile_name,
-    #   build_configurations: ["Release"]
-    # )
-
-    # # Build the app using gym
-    # gym(
-    #   scheme: "production",
-    #   output_name: "Popcart-iOS",
-    #   configuration: "Release-production",
-    #   export_options: {
-    #     method: "app-store",
-    #     provisioningProfiles: {
-    #       app_identifier => "Popcart provision profile MarchX"
-    #     }
-    #   },
-    #   workspace: "ios/Runner.xcworkspace"
-    # )
-
-    # # Log the IPA path
-    # ipa_path = "build/ios/ipa/Popcart-iOS.ipa"
-    # UI.success("IPA built at: #{ipa_path}")
-
-
-     # Disable automatic signing to ensure correct code signing identity
-    #  update_code_signing_settings(
-    #   use_automatic_signing: false,
-    #   targets: ["Runner"], # Update if you have multiple targets
-    #   code_sign_identity: "Apple Distribution", # Verify this matches your certificate
-    #   bundle_identifier: app_identifier,
-    #   profile_name: profile_name,
-    #   build_configurations: ["Release"]
-    # )
-
-    target_file = ENV["FLUTTER_TARGET"] || "lib/main.dart"
-
-    Dir.chdir("..") do
-      sh("bundle update")
-      sh("flutter build ios --release --flavor=production --target=#{target_file} --verbose")
-    end
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      targets: ["Runner"], # Update if multiple targets
+      code_sign_identity: "Apple Distribution", #  certificate
+      bundle_identifier: app_identifier,
+      profile_name: profile_name,
+      build_configurations: ["Release"]
+    )
 
     # Build the app using gym
     gym(
@@ -246,8 +205,47 @@ platform :ios do
   lane :ios_build_upload_testflight do
     load_asc_api_key
     prepare_signing
+    setup_flutter
     fetch_and_increment_build_number
-    #build_release
+    build_release
     upload_release
   end
 end
+
+
+
+# # Build the app using gym
+    # gym(
+    #   scheme: "production",
+    #   output_name: "Popcart-iOS",
+    #   configuration: "Release-production",
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       app_identifier => "Popcart provision profile MarchX"
+    #     }
+    #   },
+    #   workspace: "ios/Runner.xcworkspace"
+    # )
+
+    # # Log the IPA path
+    # ipa_path = "build/ios/ipa/Popcart-iOS.ipa"
+    # UI.success("IPA built at: #{ipa_path}")
+
+
+     # Disable automatic signing to ensure correct code signing identity
+    #  update_code_signing_settings(
+    #   use_automatic_signing: false,
+    #   targets: ["Runner"], # Update if you have multiple targets
+    #   code_sign_identity: "Apple Distribution", # Verify this matches your certificate
+    #   bundle_identifier: app_identifier,
+    #   profile_name: profile_name,
+    #   build_configurations: ["Release"]
+    # )
+
+    # target_file = ENV["FLUTTER_TARGET"] || "lib/main.dart"
+
+    # Dir.chdir("..") do
+    #   sh("bundle update")
+    #   sh("flutter build ios --release --flavor=production --target=#{target_file} --verbose")
+    # end

@@ -63,15 +63,6 @@ jobs:
           cd ios
           bundle install
           bundle update
-
-      - name: Build IPA
-        run: flutter build ipa --release --export-options-plist=ios/Runner/ExportOptions.plist --flavor=production --target=lib/app/main.prod.dart --verbose
-      
-      - name: Upload IPA Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-ipa
-          path: build/ios/ipa/Runner.ipa
       
       - name: Build & upload iOS binary
         run: |
