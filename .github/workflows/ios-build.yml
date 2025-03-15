@@ -65,7 +65,9 @@ jobs:
           bundle update
       
       - name: Install CocoaPods dependencies
-        run: pod install --repo-update
+        run: |
+           cd ios
+           pod install --repo-update
 
       - name: Clean DerivedData
         run: rm -rf ~/Library/Developer/Xcode/DerivedData
