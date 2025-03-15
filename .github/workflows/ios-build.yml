@@ -58,7 +58,6 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-      
       - name: Install Gems
         run: |
           cd ios
