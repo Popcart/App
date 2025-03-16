@@ -3,13 +3,17 @@ import 'dart:developer';
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/gen/assets.gen.dart';
 
 class BuyerLivestreamScreen extends StatefulWidget {
   const BuyerLivestreamScreen({
@@ -131,8 +135,30 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     }
   }
 
+  Future<void> showProductModal() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => Container(
+        height: MediaQuery.of(context).size.height * 0.8,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: ProductModal(
+          sellerId: widget.liveStream.user.id,
+          products: widget.liveStream.products,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    log(widget.liveStream.products.toString());
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -260,20 +286,43 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
               ),
             ),
           ),
-          const Positioned.fill(
+          Positioned.fill(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: SafeArea(
                 maintainBottomViewPadding: true,
                 child: FooterLayout(
                   footer: KeyboardAttachable(
-                    child: Row(
-                      children: [
-                        Flexible(flex: 7, child: TextField()),
-                        Flexible(
-                          child: CircleAvatar(),
-                        ),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 5,
+                            child: chatBox(),
+                          ),
+                          const SizedBox(width: 16),
+                          Flexible(
+                            child: GestureDetector(
+                              onTap: showProductModal,
+                              behavior: HitTestBehavior.opaque,
+                              child: Container(
+                                width: 56,
+                                height: 56,
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(100),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                child: AppAssets.icons.storefront.svg(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -281,6 +330,30 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  TextField chatBox() {
+    return TextField(
+      onTapOutside: (event) => FocusScope.of(context).unfocus(),
+      decoration: const InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(100),
+          ),
+          borderSide: BorderSide(
+            color: Colors.white,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(100),
+          ),
+          borderSide: BorderSide(
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }
@@ -298,5 +371,130 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
             ),
           )
         : const CupertinoActivityIndicator();
+  }
+}
+
+class ProductModal extends HookWidget {
+  const ProductModal({
+    required this.products,
+    required this.sellerId,
+    super.key,
+  });
+
+  final List<String> products;
+  final String sellerId;
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedSegment = useState(0);
+    final pageController = usePageController();
+    return Column(
+      children: [
+        const Text(
+          'Products',
+          style: TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          // height: 40,
+          child: CupertinoSegmentedControl<int>(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            children: const {
+              0: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'In this room',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              1: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'Store',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            },
+            onValueChanged: (int value) {
+              selectedSegment.value = value;
+              pageController.animateToPage(
+                value,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            },
+            groupValue: selectedSegment.value, // Current selected value
+            borderColor: const Color(0xFF393C43),
+            selectedColor: const Color(0xFF676C75), // Selected segment color
+            unselectedColor:
+                const Color(0xFF393C43), // Unselected segment color
+          ),
+        ),
+
+        const SizedBox(height: 16),
+        Expanded(
+          child: PageView(
+            controller: pageController,
+            onPageChanged: (int page) {
+              selectedSegment.value = page;
+            },
+            children: [
+              GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                itemCount: products.length,
+                itemBuilder: (context, index) => SingleProductWidget(
+                  id: products[index],
+                ),
+              ),
+              GridView.count(
+                crossAxisCount: 2,
+              ),
+            ],
+          ),
+        ),
+        // Spacer(),
+      ],
+    );
+  }
+}
+
+class SingleProductWidget extends HookWidget {
+  const SingleProductWidget({
+    required this.id,
+    super.key,
+  });
+
+  final String id;
+
+  @override
+  Widget build(BuildContext context) {
+    final product = useState<Product?>(null);
+    final fetchProduct = useCallback(() async {
+      final response = await locator<SellersRepo>().getProduct(productId: id);
+      response.when(
+        success: (data) {
+          product.value = data?.data;
+        },
+        error: (error) {},
+      );
+    });
+    useEffect(
+      () {
+        fetchProduct();
+        return null;
+      },
+      [],
+    );
+    return const FlutterLogo();
   }
 }

@@ -60,6 +60,11 @@ class PopCart extends StatelessWidget {
                 radioTheme: RadioThemeData(
                   fillColor: WidgetStateProperty.all(AppColors.orange),
                 ),
+                bottomSheetTheme: const BottomSheetThemeData(
+                  showDragHandle: true,
+                  dragHandleColor: Color(0xff393C43),
+                  backgroundColor: Color(0xff111214),
+                ),
                 listTileTheme: const ListTileThemeData(
                   contentPadding: EdgeInsets.zero,
                   titleTextStyle: TextStyle(

@@ -25,7 +25,7 @@ class Product {
   factory Product.empty() => Product(
         id: '',
         name: '',
-        seller: '',
+        seller: UserModel.empty(),
         category: '',
         price: 0,
         description: '',
@@ -46,8 +46,9 @@ class Product {
   final String id;
   @JsonKey(name: 'name', defaultValue: '')
   final String name;
-  @JsonKey(name: 'seller', defaultValue: '')
-  final String seller;
+   @SellerConverter()
+  @JsonKey(name: 'seller', defaultValue: UserModel.empty)
+  final UserModel seller;
   @JsonKey(name: 'category', defaultValue: '')
   final String category;
   @JsonKey(name: 'price', defaultValue: 0)
@@ -74,6 +75,30 @@ class Product {
   @override
   String toString() {
     return '''Product(id: $id, name: $name, seller: $seller, category: $category, price: $price, description: $description, brand: $brand, stockUnit: $stockUnit, images: $images, available: $available, published: $published, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)''';
+  }
+}
+
+class SellerConverter implements JsonConverter<UserModel, dynamic> {
+  const SellerConverter();
+
+  @override
+  UserModel fromJson(dynamic json) {
+    // If it's a string (just the ID)
+    if (json is String) {
+      return UserModel.withId(json);
+    }
+    // If it's a Map/object with seller details
+    else if (json is Map<String, dynamic>) {
+      return UserModel.fromJson(json);
+    }
+    // Default case
+    return UserModel.empty();
+  }
+
+  @override
+  dynamic toJson(UserModel seller) {
+    // Since you're using createToJson: false, this isn't strictly necessary
+    return seller.id;
   }
 }
 
@@ -168,8 +193,7 @@ class Stream {
         v: 0,
       );
 
-  factory Stream.fromJson(Map<String, dynamic> json) =>
-      _$StreamFromJson(json);
+  factory Stream.fromJson(Map<String, dynamic> json) => _$StreamFromJson(json);
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
   @JsonKey(name: 'user', defaultValue: '')
