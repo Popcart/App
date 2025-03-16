@@ -325,9 +325,9 @@ class ActiveLiveStream extends HookWidget {
         listener: (context, state) {
           state.whenOrNull(
             error: (message) => context.showError(message),
-            generateTokenSuccess: (token) {
+            generateTokenSuccess: (token) async {
               if (userId == liveStream.user.id) {
-                context.pushNamed(
+                await context.pushNamed(
                   AppPath.authorizedUser.live.sellerLivestream.path,
                   extra: true,
                   queryParameters: {
@@ -336,13 +336,19 @@ class ActiveLiveStream extends HookWidget {
                   },
                 );
               }
-              context.pushNamed(
+              // ignore: use_build_context_synchronously
+              final shouldRefresh = await context.pushNamed<bool>(
                 AppPath.authorizedUser.live.buyerLivestream.path,
                 extra: liveStream,
                 queryParameters: {
                   'token': token,
                 },
               );
+              if (shouldRefresh != null && shouldRefresh && context.mounted) {
+                await context
+                    .read<ActiveLivestreamsCubit>()
+                    .getActiveLivestreams();
+              }
             },
           );
         },

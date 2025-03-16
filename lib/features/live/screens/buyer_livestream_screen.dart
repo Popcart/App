@@ -5,6 +5,7 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -14,6 +15,7 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -51,6 +53,12 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     super.dispose();
   }
 
+  @override
+  void deactivate() {
+    context.read<ActiveLivestreamsCubit>().getActiveLivestreams();
+    super.deactivate();
+  }
+
   void closeLivestream() {
     showCupertinoDialog<void>(
       context: context,
@@ -61,7 +69,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
           CupertinoDialogAction(
             child: const Text('OK'),
             onPressed: () {
-              context.pop();
+              context.pop(true);
             },
           ),
         ],
