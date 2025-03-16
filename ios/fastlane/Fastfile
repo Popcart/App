@@ -75,80 +75,77 @@ platform :ios do
   # #####################################################
   # # Prepare Signing Certificates and Profiles          #
   # #####################################################
-  desc "Installs signing certificate in the keychain and downloads provisioning profiles from App Store Connect"
-  lane :prepare_signing do |options|
-    team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-    UI.user_error!("Team ID not found in Appfile") unless team_id
+  # desc "Installs signing certificate in the keychain and downloads provisioning profiles from App Store Connect"
+  # lane :prepare_signing do |options|
+  #   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  #   UI.user_error!("Team ID not found in Appfile") unless team_id
 
     
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    keychain_password = ENV["KEYCHAIN_PASSWORD"] # Hardcoded API key will be replaced
-    UI.important("Using hardcoded API key and password. Move to environment variables for security.")
+  #   api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+  #   keychain_password = ENV["KEYCHAIN_PASSWORD"] # Hardcoded API key will be replaced
+  #   UI.important("Using hardcoded API key and password. Move to environment variables for security.")
 
-    keychain_name = "signing"
+  #   keychain_name = "signing"
 
-    # Delete existing keychain if it exists
-    delete_keychain(
-      name: keychain_name
-    ) if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
+  #   # Delete existing keychain if it exists
+  #   delete_keychain(
+  #     name: keychain_name
+  #   ) if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
 
-    # Create and configure a new keychain
-    create_keychain(
-      name: keychain_name,
-      password: keychain_password,
-      default_keychain: true,
-      unlock: true,
-      timeout: 3600
-    )
+  #   # Create and configure a new keychain
+  #   create_keychain(
+  #     name: keychain_name,
+  #     password: keychain_password,
+  #     default_keychain: true,
+  #     unlock: true,
+  #     timeout: 3600
+  #   )
 
-    # Import certificate if CERTIFICATE_BASE64 is set
-    unless ENV["CERTIFICATE_BASE64"].nil? || ENV["CERTIFICATE_BASE64"].empty?
-      require 'base64'
-      require 'tempfile'
+  #   # Import certificate if CERTIFICATE_BASE64 is set
+  #   unless ENV["CERTIFICATE_BASE64"].nil? || ENV["CERTIFICATE_BASE64"].empty?
+  #     require 'base64'
+  #     require 'tempfile'
 
-      # Validate certificate password
-      certificate_password = ENV["CERTIFICATE_PASSWORD"]
-      UI.user_error!("CERTIFICATE_PASSWORD environment variable not set") unless certificate_password
+  #     # Validate certificate password
+  #     certificate_password = ENV["CERTIFICATE_PASSWORD"]
+  #     UI.user_error!("CERTIFICATE_PASSWORD environment variable not set") unless certificate_password
 
-      # Decode the base64 content and write to a temporary file
-      Tempfile.create(['certificate', '.p12']) do |temp_file|
-        temp_file.binmode # Ensure binary mode to avoid encoding issues
-        temp_file.write(Base64.decode64(ENV["CERTIFICATE_BASE64"]))
-        temp_file.flush
+  #     # Decode the base64 content and write to a temporary file
+  #     Tempfile.create(['certificate', '.p12']) do |temp_file|
+  #       temp_file.binmode # Ensure binary mode to avoid encoding issues
+  #       temp_file.write(Base64.decode64(ENV["CERTIFICATE_BASE64"]))
+  #       temp_file.flush
 
-        import_certificate(
-          certificate_path: temp_file.path,
-          certificate_password: certificate_password,
-          keychain_name: keychain_name,
-          keychain_password: keychain_password
-        ) unless ENV["CERTIFICATE_BASE64"].nil?
-      end
-    else
-      UI.important("CERTIFICATE_BASE64 environment variable not set. Skipping certificate import.")
-    end
+  #       import_certificate(
+  #         certificate_path: temp_file.path,
+  #         certificate_password: certificate_password,
+  #         keychain_name: keychain_name,
+  #         keychain_password: keychain_password
+  #       ) unless ENV["CERTIFICATE_BASE64"].nil?
+  #     end
+  #   else
+  #     UI.important("CERTIFICATE_BASE64 environment variable not set. Skipping certificate import.")
+  #   end
 
-    # Fetch and install provisioning profiles
-    sigh(
-      adhoc: options[:adhoc],
-      api_key: api_key,
-      readonly: true
-    )
-  end
+  #   # Fetch and install provisioning profiles
+  #   sigh(
+  #     adhoc: options[:adhoc],
+  #     api_key: api_key,
+  #     readonly: true
+  #   )
+  # end
 
 
   lane :beta_do do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     setup_ci if ENV['CI']
-
-  get_certificates(
+    
+    get_certificates(
     development: false,
     api_key: api_key,
-  )
-  match(
-    type: "appstore",
-    readonly: true,  # Only read existing certificates (no modifications)
-    keychain_password: ENV['FASTLANE_PASSWORD']
+    team_id: "LB5YMG5W6W"
+    generate_apple_certs: true
   )
 
   get_provisioning_profile(
