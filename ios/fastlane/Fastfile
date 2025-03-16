@@ -31,8 +31,8 @@ platform :ios do
   # #####################################################
   # # Load App Store Connect API Key for authentication #
   # #####################################################
-  desc "Load ASC API Key information to use in subsequent lanes"
-  lane :load_asc_api_key do
+  #desc "Load ASC API Key information to use in subsequent lanes"
+  def api_key_load
     key_id = ENV["APP_STORE_CONNECT_KEY_ID"]
     issuer_id = ENV["APP_STORE_CONNECT_ISSUER_ID"]
     key_content = ENV["APP_STORE_CONNECT_P8"]
@@ -143,7 +143,7 @@ platform :ios do
     
     get_certificates(
     development: false,
-    api_key: api_key,
+    api_key: api_key_load,
     team_id: "LB5YMG5W6W",
     generate_apple_certs: true
   )
@@ -158,7 +158,7 @@ platform :ios do
     build_app(
     scheme: "production" 
   )
-    upload_to_testflight(skip_waiting_for_build_processing: true)
+    upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
 
   #####################################################
