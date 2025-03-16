@@ -151,7 +151,6 @@ platform :ios do
   match(
   type: "adhoc",
   readonly: false, # Fetch and update profiles if necessary
-  storage_mode: "json",
   api_key: api_key, # If using App Store Connect API authentication
   keychain_name: "build.keychain",
   keychain_password: ENV["CERTIFICATE_PASSWORD"]
