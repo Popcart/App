@@ -158,138 +158,171 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
         );
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: _localUserJoined
-                ? AgoraVideoView(
-                    controller: VideoViewController(
-                      rtcEngine: _engine,
-                      canvas: const VideoCanvas(
-                        renderMode: RenderModeType.renderModeHidden,
-                        uid: 0,
+      body: PopScope(
+        canPop: false, // Prevents automatic popping
+        onPopInvokedWithResult: (didPop, i) async {
+          if (didPop) {
+            return;
+          }
+
+          // Show confirmation dialog
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Are you sure?'),
+              content: const Text('Do you want to end this livestream?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Yes'),
+                ),
+              ],
+            ),
+          );
+
+          // If user confirms, pop the screen
+          if (result != null && result && context.mounted) {
+            context.pop();
+          }
+        },
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: _localUserJoined
+                  ? AgoraVideoView(
+                      controller: VideoViewController(
+                        rtcEngine: _engine,
+                        canvas: const VideoCanvas(
+                          renderMode: RenderModeType.renderModeHidden,
+                          uid: 0,
+                        ),
                       ),
-                    ),
-                  )
-                : const CupertinoActivityIndicator(),
-          ),
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppBackButton(),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 12,
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              userProfile.username,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+                    )
+                  : const CupertinoActivityIndicator(),
+            ),
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const AppBackButton(),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 12,
+                          ),
+                          const SizedBox(width: 12),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userProfile.username,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
                               ),
+                              const Text(
+                                '0 followers',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
                             ),
-                            const Text(
-                              '0 followers',
+                            decoration: BoxDecoration(
+                              color: const Color(0xfff97316),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              'Follow',
                               style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
                                 color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
                           ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xfff97316),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'Follow',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xff4B4444)
-                                    .withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    color: Colors.white,
-                                    size: 12,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    userJoined.toString(),
-                                    style: const TextStyle(
+                          const Spacer(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff4B4444)
+                                      .withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.remove_red_eye_outlined,
                                       color: Colors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
+                                      size: 12,
                                     ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffcc0000),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: const Text(
-                                      'Live',
-                                      style: TextStyle(
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      userJoined.toString(),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 4),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xffcc0000),
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      child: const Text(
+                                        'Live',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
