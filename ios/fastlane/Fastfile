@@ -151,7 +151,6 @@ platform :ios do
   get_provisioning_profile(
     adhoc: true,
     force: true,
-    readonly: true,
     api_key: api_key,
     filename: "Popcart_provision_profile2025.mobileprovision"
   )
