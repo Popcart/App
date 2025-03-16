@@ -206,7 +206,9 @@ platform :ios do
 
   lane :beta_do do
     setup_ci if ENV['CI']
-    build_app
+    build_app(
+    scheme: "production" 
+  )
     upload_to_testflight(skip_waiting_for_build_processing: true)
   end
 
