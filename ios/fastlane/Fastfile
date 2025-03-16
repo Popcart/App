@@ -143,8 +143,7 @@ platform :ios do
     get_certificates(
     development: false,
     username: "odiadavid2@gmail.com",
-    api_key: api_key,
-    platform: ios
+    api_key: api_key
   )
 
   get_provisioning_profile(
