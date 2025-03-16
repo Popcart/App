@@ -18,15 +18,15 @@ jobs:
           channel: 'stable'
           flutter-version: '3.29.1'
 
-      - name: Install dependencies
-        run: |
-          flutter clean
-          rm -rf ios/Pods ios/Podfile.lock
-          flutter pub get
-          cd ios
-          pod deintegrate
-          pod cache clean --all
-          pod install --verbose
+      # - name: Install dependencies
+      #   run: |
+      #     flutter clean
+      #     rm -rf ios/Pods ios/Podfile.lock
+      #     flutter pub get
+      #     cd ios
+      #     pod deintegrate
+      #     pod cache clean --all
+      #     pod install --verbose
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1

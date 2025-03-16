@@ -137,25 +137,15 @@ platform :ios do
 
 
   lane :setup_flutter do
-    # Change to the parent directory (Flutter root) from ios/
-    Dir.chdir("..") do
-      # Clean Flutter build artifacts
-      sh "flutter clean"
-      
-      # Fetch Flutter dependencies
-      sh "flutter pub get"
-      
-      # Change to ios/ directory for Pod commands
-      Dir.chdir("ios") do
-        # Clean Pods (remove Pods directory and lockfile if needed)
-        sh "rm -rf Pods" # Equivalent to a "clean" step
-        sh "pod cache clean --all" # Optional: clears Pod cache
-        
-        # Install Pods based on Podfile
-        sh "pod install --verbose"
-      end
-    end
+  # Change to the parent directory (Flutter root) from ios/
+  Dir.chdir("..") do
+    # Clean Flutter build artifacts
+    sh "flutter clean"
+    
+    # Fetch Flutter dependencies
+    sh "flutter pub get"
   end
+end
 
   #####################################################
   # Build the iOS App for Release                     #
