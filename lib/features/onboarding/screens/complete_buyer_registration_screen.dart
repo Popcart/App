@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:popcart/app/app.module.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/animated_widgets.dart';
@@ -112,88 +112,105 @@ class _CompleteBuyerRegistrationScreenState
     context.read<OnboardingCubit>()
       ..firstName = _firstNameController.text
       ..lastName = _lastNameController.text
-      ..email = _emailController.text;
-    context.pushNamed(AppPath.auth.buyerSignup.chooseUsername.path);
+      ..email = _emailController.text
+      ..verifyEmail();
+    // context.pushNamed(AppPath.auth.buyerSignup.chooseUsername.path);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppBackButton(),
-                const SizedBox(height: 32),
-                SlideTransition(
-                  position: _firstSlideAnimation,
-                  child: Text(
-                    l10n.your_details,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.white,
+    final cubit = context.watch<OnboardingCubit>();
+    return BlocListener<OnboardingCubit, OnboardingState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          verifyEmailFailure: (message) => context.showError(message),
+          verifyEmailSuccess: () =>
+              context.pushNamed(AppPath.auth.buyerSignup.chooseUsername.path),
+        );
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AppBackButton(),
+                  const SizedBox(height: 32),
+                  SlideTransition(
+                    position: _firstSlideAnimation,
+                    child: Text(
+                      l10n.your_details,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                SlideTransition(
-                  position: _secondSlideAnimation,
-                  child: Text(
-                    l10n.your_details_sub,
-                    style: const TextStyle(color: AppColors.white),
+                  const SizedBox(height: 8),
+                  SlideTransition(
+                    position: _secondSlideAnimation,
+                    child: Text(
+                      l10n.your_details_sub,
+                      style: const TextStyle(color: AppColors.white),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 24),
-                SlideTransition(
-                  position: _thirdSlideAnimation,
-                  child: CustomTextFormField(
-                    focusNode: _focusNode,
-                    controller: _firstNameController,
-                    hintText: 'First Name',
-                    validator: ValidationBuilder().required().build(),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.name,
-                    textCapitalization: TextCapitalization.words,
+                  const SizedBox(height: 24),
+                  SlideTransition(
+                    position: _thirdSlideAnimation,
+                    child: CustomTextFormField(
+                      focusNode: _focusNode,
+                      controller: _firstNameController,
+                      hintText: 'First Name',
+                      validator: ValidationBuilder().required().build(),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                SlideTransition(
-                  position: _fourthSlideAnimation,
-                  child: CustomTextFormField(
-                    controller: _lastNameController,
-                    hintText: 'Last Name',
-                    validator: ValidationBuilder().required().build(),
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.name,
-                    textCapitalization: TextCapitalization.words,
+                  const SizedBox(height: 16),
+                  SlideTransition(
+                    position: _fourthSlideAnimation,
+                    child: CustomTextFormField(
+                      controller: _lastNameController,
+                      hintText: 'Last Name',
+                      validator: ValidationBuilder().required().build(),
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                SlideTransition(
-                  position: _fifthSlideAnimation,
-                  child: CustomTextFormField(
-                    controller: _emailController,
-                    hintText: 'Email',
-                    validator: ValidationBuilder()
-                        .required()
-                        .add(dotValidator)
-                        .build(),
-                    textInputAction: TextInputAction.done,
-                    keyboardType: TextInputType.emailAddress,
+                  const SizedBox(height: 16),
+                  SlideTransition(
+                    position: _fifthSlideAnimation,
+                    child: CustomTextFormField(
+                      controller: _emailController,
+                      hintText: 'Email',
+                      validator: ValidationBuilder()
+                          .required()
+                          .add(dotValidator)
+                          .build(),
+                      textInputAction: TextInputAction.done,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
                   ),
-                ),
-                const Spacer(),
-                BouncingEffect(
-                  onTap: _onProceed,
-                  child: CustomElevatedButton(text: l10n.next),
-                ),
-              ],
+                  const Spacer(),
+                  BouncingEffect(
+                    onTap: _onProceed,
+                    child: CustomElevatedButton(
+                      text: l10n.next,
+                      loading: cubit.state.maybeWhen(
+                        loading: () => true,
+                        orElse: () => false,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

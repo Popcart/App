@@ -13,6 +13,7 @@ sealed class UserRepository {
     required File idDocument,
   });
   Future<ApiResponse<UserModel>> getUserProfile();
+ 
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -53,4 +54,6 @@ class UserRepositoryImpl implements UserRepository {
       responseMapper: UserModel.fromJson,
     );
   }
+
+
 }
