@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_model.g.dart';
 
-
 @JsonEnum()
 enum UserType {
   @JsonValue('buyer')
@@ -29,6 +28,23 @@ class UserModel {
     required this.v,
     required this.businessProfile,
   });
+
+  factory UserModel.withId(String id) => UserModel(
+        id: id,
+        firstName: '',
+        lastName: '',
+        username: '',
+        phone: '',
+        email: '',
+        userType: UserType.buyer,
+        active: false,
+        phoneVerified: false,
+        emailVerified: false,
+        createdAt: '',
+        updatedAt: '',
+        v: 0,
+        businessProfile: BusinessProfile.empty(),
+      );
 
   factory UserModel.empty() => UserModel(
         id: '',
@@ -83,23 +99,6 @@ class UserModel {
   String toString() {
     return '''UserModel(id: $id, firstName: $firstName, lastName: $lastName, username: $username, phone: $phone, email: $email, userType: $userType, active: $active, phoneVerified: $phoneVerified, emailVerified: $emailVerified, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, businessProfile: $businessProfile)''';
   }
-
-  factory UserModel.withId (String id) => UserModel(
-    id: id,
-    firstName: '',
-    lastName: '',
-    username: '',
-    phone: '',
-    email: '',
-    userType: UserType.buyer,
-    active: false,
-    phoneVerified: false,
-    emailVerified: false,
-    createdAt: '',
-    updatedAt: '',
-    v: 0,
-    businessProfile: BusinessProfile.empty(),
-  );
 }
 
 @JsonSerializable(createToJson: false)

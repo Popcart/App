@@ -1,6 +1,8 @@
 import 'dart:developer';
+import 'dart:math' hide log;
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,6 +16,7 @@ import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class BuyerLivestreamScreen extends StatefulWidget {
   const BuyerLivestreamScreen({
@@ -136,7 +139,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
   }
 
   Future<void> showProductModal() async {
-    await showModalBottomSheet<void>(
+    final product = await showModalBottomSheet<Product>(
       context: context,
       isScrollControlled: true,
       builder: (_) => Container(
@@ -154,6 +157,11 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         ),
       ),
     );
+
+    if (product != null) {
+      // print(product);
+      // context.go('/product/${product.id}');
+    }
   }
 
   @override
@@ -448,6 +456,7 @@ class ProductModal extends HookWidget {
             },
             children: [
               GridView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                 ),
@@ -478,12 +487,12 @@ class SingleProductWidget extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final product = useState<Product?>(null);
+    final product = useState<Product>(Product.empty());
     final fetchProduct = useCallback(() async {
       final response = await locator<SellersRepo>().getProduct(productId: id);
       response.when(
         success: (data) {
-          product.value = data?.data;
+          product.value = data?.data ?? Product.empty();
         },
         error: (error) {},
       );
@@ -495,6 +504,38 @@ class SingleProductWidget extends HookWidget {
       },
       [],
     );
-    return const FlutterLogo();
+    return GestureDetector(
+      onTap: () {
+        context.pop(product.value);
+      },
+      child: Skeletonizer(
+        enabled: product.value == Product.empty(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: ExtendedImage.network(
+                product.value.images.isEmpty
+                    ? Random.secure().toString()
+                    : product.value.images.first,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 140,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              product.value.name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

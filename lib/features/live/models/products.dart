@@ -26,7 +26,7 @@ class Product {
         id: '',
         name: '',
         seller: UserModel.empty(),
-        category: '',
+        category: Category.empty(),
         price: 0,
         description: '',
         brand: '',
@@ -46,11 +46,12 @@ class Product {
   final String id;
   @JsonKey(name: 'name', defaultValue: '')
   final String name;
-   @SellerConverter()
+  @SellerConverter()
   @JsonKey(name: 'seller', defaultValue: UserModel.empty)
   final UserModel seller;
-  @JsonKey(name: 'category', defaultValue: '')
-  final String category;
+  @CategoryConverter()
+  @JsonKey(name: 'category', defaultValue: Category.empty)
+  final Category category;
   @JsonKey(name: 'price', defaultValue: 0)
   final double price;
   @JsonKey(name: 'description', defaultValue: '')
@@ -220,5 +221,74 @@ class Stream {
   @override
   String toString() {
     return '''Stream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
+  }
+}
+
+@JsonSerializable(createToJson: false)
+class Category {
+  Category({
+    required this.id,
+    required this.name,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.v,
+  });
+
+  factory Category.withId(String id) => Category(
+        id: id,
+        name: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        v: 0,
+      );
+
+  factory Category.empty() => Category(
+        id: '',
+        name: '',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        v: 0,
+      );
+
+  factory Category.fromJson(Map<String, dynamic> json) =>
+      _$CategoryFromJson(json);
+  @JsonKey(name: '_id', defaultValue: '')
+  final String id;
+  @JsonKey(name: 'name', defaultValue: '')
+  final String name;
+  @JsonKey(name: 'createdAt', defaultValue: DateTime.now)
+  final DateTime createdAt;
+  @JsonKey(name: 'updatedAt', defaultValue: DateTime.now)
+  final DateTime updatedAt;
+  @JsonKey(name: '__v', defaultValue: 0)
+  final int v;
+
+  @override
+  String toString() {
+    return '''Category(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt, v: $v)''';
+  }
+}
+
+class CategoryConverter implements JsonConverter<Category, dynamic> {
+  const CategoryConverter();
+
+  @override
+  Category fromJson(dynamic json) {
+    // If it's a string (just the ID)
+    if (json is String) {
+      return Category.withId(json);
+    }
+    // If it's a Map/object with category details
+    else if (json is Map<String, dynamic>) {
+      return Category.fromJson(json);
+    }
+    // Default case
+    return Category.empty();
+  }
+
+  @override
+  dynamic toJson(Category category) {
+    // Since you're using createToJson: false, this isn't strictly necessary
+    return category.id;
   }
 }
