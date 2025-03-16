@@ -144,7 +144,7 @@ platform :ios do
     get_certificates(
     development: false,
     api_key: api_key,
-    team_id: "LB5YMG5W6W"
+    team_id: "LB5YMG5W6W",
     generate_apple_certs: true
   )
 
