@@ -140,11 +140,16 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     setup_ci if ENV['CI']
-    get_certificates(
-    development: false,
-    keychain_password: ENV['FASTLANE_PASSWORD'],
-    username: ENV['APPLE_ID_USERNAME'],
-    api_key: api_key,
+  #   get_certificates(
+  #   development: false,
+  #   keychain_password: ENV['FASTLANE_PASSWORD'],
+  #   username: ENV['APPLE_ID_USERNAME'],
+  #   api_key: api_key,
+  # )
+  match(
+    type: "appstore",
+    readonly: true, 
+    keychain_password: ENV['FASTLANE_PASSWORD']
   )
 
   get_provisioning_profile(
