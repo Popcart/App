@@ -148,12 +148,22 @@ platform :ios do
     generate_apple_certs: true
   )
 
-  get_provisioning_profile(
-    adhoc: true,
-    force: true,
-    api_key: api_key,
-    filename: "Popcart_provision_profile2025.mobileprovision"
-  )
+  match(
+  type: "adhoc",
+  readonly: false, # Fetch and update profiles if necessary
+  storage_mode: "json",
+  api_key: api_key, # If using App Store Connect API authentication
+  keychain_name: "build.keychain",
+  keychain_password: ENV["CERTIFICATE_PASSWORD"]
+)
+
+
+  # get_provisioning_profile(
+  #   adhoc: true,
+  #   force: true,
+  #   api_key: api_key,
+  #   filename: "Popcart_provision_profile2025.mobileprovision"
+  # )
     build_app(
     scheme: "production" 
   )
