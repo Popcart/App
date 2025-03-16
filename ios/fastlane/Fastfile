@@ -59,7 +59,7 @@ platform :ios do
     generate_apple_certs: true
   )
 
- git_url = "https://ayemereodia2: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@github.com/ayemereodia2/codesigning.git"
+ git_url = "https://#{ENV['MATCH_GIT_USERNAME']}:#{ENV['MATCH_GIT_TOKEN']}@github.com/ayemereodia2/codesigning.git"
 
 match(
     type: "appstore",
