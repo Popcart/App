@@ -142,7 +142,7 @@ platform :ios do
     setup_ci if ENV['CI']
     get_certificates(
     development: false,
-    username: "odiadavid2@gmail.com",
+    username: ENV['APPLE_ID_USERNAME'],
     api_key: api_key
   )
 
