@@ -149,58 +149,66 @@ platform :ios do
   #####################################################
   # Build the iOS App for Release                     #
   #####################################################
-  desc "Build the iOS app for release"
-  lane :build_release do |options|
-    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
-    UI.user_error!("App identifier not found in Appfile") unless app_identifier
+  # desc "Build the iOS app for release"
+  # lane :build_release do |options|
+  #   app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+  #   UI.user_error!("App identifier not found in Appfile") unless app_identifier
 
-    profile_name = "Popcart provision profile MarchX" # provisioning profile name
-    output_name = "Popcart-iOS" # Name of the generated .ipa file
-    export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
+  #   profile_name = "Popcart provision profile MarchX" # provisioning profile name
+  #   output_name = "Popcart-iOS" # Name of the generated .ipa file
+  #   export_method = "app-store" # Options: app-store, ad-hoc, enterprise, development
 
     
-    # Ensure Flutter and dependencies are set up
+  #   # Ensure Flutter and dependencies are set up
 
-    # Disable automatic signing to ensure correct code signing identity
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      targets: ["Runner"], # Update if multiple targets
-      code_sign_identity: "Apple Distribution", #  certificate
-      bundle_identifier: app_identifier,
-      profile_name: profile_name,
-      build_configurations: ["Release"]
-    )
+  #   # Disable automatic signing to ensure correct code signing identity
+  #   update_code_signing_settings(
+  #     use_automatic_signing: false,
+  #     targets: ["Runner"], # Update if multiple targets
+  #     code_sign_identity: "Apple Distribution", #  certificate
+  #     bundle_identifier: app_identifier,
+  #     profile_name: profile_name,
+  #     build_configurations: ["Release"]
+  #   )
 
-    # Build the app using gym
-    gym(
-      scheme: "production", # Update with your scheme name
-      output_name: output_name,
-      configuration: "Release-production",
-      export_options: {
-        method: export_method,
-        provisioningProfiles: {
-          app_identifier => profile_name
-        }
-      }
-    )
-  end
+  #   # Build the app using gym
+  #   gym(
+  #     scheme: "production", # Update with your scheme name
+  #     output_name: output_name,
+  #     configuration: "Release-production",
+  #     export_options: {
+  #       method: export_method,
+  #       provisioningProfiles: {
+  #         app_identifier => profile_name
+  #       }
+  #     }
+  #   )
+  # end
 
-  #####################################################
-  # Upload to TestFlight/App Store Connect            #
-  #####################################################
-  desc "Upload to TestFlight / App Store Connect"
-  lane :upload_release do
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    UI.important("Using hardcoded API key. Move to environment variable for security.")
+  # #####################################################
+  # # Upload to TestFlight/App Store Connect            #
+  # #####################################################
+  # desc "Upload to TestFlight / App Store Connect"
+  # lane :upload_release do
+  #   api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+  #   UI.important("Using hardcoded API key. Move to environment variable for security.")
 
-    deliver(
-      api_key: api_key,
-      skip_screenshots: true,
-      skip_metadata: true,
-      skip_app_version_update: true,
-      force: true, # Skips HTML preview verification (useful for CI)
-      run_precheck_before_submit: false # Not supported via ASC API yet
-    )
+  #   deliver(
+  #     api_key: api_key,
+  #     skip_screenshots: true,
+  #     skip_metadata: true,
+  #     skip_app_version_update: true,
+  #     force: true, # Skips HTML preview verification (useful for CI)
+  #     run_precheck_before_submit: false # Not supported via ASC API yet
+  #   )
+  # end
+
+
+  lane :beta_do do
+    setup_ci if ENV['CI']
+    match(type: 'appstore')
+    build_app
+    upload_to_testflight(skip_waiting_for_build_processing: true)
   end
 
   #####################################################
@@ -212,8 +220,9 @@ platform :ios do
     prepare_signing
     #setup_flutter
     fetch_and_increment_build_number
-    build_release
-    upload_release
+    beta_do
+    #build_release
+    #upload_release
   end
 end
 
