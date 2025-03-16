@@ -12,8 +12,12 @@ sealed class UserRepository {
     required File utilityBillDocument,
     required File idDocument,
   });
+  Future<ApiResponse<void>> submitIndividualBusinessInformation({
+    required String bvn,
+    String? businessEmail,
+    String? businessName,
+  });
   Future<ApiResponse<UserModel>> getUserProfile();
- 
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -55,5 +59,20 @@ class UserRepositoryImpl implements UserRepository {
     );
   }
 
-
+  @override
+  Future<ApiResponse<void>> submitIndividualBusinessInformation({
+    required String bvn,
+    String? businessEmail,
+    String? businessName,
+  }) {
+    return _apiHelper.request<void>(
+      path: 'edit-business-profile',
+      method: MethodType.patch,
+      payload: {
+        'businessName': businessName,
+        'bvn': bvn,
+        'businessAddress': businessEmail,
+      },
+    );
+  }
 }

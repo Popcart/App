@@ -238,4 +238,29 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       },
     );
   }
+
+  Future<void> submitIndividualBusinessInformation({
+    required String bvn,
+    String? businessEmail,
+    String? businessName,
+  }) async {
+    emit(const OnboardingState.loading());
+    final response = await _userRepository.submitIndividualBusinessInformation(
+      bvn: bvn,
+      businessEmail: businessEmail,
+      businessName: businessName,
+    );
+    response.when(
+      success: (data) {
+        emit(const OnboardingState.onboardingSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.onboardingFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
 }
