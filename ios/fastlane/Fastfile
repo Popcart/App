@@ -143,8 +143,8 @@ platform :ios do
     get_certificates(
     development: false,
     username: ENV['APPLE_ID_USERNAME'],
+    keychain_password: ENV['FASTLANE_PASSWORD'],
     api_key: api_key,
-    keychain_password: ENV['FASTLANE_PASSWORD']
   )
 
   get_provisioning_profile(
