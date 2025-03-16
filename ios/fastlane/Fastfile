@@ -62,7 +62,7 @@ platform :ios do
 
 match(
     type: "appstore",
-    git_url: "https://ayemereodia2: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@github.com/ayemereodia2/codesigning.git", # Or SSH URL
+    git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
     app_identifier: "com.popcart.africa.vax",
     team_id: "LB5YMG5W6W",
     api_key: api_key_load,
