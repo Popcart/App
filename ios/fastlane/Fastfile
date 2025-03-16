@@ -148,13 +148,14 @@ platform :ios do
     generate_apple_certs: true
   )
 
-  match(
-  type: "adhoc",
-  readonly: false, # Fetch and update profiles if necessary
-  api_key: api_key, # If using App Store Connect API authentication
-  keychain_name: "build.keychain",
-  keychain_password: ENV["CERTIFICATE_PASSWORD"]
-)
+match(
+    type: "appstore",
+    git_url: "https://github.com/ayemereodia2/codesigning.git", # Or SSH URL
+    app_identifier: "com.popcart.africa.vax",
+    team_id: "LB5YMG5W6W",
+    api_key: api_key_load,
+    readonly: true # Use readonly in CI to avoid modifications
+  )
 
 
   # get_provisioning_profile(
