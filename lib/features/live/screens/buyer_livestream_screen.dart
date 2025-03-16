@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -465,14 +466,118 @@ class ProductModal extends HookWidget {
                   id: products[index],
                 ),
               ),
-              GridView.count(
-                crossAxisCount: 2,
-              ),
+              AllSellerProducts(id: sellerId),
             ],
           ),
         ),
         // Spacer(),
       ],
+    );
+  }
+}
+
+class AllSellerProducts extends StatefulWidget {
+  const AllSellerProducts({
+    required this.id,
+    super.key,
+  });
+
+  final String id;
+
+  @override
+  State<AllSellerProducts> createState() => _AllSellerProductsState();
+}
+
+class _AllSellerProductsState extends State<AllSellerProducts> {
+  late final PagingController<int, Product> _pagingController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController = PagingController(firstPageKey: 1);
+    _pagingController.addPageRequestListener(fetchPage);
+  }
+
+  Future<void> fetchPage(int pageKey) async {
+    final items = await locator<SellersRepo>().getProducts(
+      userId: widget.id,
+      page: pageKey,
+      limit: 10,
+    );
+    items.when(
+      success: (data) {
+        final isLastPage = data?.data?.page == data?.data?.totalPages;
+        if (isLastPage) {
+          _pagingController.appendLastPage(data?.data?.results ?? <Product>[]);
+        } else {
+          final nextPageKey = pageKey + 1;
+          _pagingController.appendPage(
+            data?.data?.results ?? <Product>[],
+            nextPageKey,
+          );
+        }
+      },
+      error: (error) {
+        _pagingController.error = error;
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PagedGridView(
+      pagingController: _pagingController,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      builderDelegate: PagedChildBuilderDelegate<Product>(
+        itemBuilder: (context, item, index) => GestureDetector(
+          onTap: () {
+            context.pop(item);
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: ExtendedImage.network(
+                  item.images.first,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 120,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                item.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+              // const SizedBox(height: 8),
+              Text(
+                item.price.toCurrency(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        noItemsFoundIndicatorBuilder: (context) => const Center(
+          child: Text(
+            'No items found',
+            style: TextStyle(fontSize: 24),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -521,12 +626,21 @@ class SingleProductWidget extends HookWidget {
                     : product.value.images.first,
                 fit: BoxFit.cover,
                 width: double.infinity,
-                height: 140,
+                height: 120,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               product.value.name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
+            ),
+            // const SizedBox(height: 8),
+            Text(
+              product.value.price.toCurrency(),
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,

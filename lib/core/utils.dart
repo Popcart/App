@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
+import 'package:intl/intl.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:toastification/toastification.dart';
 
@@ -150,5 +151,11 @@ class PhonePrefixFormatter extends TextInputFormatter {
     }
 
     return newValue;
+  }
+}
+
+extension NumberExtension on num {
+  String toCurrency() {
+    return NumberFormat.currency(locale: 'en_NG', symbol: '₦').format(this);
   }
 }
