@@ -57,21 +57,22 @@ match(
     readonly: true # Use readonly in CI to avoid modifications
   )
 
+  # Step 1: Build Flutter app with flavor and target
+  Dir.chdir("..") do # Move to Flutter root directory
+    sh("flutter build ios --release --flavor production --target lib/app/main.prod.dart --no-codesign")
+  end
+
+  # Step 2: Archive and export with build_app
   build_app(
-  scheme: "Runner", # Default Flutter scheme
-  export_options: {
-    method: "app-store", # or "ad-hoc", "enterprise" based on your method
-    provisioningProfiles: {
-      "com.popcart.africa.vax" => "com.popcart.africa.vax AppStore" # Match profile exactly
+    scheme: "Runner",
+    workspace: "ios/Runner.xcworkspace", # Specify workspace for Flutter
+    export_options: {
+      method: "app-store",
+      provisioningProfiles: {
+        "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+      }
     }
-  },
-  build_arguments: [
-    "--flavor", "production",
-    "--target", "lib/app/main.prod.dart" # Match FLUTTER_TARGET from .yml
-  ]
-)
-
-
+  )
 
     upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
