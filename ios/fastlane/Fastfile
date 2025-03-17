@@ -16,82 +16,170 @@
 default_platform(:ios)
 
 platform :ios do
-  # Load App Store Connect API Key once
-  before_all do
-    @api_key = app_store_connect_api_key(
-      key_id: ENV["APP_STORE_CONNECT_KEY_ID"],
-      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
-      key_content: ENV["APP_STORE_CONNECT_P8"],
+  # #####################################################
+  # # Load App Store Connect API Key for authentication #
+  # #####################################################
+  #desc "Load ASC API Key information to use in subsequent lanes"
+  def api_key_load
+    key_id = ENV["APP_STORE_CONNECT_KEY_ID"]
+    issuer_id = ENV["APP_STORE_CONNECT_ISSUER_ID"]
+    key_content = ENV["APP_STORE_CONNECT_P8"]
+
+    app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_content: key_content,
       is_key_content_base64: true,
-      in_house: false
+      in_house: false # Set to true if using an in-house (enterprise) account
     )
   end
 
-  lane :prepare_signing do
-    # CI setup
-    if ENV['CI']
-      setup_ci
-
-      # Create and unlock a custom keychain
-      keychain_name = "build.keychain"
-      delete_keychain(name: keychain_name) if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
-      create_keychain(
-        name: keychain_name,
-        password: "",
-        default_keychain: true,
-        unlock: true,
-        timeout: 3600
-      )
-
-      # Import certificate from CI secrets (if provided)
-      if ENV["CERTIFICATE_BASE64"]
-        sh("echo '#{ENV["CERTIFICATE_BASE64"]}' | base64 --decode > certificate.p12")
-        import_certificate(
-          certificate_path: "certificate.p12",
-          certificate_password: ENV["CERTIFICATE_PASSWORD"],
-          keychain_name: keychain_name
-        )
-      end
-    end
-
-    # Match to sync certificates and profiles
-    match(
-      type: "appstore",
-      git_url: "git@github.com:ayemereodia2/codesigning.git",
-      app_identifier: "com.popcart.africa.vax",
-      team_id: "LB5YMG5W6W",
-      api_key: @api_key,
-      readonly: ENV['CI'], # Readonly in CI, writable locally
-      force: !ENV['CI'],  # Force regeneration locally to sync
-      verbose: true
-    )
-  end
 
   lane :beta_do do
-    prepare_signing
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-    build_app(
-      scheme: "Runner", # Default Flutter scheme
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax"
-        }
-      },
-      build_arguments: {
-        "--flavor" => "production",
-        "--target" => "lib/app/main.prod.dart" # Match FLUTTER_TARGET from .yml
-      }
-    )
+    setup_ci if ENV['CI']
     
-    upload_to_testflight(
-      api_key: @api_key,
-      skip_waiting_for_build_processing: true
-    )
+    get_certificates(
+    development: false,
+    api_key: api_key_load,
+    team_id: "LB5YMG5W6W",
+    generate_apple_certs: true
+  )
+
+
+match(
+    type: "appstore",
+    git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
+    app_identifier: "com.popcart.africa.vax",
+    team_id: "LB5YMG5W6W",
+    api_key: api_key_load,
+    readonly: true # Use readonly in CI to avoid modifications
+  )
+
+  build_app(
+  scheme: "Runner", # Default Flutter scheme
+  export_options: {
+    method: "app-store", # or "ad-hoc", "enterprise" based on your method
+    provisioningProfiles: {
+      "com.popcart.africa.vax" => "com.popcart.africa.vax AppStore" # Match profile exactly
+    }
+  },
+  build_arguments: [
+    "--flavor", "production",
+    "--target", "lib/app/main.prod.dart" # Match FLUTTER_TARGET from .yml
+  ]
+)
+
+
+
+    upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
 
+  #####################################################
+  # Full Build and Upload Workflow                    #
+  #####################################################
   desc "Build and upload to TestFlight"
   lane :ios_build_upload_testflight do
     beta_do
   end
 end
+
+
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+# default_platform(:ios)
+
+# platform :ios do
+#   # Load App Store Connect API Key once
+#   before_all do
+#     @api_key = app_store_connect_api_key(
+#       key_id: ENV["APP_STORE_CONNECT_KEY_ID"],
+#       issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+#       key_content: ENV["APP_STORE_CONNECT_P8"],
+#       is_key_content_base64: true,
+#       in_house: false
+#     )
+#   end
+
+#   lane :prepare_signing do
+#     # CI setup
+#     if ENV['CI']
+#       setup_ci
+
+#       # Create and unlock a custom keychain
+#       keychain_name = "build.keychain"
+#       delete_keychain(name: keychain_name) if File.exist?(File.expand_path("~/Library/Keychains/#{keychain_name}-db"))
+#       create_keychain(
+#         name: keychain_name,
+#         password: "",
+#         default_keychain: true,
+#         unlock: true,
+#         timeout: 3600
+#       )
+
+#       # Import certificate from CI secrets (if provided)
+#       if ENV["CERTIFICATE_BASE64"]
+#         sh("echo '#{ENV["CERTIFICATE_BASE64"]}' | base64 --decode > certificate.p12")
+#         import_certificate(
+#           certificate_path: "certificate.p12",
+#           certificate_password: ENV["CERTIFICATE_PASSWORD"],
+#           keychain_name: keychain_name
+#         )
+#       end
+#     end
+
+#     # Match to sync certificates and profiles
+#     match(
+#       type: "appstore",
+#       git_url: "git@github.com:ayemereodia2/codesigning.git",
+#       app_identifier: "com.popcart.africa.vax",
+#       team_id: "LB5YMG5W6W",
+#       api_key: @api_key,
+#       readonly: ENV['CI'], # Readonly in CI, writable locally
+#       force: !ENV['CI'],  # Force regeneration locally to sync
+#       verbose: true
+#     )
+#   end
+
+#   lane :beta_do do
+#     prepare_signing
+
+#     build_app(
+#       scheme: "Runner", # Default Flutter scheme
+#       export_options: {
+#         method: "app-store",
+#         provisioningProfiles: {
+#           "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax"
+#         }
+#       },
+#       build_arguments: {
+#         "--flavor" => "production",
+#         "--target" => "lib/app/main.prod.dart" # Match FLUTTER_TARGET from .yml
+#       }
+#     )
+    
+#     upload_to_testflight(
+#       api_key: @api_key,
+#       skip_waiting_for_build_processing: true
+#     )
+#   end
+
+#   desc "Build and upload to TestFlight"
+#   lane :ios_build_upload_testflight do
+#     beta_do
+#   end
+# end
