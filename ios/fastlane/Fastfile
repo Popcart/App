@@ -71,8 +71,19 @@ platform :ios do
     prepare_signing
 
     build_app(
-      scheme: "production"
+      scheme: "Runner", # Default Flutter scheme
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax"
+        }
+      },
+      build_arguments: {
+        "--flavor" => "production",
+        "--target" => "lib/app/main.prod.dart" # Match FLUTTER_TARGET from .yml
+      }
     )
+    
     upload_to_testflight(
       api_key: @api_key,
       skip_waiting_for_build_processing: true
