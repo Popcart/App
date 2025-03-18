@@ -8,6 +8,9 @@ sealed class SellersRepo {
     required int page,
     required int limit,
   });
+  Future<ApiResponse<Product>> getProduct({
+    required String productId,
+  });
 }
 
 class SellersRepoImpl implements SellersRepo {
@@ -35,6 +38,15 @@ class SellersRepoImpl implements SellersRepo {
           'products',
         );
       },
+    );
+  }
+
+  @override
+  Future<ApiResponse<Product>> getProduct({required String productId}) {
+    return _apiHelper.request<Product>(
+      path: 'products/$productId',
+      method: MethodType.get,
+      responseMapper: Product.fromJson,
     );
   }
 }

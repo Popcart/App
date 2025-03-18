@@ -19,6 +19,13 @@ sealed class OnboardingRepo {
     required String otp,
     required String phone,
   });
+
+   Future<ApiResponse<void>> verifyEmail({
+    required String email,
+  });
+  Future<ApiResponse<void>> verifyUsername({
+    required String username,
+  });
 }
 
 class OnboardingRepoImpl implements OnboardingRepo {
@@ -75,6 +82,28 @@ class OnboardingRepoImpl implements OnboardingRepo {
         'phone': phone,
       },
      
+    );
+  }
+
+    @override
+  Future<ApiResponse<void>> verifyEmail({required String email}) {
+    return _apiHelper.request<void>(
+      path: 'validate-signup-details',
+      method: MethodType.post,
+      payload: {
+        'email': email,
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> verifyUsername({required String username}) {
+    return _apiHelper.request<void>(
+      path: 'validate-signup-details',
+      method: MethodType.post,
+      payload: {
+        'username': username,
+      },
     );
   }
 }
