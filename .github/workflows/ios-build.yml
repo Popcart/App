@@ -51,7 +51,6 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-
       - name: Install provisioning profile
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
