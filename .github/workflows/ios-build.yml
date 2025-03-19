@@ -83,7 +83,7 @@ jobs:
         run: |
           cd ios
           bundle exec fastlane ios_build_upload_testflight
-        working-directory: ./app
+        working-directory: ./App
         env:
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
