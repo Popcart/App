@@ -59,7 +59,7 @@ match(
 
   # Step 1: Build Flutter app with flavor and target
   #Dir.chdir("..") do # Move to Flutter root directory
-    sh("flutter build ios --release --flavor production --target lib/app/main.prod.dart --no-codesign")
+    #sh("flutter build ios --release --flavor production --target lib/app/main.prod.dart --no-codesign")
   #end
 
   # Step 2: Archive and export with build_app
