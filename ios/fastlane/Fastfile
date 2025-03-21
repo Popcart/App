@@ -64,8 +64,8 @@ match(
 
   # Step 2: Archive and export with build_app
   build_app(
-    scheme: "Runner",
-    workspace: "/Users/runner/work/App/App/ios/Runner.xcworkspace", # Specify workspace for Flutter
+    scheme: "production",
+    workspace: "./Runner.xcworkspace", # Specify workspace for Flutter
     export_options: {
       method: "app-store",
       provisioningProfiles: {
