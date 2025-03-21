@@ -46,14 +46,14 @@ platform :ios do
       generate_apple_certs: true
     )
 
-    # match(
-    #   type: "appstore",
-    #   git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
-    #   app_identifier: "com.popcart.africa.vax",
-    #   team_id: "LB5YMG5W6W",
-    #   api_key: api_key_load,
-    #   readonly: true # Use readonly in CI to avoid modifications
-    # )  
+    match(
+      type: "appstore",
+      git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
+      app_identifier: "com.popcart.africa.vax",
+      team_id: "LB5YMG5W6W",
+      api_key: api_key_load,
+      readonly: true # Use readonly in CI to avoid modifications
+    )  
 
     # Step 2: Archive and export with build_app
     build_app(
