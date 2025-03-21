@@ -63,7 +63,6 @@ platform :ios do
     # Step 2: Archive and export with build_app
     build_app(
       scheme: "production",
-      skip_build_archive: true,
       workspace: "./Runner.xcworkspace", 
       archive_path: "../build/ios/archive/Runner.xcarchive",
       export_options: {
