@@ -35,32 +35,27 @@ platform :ios do
   end
 
   lane :beta_do do
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    # api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
-    setup_ci if ENV['CI']
+    # setup_ci if ENV['CI']
 
-    get_certificates(
-      development: false,
-      api_key: api_key_load,
-      team_id: "LB5YMG5W6W",
-      generate_apple_certs: true
-    )
+    # get_certificates(
+    #   development: false,
+    #   api_key: api_key_load,
+    #   team_id: "LB5YMG5W6W",
+    #   generate_apple_certs: true
+    # )
 
-    match(
-      type: "appstore",
-      git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
-      app_identifier: "com.popcart.africa.vax",
-      team_id: "LB5YMG5W6W",
-      api_key: api_key_load,
-      readonly: true # Use readonly in CI to avoid modifications
-    )
-
-    Dir.chdir("..") do # Move to root (assuming Fastfile is in ios/)
-      sh("make ipa-prod") # Build iOS app without signing
-    end
+    # match(
+    #   type: "appstore",
+    #   git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
+    #   app_identifier: "com.popcart.africa.vax",
+    #   team_id: "LB5YMG5W6W",
+    #   api_key: api_key_load,
+    #   readonly: true # Use readonly in CI to avoid modifications
+    # )  
 
     # Step 2: Archive and export with build_app
-    Dir.chdir("ios") do
     build_app(
       scheme: "production",
       workspace: "./Runner.xcworkspace", 
@@ -71,7 +66,6 @@ platform :ios do
         }
       }
     )
-    end
 
     upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
