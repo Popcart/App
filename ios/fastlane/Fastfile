@@ -55,7 +55,7 @@ platform :ios do
       readonly: true # Use readonly in CI to avoid modifications
     )
 
-
+    sh("cd ios")
     # Step 2: Archive and export with build_app
     build_app(
       scheme: "production",
