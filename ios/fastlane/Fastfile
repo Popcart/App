@@ -55,8 +55,8 @@ platform :ios do
       readonly: true # Use readonly in CI to avoid modifications
     )
 
-    sh("cd ios")
     # Step 2: Archive and export with build_app
+    Dir.chdir("ios") do
     build_app(
       scheme: "production",
       workspace: "./Runner.xcworkspace", 
@@ -67,6 +67,7 @@ platform :ios do
         }
       }
     )
+    end
 
     upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
