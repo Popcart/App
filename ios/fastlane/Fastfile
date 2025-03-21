@@ -55,6 +55,11 @@ platform :ios do
       readonly: true # Use readonly in CI to avoid modifications
     )
 
+    Dir.chdir("..") do # Move to root (assuming Fastfile is in ios/)
+      sh("flutter pub get") # Fetch dependencies
+      sh("flutter build ios --release --no-codesign") # Build iOS app without signing
+    end
+
     # Step 2: Archive and export with build_app
     Dir.chdir("ios") do
     build_app(
