@@ -56,9 +56,9 @@ platform :ios do
     )
 
     # Step 1: Build Flutter app with flavor and target
-    flutter(
-      "build ios --release --flavor production --target lib/app/main.prod.dart --no-codesign"
-    )
+    # flutter(
+    #   "build ios --release --flavor production --target lib/app/main.prod.dart --no-codesign"
+    # )
 
     # Step 2: Archive and export with build_app
     build_app(
