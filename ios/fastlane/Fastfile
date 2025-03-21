@@ -68,7 +68,7 @@ platform :ios do
       export_options: {
         method: "app-store",
         provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+          "com.popcart.africa.vax" => "Popcart provision profile MarchX" # Match profile name from codesigning.git
         }
       }
     )
@@ -86,19 +86,19 @@ platform :ios do
 
   # desc "Test lane"
   # lane :ios_test_lane do
-  #   build_app(
-  #     scheme: "production",
-  #     skip_build_archive: true,
-  #     workspace: "./Runner.xcworkspace", # Specify workspace for Flutter
-  #     archive_path: "../build/ios/archive/Runner.xcarchive",
-  #     export_options: {
+  #   # sh("make clean")
+  #   # sh("flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign")
+  #   build_app(scheme: "production",
+  #           workspace: "./Runner.xcworkspace",
+  #           include_bitcode: true,
+  #           export_options: {
   #       method: "app-store",
   #       provisioningProfiles: {
-  #         "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+  #         "com.popcart.africa.vax" => "Popcart provision profile MarchX" # Match profile name from codesigning.git
   #       }
   #     }
-  #   )
-  # end
+  #     )
+  end
 end
 
 
