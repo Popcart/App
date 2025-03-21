@@ -39,12 +39,12 @@ platform :ios do
 
     # setup_ci if ENV['CI']
 
-    # get_certificates(
-    #   development: false,
-    #   api_key: api_key_load,
-    #   team_id: "LB5YMG5W6W",
-    #   generate_apple_certs: true
-    # )
+    get_certificates(
+      development: false,
+      api_key: api_key_load,
+      team_id: "LB5YMG5W6W",
+      generate_apple_certs: true
+    )
 
     # match(
     #   type: "appstore",
