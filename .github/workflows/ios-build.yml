@@ -34,11 +34,13 @@ jobs:
           ruby-version: '3.4.2'
           bundler-cache: true
 
+      - name: Select Xcode Version
+        run: sudo xcode-select --switch /Applications/Xcode_15.3.app
+
       - name: Install Build Tools
         run: |
-          xcode-select --install || true
-          brew install build-essential || true
-
+            xcode-select --install || true
+            brew install build-essential || true
       
       - name: Decode Certificates and Profiles
         run: |
