@@ -90,13 +90,12 @@ jobs:
           security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
 
 
-      
       - name: Run Flutter Build and Fastlane Upload
         run: |
           cd ios
           bundle exec fastlane ios_match --verbose
           cd ..
-          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
+          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
           cd ios
           bundle exec fastlane ios_build_upload_testflight
         env:
