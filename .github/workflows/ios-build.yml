@@ -81,39 +81,26 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
 
-
-      - name: Build Flutter IPA
-        run: |
-          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
-          working-directory: ./app
-
-      # Archive the IPA
-      - name: Upload IPA
-        uses: actions/upload-artifact@v4
-        with:
-          name: flutter-ipa
-          path: build/ios/ipa/*.ipa
-
       
-      # - name: Build & upload iOS binary
-      #   run: |
-      #     cd ios
-      #     bundle exec fastlane ios_build_upload_testflight
-      #   env:
-      #     APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-      #     APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
-      #     APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-      #     APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-      #     APP_STORE_CONNECT_P8: ${{ secrets.APP_STORE_CONNECT_P8 }}
-      #     CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
-      #     CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
-      #     KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-      #     MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-      #     FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-      #     MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
-      #     MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
-      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-      #     FLUTTER_TARGET: "lib/app/main.prod.dart"
+      - name: Build & upload iOS binary
+        run: |
+          cd ios
+          bundle exec fastlane ios_build_upload_testflight
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_P8: ${{ secrets.APP_STORE_CONNECT_P8 }}
+          CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+          MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          FLUTTER_TARGET: "lib/app/main.prod.dart"
     
       - name: Clean up Keychain and Provisioning Profiles
         if: always() # Runs even if previous steps fail

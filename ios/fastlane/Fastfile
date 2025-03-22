@@ -79,26 +79,19 @@ platform :ios do
     beta_do
   end
 
-   desc "Test lane"
-   lane :ios_test_lane do
-
-    sh("flutter", "build", "ipa", 
-       "--flavor=production", 
-       "--target=lib/app/main.prod.dart", 
-       "--verbose")
-
-    build_app(scheme: "production",
-            workspace: "./Runner.xcworkspace",
-            include_bitcode: true,
-            output_directory: "./build/ios/ipa",
-            export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-        }
-      }
-      )
-  end
+  #  desc "Test lane"
+  #  lane :ios_test_lane do
+  #   build_app(scheme: "production",
+  #           workspace: "./Runner.xcworkspace",
+  #           include_bitcode: true,
+  #           export_options: {
+  #       method: "app-store",
+  #       provisioningProfiles: {
+  #         "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+  #       }
+  #     }
+  #     )
+  # end
 end
 
 
