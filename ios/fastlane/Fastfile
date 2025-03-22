@@ -62,7 +62,7 @@ platform :ios do
       export_options: {
         method: "app-store",
         provisioningProfiles: {
-          "com.popcart.africa.vax" => "Popcart provision profile MarchX" # Match profile name from codesigning.git
+          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
         }
       }
     )
