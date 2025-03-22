@@ -26,14 +26,14 @@ platform :ios do
     key_content = ENV["APP_STORE_CONNECT_P8"]
 
     app_store_connect_api_key(
-      key_id: key_id,
-      issuer_id: issuer_id,
-      key_content: key_content,
+      key_id: "K9AKBV7B7K",
+      issuer_id: "b2f0cbda-586d-4c72-a6bd-8391cf2a5082",
+      #key_content: key_content,
+      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
       is_key_content_base64: true,
       in_house: false # Set to true if using an in-house (enterprise) account
     )
   end
-#      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
 
   lane :beta_do do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
@@ -49,19 +49,6 @@ platform :ios do
       readonly: true # Use readonly in CI to avoid modifications
     )  
 
-    # Step 2: Archive and export with build_app
-    # build_app(
-    #   scheme: "production",
-    #   workspace: "./Runner.xcworkspace", 
-    #   export_options: {
-    #     method: "app-store",
-    #     provisioningProfiles: {
-    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-    #     }
-    #   }
-    # )
-
-    #upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
 
   #####################################################
@@ -69,22 +56,7 @@ platform :ios do
   #####################################################
   desc "Build and upload to TestFlight"
   lane :upload_testflight do
-
-    def api_key_load
-      key_id = ENV["APP_STORE_CONNECT_KEY_ID"]
-      issuer_id = ENV["APP_STORE_CONNECT_ISSUER_ID"]
-      key_content = ENV["APP_STORE_CONNECT_P8"]
-      
-      beta_do
-      
-      app_store_connect_api_key(
-        key_id: key_id,
-        issuer_id: issuer_id,
-        key_content: key_content,
-        is_key_content_base64: true,
-        in_house: false # Set to true if using an in-house (enterprise) account
-      )
-    end
+    beta_do
     upload_to_testflight(
       api_key: api_key_load,
       ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
@@ -97,7 +69,27 @@ platform :ios do
     beta_do
   end
 
-  #  desc "Test lane"
+end
+
+
+ #      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
+
+
+# Step 2: Archive and export with build_app
+    # build_app(
+    #   scheme: "production",
+    #   workspace: "./Runner.xcworkspace", 
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+    #     }
+    #   }
+    # )
+
+    #upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
+
+#  desc "Test lane"
   #  lane :ios_test_lane do
   #   build_app(scheme: "production",
   #           workspace: "./Runner.xcworkspace",
@@ -110,6 +102,3 @@ platform :ios do
   #     }
   #     )
   # end
-end
-
-

@@ -88,7 +88,8 @@ jobs:
           cd ios
           bundle exec fastlane ios_match --verbose
           cd ..
-          flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
+          make clean
+          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
           cd ios
           bundle exec fastlane ios_build_upload_testflight
         env:

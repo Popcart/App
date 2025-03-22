@@ -14,7 +14,7 @@ mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
 echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/com.popcart.africa.mobileprovision
 
 # Build iOS
-flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign
+flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign
 cd ios
 xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/Runner.xcarchive archive \
   CODE_SIGN_STYLE="Manual" \
