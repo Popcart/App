@@ -85,7 +85,7 @@ jobs:
       - name: Run Flutter Build and Fastlane Upload
         run: |
           cd ios
-          bundle exec fastlane match appstore --verbose
+          bundle exec fastlane ios_match --verbose
           cd ..
           flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
           cd ios
