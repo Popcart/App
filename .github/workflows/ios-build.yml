@@ -42,16 +42,16 @@ jobs:
             xcode-select --install || true
             brew install build-essential || true
       
-      - name: Decode Certificates and Profiles
-        run: |
-          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ios/certificate.p12
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ios/profile.mobileprovision
-          security create-keychain -p "" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "" build.keychain
-          security import ios/certificate.p12 -k build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+      # - name: Decode Certificates and Profiles
+      #   run: |
+      #     echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ios/certificate.p12
+      #     echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ios/profile.mobileprovision
+      #     security create-keychain -p "" build.keychain
+      #     security default-keychain -s build.keychain
+      #     security unlock-keychain -p "" build.keychain
+      #     security import ios/certificate.p12 -k build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
+      #     mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+      #     cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
       - name: Install provisioning profile
         run: |
@@ -80,6 +80,15 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
+
+
+      - name: Setup Keychain
+        run: |
+          security create-keychain -p "github" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "github" build.keychain
+          security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+
 
       
       - name: Run Flutter Build and Fastlane Upload
