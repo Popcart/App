@@ -82,8 +82,11 @@ jobs:
           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
 
       
-      - name: Build & upload iOS binary
+      - name: Run Flutter Build and Fastlane Upload
         run: |
+          # Build IPA with custom target from Flutter root
+          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
+          # Move to ios directory and run Fastlane
           cd ios
           bundle exec fastlane ios_build_upload_testflight
         env:

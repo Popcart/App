@@ -57,18 +57,23 @@ platform :ios do
     )  
 
     # Step 2: Archive and export with build_app
-    build_app(
-      scheme: "production",
-      workspace: "./Runner.xcworkspace", 
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-        }
-      }
-    )
+    # build_app(
+    #   scheme: "production",
+    #   workspace: "./Runner.xcworkspace", 
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+    #     }
+    #   }
+    # )
 
-    upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
+    upload_to_testflight(
+      api_key: api_key_load,
+      ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
+      skip_waiting_for_build_processing: true
+    )
+    #upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
 
   #####################################################
