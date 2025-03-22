@@ -81,7 +81,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
           # security unlock-keychain -p "runner" /Users/runner/Library/Keychains/login.keychain-db
-          fastlane match appstore --verbose
+          #fastlane match appstore --verbose
 
       # - name: Import Certificates with Match
       #   env: 
