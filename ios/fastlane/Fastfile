@@ -29,7 +29,6 @@ platform :ios do
       key_id: key_id,
       issuer_id: issuer_id,
       key_content: key_content,
-      #key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
       is_key_content_base64: true,
       in_house: false # Set to true if using an in-house (enterprise) account
     )
@@ -42,16 +41,12 @@ platform :ios do
 
     match(
       type: "appstore",
-      git_url: "git@github.com:ayemereodia2/codesigning.git", # Or SSH URL
+      git_url: "git@github.com:ayemereodia2/codesigningprag.git", # Or SSH URL
       app_identifier: "com.popcart.africa.vax",
       team_id: "LB5YMG5W6W",
       api_key: api_key_load,
       readonly: true, # Use readonly in CI to avoid modifications
-      #skip_certificate_matching: true
     )  
-
-    sh("security import ../certs/distribution/CFJ53XT4L5.p12 -k ~/Library/Keychains/build.keychain-db")
-
   end
 
   #####################################################
@@ -75,7 +70,7 @@ platform :ios do
 end
 
 
- #      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
+ # key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
 
 
 # Step 2: Archive and export with build_app
@@ -108,3 +103,4 @@ end
   
   #key_id: "K9AKBV7B7K",
   #issuer_id: "b2f0cbda-586d-4c72-a6bd-8391cf2a5082",
+  #key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",

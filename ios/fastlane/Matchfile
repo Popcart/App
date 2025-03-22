@@ -1,9 +1,10 @@
-git_url("git@github.com:ayemereodia2/codesigning.git")
-
+git_url("git@github.com:ayemereodia2/codesigningprag.git")
 storage_mode("git")
-app_identifier("com.popcart.africa.vax")
-team_id("LB5YMG5W6W")
 type("appstore")
+app_identifier("com.popcart.africa.vax")
+username("odiadavid2@gmail.com")
+team_id("LB5YMG5W6W")
+readonly(true)
  # The default type, can be: appstore, adhoc, enterprise or development
 
 # app_identifier(["tools.fastlane.app", "tools.fastlane.app2"])
