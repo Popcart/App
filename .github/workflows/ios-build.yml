@@ -80,6 +80,18 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
+
+      - name: Import Certificates with Match
+        env: 
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
+          APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        run: |
+          security unlock-keychain -p "runner" /Users/runner/Library/Keychains/login.keychain-db
+          fastlane match appstore --verbose
+
       
       - name: Build & upload iOS binary
         run: |
