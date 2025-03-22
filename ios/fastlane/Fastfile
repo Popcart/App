@@ -47,7 +47,7 @@ platform :ios do
       team_id: "LB5YMG5W6W",
       api_key: api_key_load,
       readonly: true, # Use readonly in CI to avoid modifications
-      skip_certificate_matching: true
+      #skip_certificate_matching: true
     )  
 
     sh("security import ../certs/distribution/CFJ53XT4L5.p12 -k ~/Library/Keychains/build.keychain-db")
