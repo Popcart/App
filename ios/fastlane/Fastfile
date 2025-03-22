@@ -33,6 +33,7 @@ platform :ios do
       in_house: false # Set to true if using an in-house (enterprise) account
     )
   end
+#      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
 
   lane :beta_do do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
@@ -78,21 +79,26 @@ platform :ios do
     beta_do
   end
 
-  # desc "Test lane"
-  # lane :ios_test_lane do
-  #   # sh("make clean")
-  #   # sh("flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose --no-codesign")
-  #   build_app(scheme: "production",
-  #           workspace: "./Runner.xcworkspace",
-  #           include_bitcode: true,
-  #           export_options: {
-  #       method: "app-store",
-  #       provisioningProfiles: {
-  #         "com.popcart.africa.vax" => "Popcart provision profile MarchX" # Match profile name from codesigning.git
-  #       }
-  #     }
-  #     )
-  #end
+   desc "Test lane"
+   lane :ios_test_lane do
+
+    sh("flutter", "build", "ipa", 
+       "--flavor=production", 
+       "--target=lib/app/main.prod.dart", 
+       "--verbose")
+
+    build_app(scheme: "production",
+            workspace: "./Runner.xcworkspace",
+            include_bitcode: true,
+            output_directory: "./build/ios/ipa",
+            export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+        }
+      }
+      )
+  end
 end
 
 
