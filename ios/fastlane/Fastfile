@@ -35,7 +35,7 @@ platform :ios do
   end
 
   lane :beta_do do
-    # api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     setup_ci if ENV['CI']
 
