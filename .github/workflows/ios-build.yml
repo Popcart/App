@@ -239,7 +239,7 @@ jobs:
       - name: Build iOS via Fastlane
         run: |
           cd ios
-          fastlane ios_match
+          bundle exec fastlane ios_match
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
@@ -249,7 +249,7 @@ jobs:
       - name: Release to App Store (automatic release)
         run: |
           cd ios
-          fastlane upload_testflight
+          bundle exec fastlane upload_testflight
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
