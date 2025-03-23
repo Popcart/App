@@ -47,22 +47,16 @@ platform :ios do
       readonly: true
       )
     
-    # build_app(
-    #   scheme: "production",
-    #   workspace: "./Runner.xcworkspace", 
-    #   export_options: {
-    #     method: "app-store",
-    #     provisioningProfiles: {
-    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-    #     }
-    #   }
-    # )
-
-    # upload_to_testflight(
-    #   api_key: api_key_load,
-    #   #ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
-    #   skip_waiting_for_build_processing: true
-    # )
+    build_app(
+      scheme: "production",
+      workspace: "./Runner.xcworkspace", 
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+        }
+      }
+    )
     
   end
 
@@ -85,6 +79,13 @@ platform :ios do
 
 end
 
+
+
+# upload_to_testflight(
+    #   api_key: api_key_load,
+    #   #ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
+    #   skip_waiting_for_build_processing: true
+    # )
 
  # key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
 

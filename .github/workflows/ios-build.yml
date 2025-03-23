@@ -134,6 +134,7 @@ jobs:
   ios-app-store:
     name: Publish to iOS app store
     runs-on: macos-latest
+
     env:
       APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
@@ -234,24 +235,18 @@ jobs:
         #   # Move to ios directory and run Fastlane
         #   cd ios
         #   bundle exec fastlane beta_do
-      - name: Build Flutter App
+
+      - name: Build iOS via Fastlane
         run: |
           cd ios
-          bundle exec fastlane beta_do --verbose
-          cd ..
-          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
+          bundle exec fastlane ios_match
+        env:
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+          MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
-      # - name: Build iOS via Fastlane
-      #   run: |
-      #     cd ios
-      #     bundle exec fastlane ios_match
-      #   env:
-      #     MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
-      #     MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
-      #     MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-      #     APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-
-      - name: Release to App Store (automatic release)
+      - name: Release to App Store (manual testflight release)
         run: |
           cd ios
           bundle exec fastlane upload_testflight
