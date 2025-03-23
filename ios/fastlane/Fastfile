@@ -46,8 +46,6 @@ platform :ios do
       api_key: api_key_load,
       readonly: true
       )
-
-    sh("make ipa-prod")
     
     build_app(
       scheme: "production",
