@@ -213,7 +213,7 @@ jobs:
           pod deintegrate
           pod cache clean --all
           
-      - name: Pod repo update
+      - name: Pod Install
         working-directory: ios
         run: pod install --verbose
       
@@ -224,8 +224,8 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Build iOS via Flutter
-        run: flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
+      # - name: Build iOS via Flutter
+      #   run: flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
         #flutter build ios --no-codesign --release
 
       - name: Build iOS via Fastlane
