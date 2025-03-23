@@ -231,7 +231,7 @@ jobs:
       - name: Build iOS via Fastlane
         run: |
           cd ios
-          bundle exec fastlane ios build
+          bundle exec fastlane os_match
         env:
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
@@ -248,3 +248,5 @@ jobs:
       #   run: bundle exec fastlane ios beta
       #   env:
       #     APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+
+      # Available lanes: ios beta_do, ios upload_testflight, ios ios_match
