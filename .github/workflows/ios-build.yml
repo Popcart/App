@@ -231,7 +231,7 @@ jobs:
       - name: Build iOS via Fastlane
         run: |
           cd ios
-          bundle exec fastlane os_match
+          bundle exec fastlane ios_match
         env:
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
