@@ -236,6 +236,10 @@ jobs:
         #   cd ios
         #   bundle exec fastlane beta_do
 
+      - name: Generate Code with build_runner
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Build iOS via Fastlane
         run: |
           cd ios
