@@ -38,15 +38,24 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     setup_ci if ENV['CI']
+    get_certificates(
+      development: false,
+      username: "odiadavid2@gmail.com",
+      api_key: api_key_load
+    )
 
-    match(
-      type: "appstore",
-      git_url: "git@github.com:ayemereodia2/codesigningprag.git", # Or SSH URL
-      app_identifier: "com.popcart.africa.vax",
-      team_id: "LB5YMG5W6W",
-      api_key: api_key_load,
-      readonly: true, # Use readonly in CI to avoid modifications
-    )  
+    get_provisioning_profile()
+    build_app(
+      scheme: "production",
+      workspace: "./Runner.xcworkspace", 
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+        }
+      }
+    )
+    
   end
 
   #####################################################
@@ -54,12 +63,7 @@ platform :ios do
   #####################################################
   desc "Build and upload to TestFlight"
   lane :upload_testflight do
-    beta_do
-    upload_to_testflight(
-      api_key: api_key_load,
-      ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
-      skip_waiting_for_build_processing: true
-    )
+    upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
   end
 
   desc "Match Build"
