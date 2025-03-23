@@ -26,9 +26,9 @@ platform :ios do
     key_content = ENV["APP_STORE_CONNECT_P8"]
 
     app_store_connect_api_key(
-      key_id: key_id,
-      issuer_id: issuer_id,
-      key_content: key_content,
+      key_id: "K9AKBV7B7K",
+      issuer_id: "b2f0cbda-586d-4c72-a6bd-8391cf2a5082",
+      key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
       is_key_content_base64: true,
       in_house: false # Set to true if using an in-house (enterprise) account
     )
@@ -46,22 +46,22 @@ platform :ios do
       api_key: api_key_load,
       readonly: true
       )
-    # get_certificates(
-    #   development: false,
-    #   username: "odiadavid2@gmail.com",
-    #   api_key: api_key_load
+    
+    # build_app(
+    #   scheme: "production",
+    #   workspace: "./Runner.xcworkspace", 
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+    #     }
+    #   }
     # )
 
-    get_provisioning_profile()
-    build_app(
-      scheme: "production",
-      workspace: "./Runner.xcworkspace", 
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-        }
-      }
+    upload_to_testflight(
+      api_key: api_key_load,
+      ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
+      skip_waiting_for_build_processing: true
     )
     
   end
@@ -77,6 +77,7 @@ platform :ios do
   desc "Match Build"
   lane :ios_match do
     beta_do
+    #upload_testflight
   end
 
 end
@@ -116,3 +117,12 @@ end
   #key_id: "K9AKBV7B7K",
   #issuer_id: "b2f0cbda-586d-4c72-a6bd-8391cf2a5082",
   #key_filepath: "/Users/andela1234/Desktop/certp8To64.txt.txt",
+
+  #local build
+  # get_certificates(
+    #   development: false,
+    #   username: "odiadavid2@gmail.com",
+    #   api_key: api_key_load
+    # )
+
+    #get_provisioning_profile()
