@@ -225,9 +225,9 @@ jobs:
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
 
-      - name: Generate Code with build_runner
-        run: |
-          flutter pub run build_runner build --delete-conflicting-outputs
+      # - name: Generate Code with build_runner
+      #   run: |
+      #     flutter pub run build_runner build --delete-conflicting-outputs
 
       - name: Build iOS via Fastlane
         run: |
