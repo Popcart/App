@@ -182,6 +182,7 @@ jobs:
 
       - name: Download bundle dependencies
         run: |
+          cd ios
           gem install bundler
           bundle config path vendor/bundle
           bundle install
