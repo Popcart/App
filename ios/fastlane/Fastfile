@@ -42,7 +42,7 @@ platform :ios do
     match(
       type: "appstore",
       readonly: is_ci,
-      git_url: "git@github.com:your-username/ios-certificates.git",
+      git_url: "git@github.com:ayemereodia2/codesigning.git",
       )
     # get_certificates(
     #   development: false,
