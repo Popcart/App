@@ -47,16 +47,16 @@ platform :ios do
       readonly: true
       )
     
-    build_app(
-      scheme: "production",
-      workspace: "./Runner.xcworkspace", 
-      export_options: {
-        method: "app-store",
-        provisioningProfiles: {
-          "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
-        }
-      }
-    )
+    # build_app(
+    #   scheme: "production",
+    #   workspace: "./Runner.xcworkspace", 
+    #   export_options: {
+    #     method: "app-store",
+    #     provisioningProfiles: {
+    #       "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
+    #     }
+    #   }
+    # )
 
     # upload_to_testflight(
     #   api_key: api_key_load,
