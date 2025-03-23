@@ -224,17 +224,6 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-      # - name: Build iOS via Flutter
-      #   run: flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
-        #flutter build ios --no-codesign --release
-
-        # run: |
-        #   cd ..
-        #   # Build IPA with custom target from Flutter root
-        #   flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
-        #   # Move to ios directory and run Fastlane
-        #   cd ios
-        #   bundle exec fastlane beta_do
 
       - name: Generate Code with build_runner
         run: |
