@@ -43,6 +43,8 @@ platform :ios do
       type: "appstore",
       readonly: is_ci,
       git_url: "git@github.com:ayemereodia2/codesigning.git",
+      api_key: api_key_load,
+      readonly: true
       )
     # get_certificates(
     #   development: false,
