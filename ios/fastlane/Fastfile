@@ -28,7 +28,7 @@ platform :ios do
     app_store_connect_api_key(
       key_id: key_id,
       issuer_id: issuer_id,
-      key_filepath: key_content,
+      key_content: key_content,
       is_key_content_base64: true,
       in_house: false # Set to true if using an in-house (enterprise) account
     )
