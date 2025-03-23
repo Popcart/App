@@ -71,13 +71,16 @@ platform :ios do
   #####################################################
   desc "Build and upload to TestFlight"
   lane :upload_testflight do
-    upload_to_testflight(api_key: api_key_load, skip_waiting_for_build_processing: true)
+
+    upload_to_testflight(
+      api_key: api_key_load,
+      skip_waiting_for_build_processing: true
+      )
   end
 
   desc "Match Build"
   lane :ios_match do
     beta_do
-    upload_testflight
   end
 
 end

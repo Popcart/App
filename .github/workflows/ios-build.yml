@@ -239,7 +239,7 @@ jobs:
       - name: Build iOS via Fastlane
         run: |
           cd ios
-          bundle exec fastlane ios_match
+          fastlane ios_match
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
@@ -249,12 +249,29 @@ jobs:
       - name: Release to App Store (automatic release)
         run: |
           cd ios
-          bundle exec fastlane upload_testflight
+          fastlane upload_testflight
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+
+      - name: Clean up Keychain and Provisioning Profiles
+        if: always() # Runs even if previous steps fail
+        run: |
+          # Delete the keychain
+          security delete-keychain build.keychain || true
+          
+          # Remove certificate and provisioning profile files
+          rm -f ios/certificate.p12
+          rm -f ios/profile.mobileprovision
+          
+          # Remove provisioning profiles from the library
+          rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
+          
+          # Verify cleanup
+          ls -la ios/
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "Directory cleaned or not found"
 
 
 
