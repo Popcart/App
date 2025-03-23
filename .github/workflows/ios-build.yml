@@ -229,7 +229,9 @@ jobs:
         #flutter build ios --no-codesign --release
 
       - name: Build iOS via Fastlane
-        run: bundle exec fastlane ios build
+        run: |
+          cd ios
+          bundle exec fastlane ios build
         env:
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
