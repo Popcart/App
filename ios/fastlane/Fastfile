@@ -38,11 +38,17 @@ platform :ios do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
     setup_ci if ENV['CI']
-    get_certificates(
-      development: false,
-      username: "odiadavid2@gmail.com",
-      api_key: api_key_load
-    )
+
+    match(
+      type: "appstore",
+      readonly: is_ci,
+      git_url: "git@github.com:your-username/ios-certificates.git",
+      )
+    # get_certificates(
+    #   development: false,
+    #   username: "odiadavid2@gmail.com",
+    #   api_key: api_key_load
+    # )
 
     get_provisioning_profile()
     build_app(

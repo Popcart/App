@@ -188,9 +188,13 @@ jobs:
         with:
           flutter-version: "3.29.1"
 
-      - name: Create assets/_env
+      - name: Setup SSH for Match
         run: |
-          echo "${{ secrets.FLUTTER_DOTENV }}" > assets/_env
+          mkdir -p ~/.ssh
+          echo "${{ secrets.MATCH_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
 
       
       - name: Cache pub dependencies
