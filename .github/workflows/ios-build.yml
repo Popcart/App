@@ -216,6 +216,13 @@ jobs:
       - name: Pod repo update
         working-directory: ios
         run: pod install --verbose
+      
+
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build iOS via Flutter
         run: flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
