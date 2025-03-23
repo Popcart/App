@@ -233,11 +233,17 @@ jobs:
           cd ios
           bundle exec fastlane ios_match
         env:
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+          MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
       - name: Release to App Store (automatic release)
         run: bundle exec fastlane upload_testflight
         env:
+          MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
+          MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
 
