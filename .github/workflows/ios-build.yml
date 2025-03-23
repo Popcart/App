@@ -228,10 +228,18 @@ jobs:
       #   run: flutter build ios --release --flavor=production --target=lib/app/main.prod.dart --verbose
         #flutter build ios --no-codesign --release
 
+        # run: |
+        #   cd ios
+        #   bundle exec fastlane ios_match
+
       - name: Build iOS via Fastlane
         run: |
+          cd ..
+          # Build IPA with custom target from Flutter root
+          flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
+          # Move to ios directory and run Fastlane
           cd ios
-          bundle exec fastlane ios_match
+          bundle exec fastlane beta_do
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
@@ -239,7 +247,9 @@ jobs:
           APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
 
       - name: Release to App Store (automatic release)
-        run: bundle exec fastlane upload_testflight
+        run: |
+          cd ios
+          bundle exec fastlane upload_testflight
         env:
           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
