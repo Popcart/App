@@ -55,7 +55,8 @@ platform :ios do
         provisioningProfiles: {
           "com.popcart.africa.vax" => "match AppStore com.popcart.africa.vax" # Match profile name from codesigning.git
         }
-      }
+      },
+      xcargs: "FLUTTER_TARGET=lib/app/main.prod.dart"
     )
     
   end
