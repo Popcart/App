@@ -60,7 +60,7 @@ platform :ios do
 
     upload_to_testflight(
       api_key: api_key_load,
-      ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
+      #ipa: "../build/ios/ipa/Runner.ipa", # Path to IPA from Flutter build
       skip_waiting_for_build_processing: true
     )
     
