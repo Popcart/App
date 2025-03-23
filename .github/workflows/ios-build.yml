@@ -134,7 +134,6 @@ jobs:
   ios-app-store:
     name: Publish to iOS app store
     runs-on: macos-latest
-
     env:
       APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
