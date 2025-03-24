@@ -228,9 +228,9 @@ jobs:
   
       - name: Create and populate env
         run: |
-          echo "${{secrets.DEV_ENV_VARIABLE}}" | base64 --decode > assets/env/dev.env
-          echo "${{secrets.STAG_ENV_VARIABLE}}" | base64 --decode > assets/env/stag.env
-          echo "${{secrets.PROD_ENV_VARIABLE}}" | base64 --decode > assets/env/prod.env
+          echo "${{secrets.DEV_ENV_VARIABLE2}}" | base64 --decode > assets/env/dev.env
+          echo "${{secrets.STAG_ENV_VARIABLE2}}" | base64 --decode > assets/env/stag.env
+          echo "${{secrets.PROD_ENV_VARIABLE2}}" | base64 --decode > assets/env/prod.env
 
       - name: Run code generation
         run: |
