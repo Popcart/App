@@ -1,135 +1,12 @@
-# name: iOS Build and Deploy to TestFlight
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     runs-on: macos-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v3
-
-#       - name: Setup Flutter
-#         uses: subosito/flutter-action@v2
-#         with:
-#           channel: 'stable'
-#           flutter-version: '3.29.1'
-
-#       - name: Install dependencies
-#         run: |
-#           flutter clean
-#           rm -rf ios/Pods ios/Podfile.lock
-#           flutter pub get
-#           cd ios
-#           pod deintegrate
-#           pod cache clean --all
-#           pod install --verbose
-
-#       - name: Setup Ruby
-#         uses: ruby/setup-ruby@v1
-#         with:
-#           ruby-version: '3.4.2'
-#           bundler-cache: true
-
-#       - name: Select Xcode Version
-#         run: sudo xcode-select --switch /Applications/Xcode_15.3.app
-
-#       - name: Install Build Tools
-#         run: |
-#             xcode-select --install || true
-#             brew install build-essential || true
-      
-#       - name: Decode Certificates and Profiles
-#         run: |
-#           echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ios/certificate.p12
-#           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ios/profile.mobileprovision
-#           security create-keychain -p "" build.keychain
-#           security default-keychain -s build.keychain
-#           security unlock-keychain -p "" build.keychain
-#           security import ios/certificate.p12 -k build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
-#           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#           cp ios/profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
-
-#       - name: Install provisioning profile
-#         run: |
-#           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-#           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-#           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
-
-#       - name: Install Gems
-#         run: |
-#           cd ios
-#           bundle install
-#           bundle update
-      
-#       - name: Install CocoaPods dependencies
-#         run: |
-#            cd ios
-#            pod install --repo-update
-
-#       - name: Clean DerivedData
-#         run: rm -rf ~/Library/Developer/Xcode/DerivedData
-
-#       - name: Setup SSH for Match
-#         run: |
-#           mkdir -p ~/.ssh
-#           echo "${{ secrets.MATCH_SSH_KEY }}" > ~/.ssh/id_rsa
-#           chmod 600 ~/.ssh/id_rsa
-#           ssh-keyscan github.com >> ~/.ssh/known_hosts
-#           git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa"
-
-
-#       - name: Run Flutter Build and Fastlane Upload
-#         run: |
-#           cd ios
-#           bundle exec fastlane ios_match --verbose
-#           cd ..
-#           make clean
-#           flutter build ipa --flavor=production --target=lib/app/main.prod.dart --verbose
-#           cd ios
-#           bundle exec fastlane ios_build_upload_testflight
-#         env:
-#           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-#           APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
-#           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
-#           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-#           APP_STORE_CONNECT_P8: ${{ secrets.APP_STORE_CONNECT_P8 }}
-#           CERTIFICATE_BASE64: ${{ secrets.CERTIFICATE_BASE64 }}
-#           CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
-#           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-#           MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-#           FASTLANE_PASSWORD: ${{ secrets.FASTLANE_PASSWORD }}
-#           MATCH_GIT_TOKEN: ${{ secrets.MATCH_GIT_TOKEN }}
-#           MATCH_GIT_USERNAME: ${{ secrets.MATCH_GIT_USERNAME }}
-#           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-#           FLUTTER_TARGET: "lib/app/main.prod.dart"
-    
-#       - name: Clean up Keychain and Provisioning Profiles
-#         if: always() # Runs even if previous steps fail
-#         run: |
-#           # Delete the keychain
-#           security delete-keychain build.keychain || true
-          
-#           # Remove certificate and provisioning profile files
-#           rm -f ios/certificate.p12
-#           rm -f ios/profile.mobileprovision
-          
-#           # Remove provisioning profiles from the library
-#           rm -rf ~/Library/MobileDevice/Provisioning\ Profiles/*
-          
-#           # Verify cleanup
-#           ls -la ios/
-#           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "Directory cleaned or not found"
-
 name: Publish to iOS App Store
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types:
+      - closed
+      
 jobs:
   ios-app-store:
     name: Publish to iOS app store
@@ -272,17 +149,4 @@ jobs:
           # Verify cleanup
           ls -la ios/
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles/ || echo "Directory cleaned or not found"
-
-
-
-
-# - name: Upload to App Store (manual release)
-      #   if: steps.variables.outputs.track == 'beta'
-      #   run: bundle exec fastlane ios beta
-      #   env:
-      #     APPSTORE_CONNECT_KEY_FILE: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-
-      # Available lanes: ios beta_do, ios upload_testflight, ios ios_match
-
-      # start from fastlane match appstore
 
