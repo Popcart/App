@@ -37,6 +37,12 @@ platform :ios do
   lane :beta_do do
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
 
+    # Clean up the match storage directory
+    match_storage_path = File.expand_path("~/.fastlane/match")
+    if Dir.exist?(match_storage_path)
+      sh("rm -rf #{match_storage_path}")
+    end
+
     setup_ci if ENV['CI']
 
     match(
