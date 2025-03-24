@@ -209,7 +209,6 @@ jobs:
           flutter clean
           rm -rf ios/Pods ios/Podfile.lock
           flutter pub get
-          flutter packages pub run build_runner build --delete-conflicting-outputs  
           cd ios
           pod deintegrate
           pod cache clean --all
@@ -226,9 +225,9 @@ jobs:
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
 
-      # - name: Generate Code with build_runner
-      #   run: |
-      #     flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Generate Code with build_runner
+        run: |
+          flutter packages pub run build_runner build --delete-conflicting-outputs  
 
       - name: Build iOS via Fastlane
         run: |
