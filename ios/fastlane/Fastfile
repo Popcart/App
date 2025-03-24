@@ -18,6 +18,7 @@ default_platform(:ios)
 platform :ios do
   # #####################################################
   # # Load App Store Connect API Key for authentication #
+  # using ENV values stored in github                   #
   # #####################################################
   #desc "Load ASC API Key information to use in subsequent lanes"
   def api_key_load
