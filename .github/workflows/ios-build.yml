@@ -134,7 +134,6 @@ jobs:
   ios-app-store:
     name: Publish to iOS app store
     runs-on: macos-latest
-
     env:
       APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
@@ -227,7 +226,12 @@ jobs:
 
       - name: Generate Code with build_runner
         run: |
-          flutter packages pub run build_runner build --delete-conflicting-outputs  
+            rm -f pubspec.lock
+            rm -f ios/Podfile.lock
+            flutter clean
+            flutter pub get
+            cd ios && pod repo update && pod install --verbose && cd ..
+            dart run build_runner build --delete-conflicting-outputs  
 
       - name: Build iOS via Fastlane
         run: |
