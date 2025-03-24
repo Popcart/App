@@ -209,6 +209,7 @@ jobs:
           flutter clean
           rm -rf ios/Pods ios/Podfile.lock
           flutter pub get
+          flutter packages pub run build_runner build --delete-conflicting-outputs  
           cd ios
           pod deintegrate
           pod cache clean --all
