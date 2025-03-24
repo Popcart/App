@@ -11,8 +11,6 @@ import 'package:popcart/features/user/models/user_model.dart';
 part 'onboarding_cubit.freezed.dart';
 part 'onboarding_state.dart';
 
-
-
 class OnboardingCubit extends Cubit<OnboardingState> {
   OnboardingCubit()
       : _onboardingRepo = locator.get<OnboardingRepo>(),
@@ -31,7 +29,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
   late String _rcNumber;
   late String _businessOwnerBvn;
   late String _businessAddress;
-   UserType? _userType;
+  UserType? _userType;
   late bool _isRegisteredSeller;
 
   set firstName(String value) {
@@ -134,9 +132,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
     response.when(
       success: (data) {
-         locator<SharedPrefs>()..accessToken = data?.data?.token ?? ''
-         ..loggedIn = true
-         ..refreshToken = data?.data?.refreshToken ?? '';
+        locator<SharedPrefs>()
+          ..accessToken = data?.data?.token ?? ''
+          ..loggedIn = true
+          ..refreshToken = data?.data?.refreshToken ?? '';
         locator.setApiHandlerToken(data?.data?.token ?? '');
         emit(const OnboardingState.verifyOtpSuccess());
       },
@@ -190,12 +189,74 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
     response.when(
       success: (data) {
-       
         emit(const OnboardingState.sendOtpSuccess());
       },
       error: (e) {
         emit(
           OnboardingState.sendOtpFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> verifyEmail() async {
+    emit(const OnboardingState.loading());
+    final response = await _onboardingRepo.verifyEmail(
+      email: _email,
+    );
+    response.when(
+      success: (data) {
+        emit(const OnboardingState.verifyEmailSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.verifyEmailFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> verifyUsername() async {
+    emit(const OnboardingState.loading());
+    final response = await _onboardingRepo.verifyUsername(
+      username: _username,
+    );
+    response.when(
+      success: (data) {
+        emit(const OnboardingState.verifyUsernameSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.verifyUsernameFailure(
+            e.message ?? 'An error occurred',
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> submitIndividualBusinessInformation({
+    required String bvn,
+    String? businessEmail,
+    String? businessName,
+  }) async {
+    emit(const OnboardingState.loading());
+    final response = await _userRepository.submitIndividualBusinessInformation(
+      bvn: bvn,
+      businessEmail: businessEmail,
+      businessName: businessName,
+    );
+    response.when(
+      success: (data) {
+        emit(const OnboardingState.onboardingSuccess());
+      },
+      error: (e) {
+        emit(
+          OnboardingState.onboardingFailure(
             e.message ?? 'An error occurred',
           ),
         );

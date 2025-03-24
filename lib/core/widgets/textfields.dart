@@ -63,7 +63,7 @@ class CustomPinField extends Pinput {
     super.focusNode,
     super.controller,
   }) : super(
-          length: 4,
+          length: 5,
           onTapOutside: kDebugMode
               ? (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus()
               : null,

@@ -67,4 +67,6 @@ class LivePath extends Path<LivePath> {
 
 class AccountPath extends Path<AccountPath> {
   AccountPath() : super('/account');
+
+  Path get settings => Path('settings');
 }
