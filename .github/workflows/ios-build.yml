@@ -226,11 +226,6 @@ jobs:
 
       - name: Generate Code with build_runner
         run: |
-            rm -f pubspec.lock
-            rm -f ios/Podfile.lock
-            flutter clean
-            flutter pub get
-            cd ios && pod repo update && pod install --verbose && cd ..
             dart run build_runner build --delete-conflicting-outputs  
 
       - name: Build iOS via Fastlane
