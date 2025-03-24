@@ -223,10 +223,18 @@ jobs:
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
-
-      - name: Generate Code with build_runner
+      - name: Create assets/env directory
+        run: mkdir -p assets/env
+  
+      - name: Create and populate env
         run: |
-            dart run build_runner build --delete-conflicting-outputs  
+          echo "${{secrets.DEV_ENV_VARIABLE}}" | base64 --decode > assets/env/dev.env
+          echo "${{secrets.STAG_ENV_VARIABLE}}" | base64 --decode > assets/env/stag.env
+          echo "${{secrets.PROD_ENV_VARIABLE}}" | base64 --decode > assets/env/prod.env
+
+      - name: Run code generation
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
 
       - name: Build iOS via Fastlane
         run: |
