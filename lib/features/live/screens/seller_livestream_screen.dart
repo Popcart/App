@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ class SellerLivestreamScreen extends StatefulHookWidget {
 }
 
 class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
-  late RtcEngine _engine;
+  // late RtcEngine _engine;
   bool _localUserJoined = false;
   int userJoined = 0;
   @override
@@ -41,10 +41,10 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
 
   @override
   void dispose() {
-    _engine
-      ..leaveChannel()
-      ..release();
-    endLivestream();
+    // _engine
+    //   ..leaveChannel()
+    //   ..release();
+    // endLivestream();
     super.dispose();
   }
 
@@ -65,86 +65,86 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
     try {
       await [Permission.camera, Permission.microphone].request();
       // Create RTC Engine
-      _engine = createAgoraRtcEngine();
-      await _engine.initialize(
-        RtcEngineContext(
-          appId: Env().agoraAppId,
-          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-        ),
-      );
+      // _engine = createAgoraRtcEngine();
+      // await _engine.initialize(
+      //   RtcEngineContext(
+      //     appId: Env().agoraAppId,
+      //     channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+      //   ),
+      // );
       // Set up event handlers
-      _engine.registerEventHandler(
-        RtcEngineEventHandler(
-          onJoinChannelSuccess: (connection, elapsed) {
-            log(
-              connection.toJson().toString(),
-              name: 'AGORA onJoinChannelSuccess connection',
-            );
-
-            setState(() {
-              _localUserJoined = true;
-              setAgoraId(connection.localUid ?? 0);
-            });
-          },
-          onUserJoined: (connection, remoteUid, elapsed) {
-            log(
-              connection.toJson().toString(),
-              name: 'AGORA onUserJoined connection',
-            );
-            log(remoteUid.toString(), name: 'AGORA onUserJoined remoteUid');
-            setState(() {
-              userJoined++;
-            });
-          },
-          onUserOffline: (connection, remoteUid, reason) {
-            log(
-              connection.toJson().toString(),
-              name: 'AGORA onUserOffline connection',
-            );
-            log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
-            log(reason.toString(), name: 'AGORA onUserOffline reason');
-            setState(() {
-              userJoined--;
-            });
-          },
-          onError: (err, msg) async {
-            log(err.toString(), name: 'AGORA onError err');
-            log(msg, name: 'AGORA onError msg');
-            await context.showError(msg);
-            if (mounted) {
-              context.pop();
-            }
-          },
-        ),
-      );
+      // _engine.registerEventHandler(
+      //   RtcEngineEventHandler(
+      //     onJoinChannelSuccess: (connection, elapsed) {
+      //       log(
+      //         connection.toJson().toString(),
+      //         name: 'AGORA onJoinChannelSuccess connection',
+      //       );
+      //
+      //       setState(() {
+      //         _localUserJoined = true;
+      //         // setAgoraId(connection.localUid ?? 0);
+      //       });
+      //     },
+      //     onUserJoined: (connection, remoteUid, elapsed) {
+      //       log(
+      //         connection.toJson().toString(),
+      //         name: 'AGORA onUserJoined connection',
+      //       );
+      //       log(remoteUid.toString(), name: 'AGORA onUserJoined remoteUid');
+      //       setState(() {
+      //         userJoined++;
+      //       });
+      //     },
+      //     onUserOffline: (connection, remoteUid, reason) {
+      //       log(
+      //         connection.toJson().toString(),
+      //         name: 'AGORA onUserOffline connection',
+      //       );
+      //       log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
+      //       log(reason.toString(), name: 'AGORA onUserOffline reason');
+      //       setState(() {
+      //         userJoined--;
+      //       });
+      //     },
+      //     onError: (err, msg) async {
+      //       log(err.toString(), name: 'AGORA onError err');
+      //       // log(msg, name: 'AGORA onError msg');
+      //       // await context.showError(msg);
+      //       // if (mounted) {
+      //       //   context.pop();
+      //       // }
+      //     },
+      //   ),
+      // );
       // Set client role
       // if (widget.isBroadcaster) {
-      await _engine.setClientRole(
-        role: ClientRoleType.clientRoleBroadcaster,
-        options: const ClientRoleOptions(
-          audienceLatencyLevel:
-              AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
-        ),
-      );
+      // await _engine.setClientRole(
+      //   role: ClientRoleType.clientRoleBroadcaster,
+      //   options: const ClientRoleOptions(
+      //     audienceLatencyLevel:
+      //         AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
+      //   ),
+      // );
       // } else {
       //   await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
       // }
       // Join channel
-      await _engine.joinChannel(
-        token: widget.token,
-        channelId: widget.channelName,
-        uid: 0,
-        options: const ChannelMediaOptions(
-          publishMicrophoneTrack: true,
-          publishCameraTrack: true,
-          autoSubscribeAudio: true,
-          autoSubscribeVideo: true,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
-        ),
-      );
-      await _engine.enableAudio();
-      await _engine.enableVideo();
-      await _engine.startPreview();
+      // await _engine.joinChannel(
+      //   token: widget.token,
+      //   channelId: widget.channelName,
+      //   uid: 0,
+      //   options: const ChannelMediaOptions(
+      //     publishMicrophoneTrack: true,
+      //     publishCameraTrack: true,
+      //     autoSubscribeAudio: true,
+      //     autoSubscribeVideo: true,
+      //     clientRoleType: ClientRoleType.clientRoleBroadcaster,
+      //   ),
+      // );
+      // await _engine.enableAudio();
+      // await _engine.enableVideo();
+      // await _engine.startPreview();
     } catch (e) {
       log(e.toString(), name: 'Agora Error');
     }
@@ -191,19 +191,19 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
         },
         child: Stack(
           children: [
-            Positioned.fill(
-              child: _localUserJoined
-                  ? AgoraVideoView(
-                      controller: VideoViewController(
-                        rtcEngine: _engine,
-                        canvas: const VideoCanvas(
-                          renderMode: RenderModeType.renderModeHidden,
-                          uid: 0,
-                        ),
-                      ),
-                    )
-                  : const CupertinoActivityIndicator(),
-            ),
+            // Positioned.fill(
+            //   child: _localUserJoined
+            //       ? AgoraVideoView(
+            //           controller: VideoViewController(
+            //             rtcEngine: _engine,
+            //             canvas: const VideoCanvas(
+            //               renderMode: RenderModeType.renderModeHidden,
+            //               uid: 0,
+            //             ),
+            //           ),
+            //         )
+            //       : const CupertinoActivityIndicator(),
+            // ),
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -270,7 +270,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xff4B4444)
-                                      .withValues(alpha: 0.5),
+                                      .withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Row(

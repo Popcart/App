@@ -31,8 +31,8 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.popcart.africa"
-    compileSdkVersion flutter.compileSdkVersion
-    ndkVersion "27.0.12077973"
+    compileSdkVersion 35
+    ndkVersion = "25.1.8937393"
 
     compileOptions {
         coreLibraryDesugaringEnabled true

@@ -34,7 +34,7 @@ class CustomTextFormField extends TextFormField {
           cursorHeight: 20,
           decoration: InputDecoration(
             hintText: hintText ?? '',
-            hintStyle: TextStyle(color: AppColors.white.withValues(alpha: 0.2)),
+            hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
             border: OutlineInputBorder(
