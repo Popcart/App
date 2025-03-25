@@ -71,7 +71,8 @@ platform :ios do
       },
       xcargs: "FLUTTER_TARGET=lib/app/main.prod.dart"
     )
-    
+    #  xcargs: "FLUTTER_TARGET=lib/app/main.prod.dart IPHONEOS_DEPLOYMENT_TARGET=18.0"
+
   end
 
   #####################################################
