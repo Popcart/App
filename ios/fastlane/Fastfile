@@ -71,6 +71,8 @@ platform :ios do
       },
       xcargs: "FLUTTER_TARGET=lib/app/main.prod.dart"
     )
+
+    
     #  xcargs: "FLUTTER_TARGET=lib/app/main.prod.dart IPHONEOS_DEPLOYMENT_TARGET=18.0"
 
   end
@@ -83,7 +85,12 @@ platform :ios do
 
     upload_to_testflight(
       api_key: api_key_load,
-      skip_waiting_for_build_processing: true
+      skip_submission:false,
+      skip_waiting_for_build_processing: false,
+      distribute_external:true,
+      notify_external_testers:true,
+      groups:["External Free Testers"],
+      changelog: "New build with latest update"
       )
   end
 
