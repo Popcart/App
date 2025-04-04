@@ -1,11 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:popcart/app/router_paths.dart';
+import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:video_player/video_player.dart';
 
 class VideoSplashScreen extends StatefulWidget {
   const VideoSplashScreen({super.key});
@@ -15,41 +14,61 @@ class VideoSplashScreen extends StatefulWidget {
 }
 
 class _VideoSplashScreenState extends State<VideoSplashScreen> {
-  late final File splashVideoFile;
-  bool loading = true;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
     super.initState();
-    getSplashFile();
-  }
-
-  Future<void> getSplashFile() async {
-    final savePath = await getTemporaryDirectory();
-    final filePath = '${savePath.path}/splash.gif';
-    splashVideoFile = File(filePath);
-    loading = false;
-    setState(() {});
+    _controller = VideoPlayerController.asset("assets/animations/popcart.mp4");
+    _controller..addListener(() {
+      setState(() {});
+    })
+    ..setLooping(true);
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xff111214),
+      backgroundColor: AppColors.orange,
       body: Stack(
         children: [
+          // Positioned.fill(
+          //   child: switch (loading) {
+          //     true => const SizedBox(),
+          //     false => Image.file(
+          //         splashVideoFile,
+          //         width: double.infinity,
+          //         height: double.infinity,
+          //         fit: BoxFit.cover,
+          //       )
+          //   },
+          // ),
           Positioned.fill(
-            child: switch (loading) {
-              true => const SizedBox(),
-              false => Image.file(
-                  splashVideoFile,
-                  width: double.infinity,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                )
-            },
+            child: _controller.value.isInitialized
+                ? FittedBox(
+              fit: BoxFit.fitWidth,
+              child: SizedBox(
+                width: _controller.value.size.width,
+                height: _controller.value.size.height,
+                child: Container(
+                  padding: const EdgeInsets.only(left: 0.0, top: 15),
+                  child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller)),
+                ),
+              ),
+            )
+                : Container(),
           ),
+
+          // Positioned.fill(
+          //   child: Lottie.asset('assets/animations/splash.json',
+          //       width: double.infinity,
+          //       height: double.infinity,),
+          // ),
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(20),

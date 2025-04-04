@@ -1,5 +1,5 @@
 import 'package:popcart/app/app.dart';
-import 'package:popcart/app/bootstrap.dart';
+import 'package:popcart/app/bloc_observer.dart';
 import 'package:popcart/env/env.dart';
 
 

@@ -222,17 +222,13 @@ class _SelectSellerTypeScreenState extends State<SelectSellerTypeScreen>
                           onTap: () {
                             if (isRegistered.value!) {
                               onboardingCubit.isRegisteredSeller = true;
-                              context.pushNamed(
-                                AppPath
-                                    .auth.buyerSignup.completeBuyerSignup.path,
-                              );
                             } else {
                               onboardingCubit.isRegisteredSeller = false;
-                              context.pushNamed(
-                                AppPath
-                                    .auth.buyerSignup.completeBuyerSignup.path,
-                              );
                             }
+                            context.pushNamed(
+                              AppPath
+                                  .auth.signup.path,
+                            );
                           },
                           child: CustomElevatedButton(
                             text: l10n.next,

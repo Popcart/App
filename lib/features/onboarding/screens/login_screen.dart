@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -26,6 +27,7 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<Offset> _thirdSlideAnimation;
   late FocusNode _focusNode;
   late TextEditingController _textEditingController;
+
   @override
   void initState() {
     _textEditingController = TextEditingController(text: '+234');
@@ -91,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen>
       listener: (context, state) {
         state.whenOrNull(
           sendOtpSuccess: () => context.pushNamed(
-            AppPath.auth.buyerSignup.verifyPhoneNumber.path,
+            AppPath.auth.otp.path,
           ),
           sendOtpFailure: (message) => context.showError(message),
         );
@@ -133,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen>
                     keyboardType: TextInputType.phone,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 24),
                 ListenableBuilder(
                   listenable: _textEditingController,
                   builder: (_, __) {
@@ -150,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen>
                               _textEditingController.text.length == 14 ? 1 : 0,
                           duration: const Duration(milliseconds: 300),
                           child: CustomElevatedButton(
-                            text: l10n.next,
+                            text: "Sign in",
                             loading: onboardingCubit.state.maybeWhen(
                               orElse: () => false,
                               loading: () => true,
@@ -160,6 +162,55 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     );
                   },
+                ),
+                const SizedBox(height: 24),
+                SlideTransition(
+                  position: _secondSlideAnimation,
+                  child: Center(
+                    child: RichText(
+                        text: TextSpan(
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                            children: [
+                          const TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.white),
+                          ),
+                          TextSpan(
+                            text: "Sign up",
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                context.pushNamed(
+                                  AppPath.auth.accountType.path,
+                                );
+                              },
+                            style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                decoration: TextDecoration.underline,
+                                color: AppColors.orange,),
+                          )
+                        ])),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                SlideTransition(
+                  position: _secondSlideAnimation,
+                  child: const Center(
+                    child: Text(
+                      'Forgot Password',
+                      style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.underline,
+                          color: AppColors.orange,),
+                    ),
+                  ),
                 ),
               ],
             ),

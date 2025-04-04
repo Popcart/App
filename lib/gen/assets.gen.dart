@@ -12,6 +12,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart' as _svg;
 import 'package:vector_graphics/vector_graphics.dart' as _vg;
 
+class $AssetsAnimationsGen {
+  const $AssetsAnimationsGen();
+
+  /// File path: assets/animations/popcart.mp4
+  String get popcart => 'assets/animations/popcart.mp4';
+
+  /// File path: assets/animations/splash.json
+  String get splash => 'assets/animations/splash.json';
+
+  /// List of all assets
+  List<String> get values => [popcart, splash];
+}
+
 class $AssetsFontsGen {
   const $AssetsFontsGen();
 
@@ -56,6 +69,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/boosts.svg
   SvgGenImage get boosts => const SvgGenImage('assets/icons/boosts.svg');
 
+  /// File path: assets/icons/business.svg
+  SvgGenImage get business => const SvgGenImage('assets/icons/business.svg');
+
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
@@ -87,8 +103,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/log_out.svg
   SvgGenImage get logOut => const SvgGenImage('assets/icons/log_out.svg');
 
+  /// File path: assets/icons/mail.svg
+  SvgGenImage get mail => const SvgGenImage('assets/icons/mail.svg');
+
   /// File path: assets/icons/messages.svg
   SvgGenImage get messages => const SvgGenImage('assets/icons/messages.svg');
+
+  /// File path: assets/icons/name.svg
+  SvgGenImage get name => const SvgGenImage('assets/icons/name.svg');
 
   /// File path: assets/icons/notifications.svg
   SvgGenImage get notifications =>
@@ -101,6 +123,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/personal_information.svg
   SvgGenImage get personalInformation =>
       const SvgGenImage('assets/icons/personal_information.svg');
+
+  /// File path: assets/icons/phone.svg
+  SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
 
   /// File path: assets/icons/profile_selected.svg
   SvgGenImage get profileSelected =>
@@ -120,6 +145,9 @@ class $AssetsIconsGen {
   SvgGenImage get storefront =>
       const SvgGenImage('assets/icons/storefront.svg');
 
+  /// File path: assets/icons/username.svg
+  SvgGenImage get username => const SvgGenImage('assets/icons/username.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
         search,
@@ -129,6 +157,7 @@ class $AssetsIconsGen {
         becomeASeller,
         bookmark,
         boosts,
+        business,
         checkicon,
         deleteAccount,
         errorIcon,
@@ -138,15 +167,19 @@ class $AssetsIconsGen {
         liveSelected,
         liveUnselected,
         logOut,
+        mail,
         messages,
+        name,
         notifications,
         paymentMethods,
         personalInformation,
+        phone,
         profileSelected,
         profileUnselected,
         purchases,
         rewards,
-        storefront
+        storefront,
+        username
       ];
 }
 
@@ -178,6 +211,7 @@ class $AssetsImagesGen {
 class AppAssets {
   const AppAssets._();
 
+  static const $AssetsAnimationsGen animations = $AssetsAnimationsGen();
   static const $AssetsFontsGen fonts = $AssetsFontsGen();
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
