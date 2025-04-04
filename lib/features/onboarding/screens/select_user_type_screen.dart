@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/widgets/animated_widgets.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
-class SelectUserTypeScreen extends StatefulWidget {
+class SelectUserTypeScreen extends StatefulHookWidget {
   const SelectUserTypeScreen({super.key});
 
   @override
@@ -71,10 +74,11 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final onboardingCubit = context.watch<OnboardingCubit>();
+    final isBuyer = useState<bool?>(null);
     return Scaffold(
       body: Stack(
         children: [
-          Positioned.fill(child: AppAssets.images.authBg.image()),
+          // Positioned.fill(child: AppAssets.images.authBg.image()),
           Positioned.fill(
             child: SafeArea(
               child: Padding(
@@ -99,172 +103,151 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                         ),
                       ),
                     ),
-                    const SizedBox(height: 64),
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        onboardingCubit.userType = UserType.buyer;
-                        context.pushNamed(
-                          AppPath.auth.buyerSignup.completeBuyerSignup.path,
-                        );
-                      },
-                      child: FadeTransition(
-                        opacity: _controller,
-                        child: SlideTransition(
-                          position: _secondSlideAnimation,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Color(0xff24262b),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(24)),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
+                    const SizedBox(height: 30),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              isBuyer.value = true;
+                              onboardingCubit.userType = UserType.buyer;
+                            },
+                            child: FadeTransition(
+                              opacity: _controller,
+                              child: SlideTransition(
+                                position: _secondSlideAnimation,
+                                child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color(0xfff97316),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(20),
-                                    ),
-                                    image: DecorationImage(
-                                      image: AppAssets.images.buyer.provider(),
-                                    ),
+                                    color: const Color(0xff24262b),
+                                    border: Border.all(color: isBuyer.value ==
+                                        null || isBuyer.value == false ?
+                                    const Color(0xff24262b) : AppColors.orange),
+                                    borderRadius:
+                                    const BorderRadius.all(Radius.circular(24)),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 64,
+                                        height: 64,
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(20),
+                                          ),
+                                          image: DecorationImage(
+                                            image: AppAssets.images.buyer.provider(),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        l10n.buyer,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        textAlign: TextAlign.center,
+                                        l10n.buyer_sub,
+                                        style: const TextStyle(
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      l10n.buyer,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      l10n.buyer_sub,
-                                      style: const TextStyle(
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: AppColors.white,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        onboardingCubit.userType = UserType.seller;
-                        context.pushNamed(AppPath.auth.selectSellerType.path);
-                      },
-                      child: FadeTransition(
-                        opacity: _controller,
-                        child: SlideTransition(
-                          position: _thirdSlideAnimation,
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              color: Color(0xff24262b),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(24)),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 64,
-                                  height: 64,
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xfff97316),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(20),
-                                    ),
-                                    image: DecorationImage(
-                                      image: AppAssets.images.seller.provider(),
-                                    ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              isBuyer.value = false;
+                              onboardingCubit.userType = UserType.seller;
+                            },
+                            child: FadeTransition(
+                              opacity: _controller,
+                              child: SlideTransition(
+                                position: _thirdSlideAnimation,
+                                child: Container(
+                                  decoration:  BoxDecoration(
+                                    color: const Color(0xff24262b),
+                                    border: Border.all(color: isBuyer.value == null || isBuyer.value == true ?
+                                    const Color(0xff24262b) : AppColors.orange),
+                                    borderRadius:
+                                    const BorderRadius.all(Radius.circular(24)),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 64,
+                                        height: 64,
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.all(
+                                            Radius.circular(20),
+                                          ),
+                                          image: DecorationImage(
+                                            image: AppAssets.images.seller
+                                                .provider(),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        l10n.seller,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        l10n.seller_sub,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      l10n.seller,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      l10n.seller_sub,
-                                      style: const TextStyle(
-                                        color: AppColors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Spacer(),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: AppColors.white,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                     const Spacer(),
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          context.pushNamed(
-                            AppPath.auth.login.path,
-                          );
-                        },
-                        child: Text.rich(
-                          TextSpan(
-                            text: l10n.already_have_an_account,
-                            style: const TextStyle(
-                              color: AppColors.orange,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: ' ',
-                              ),
-                              TextSpan(
-                                text: l10n.sign_in,
-                                style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
+                    IgnorePointer(
+                      ignoring: isBuyer.value == null,
+                      child: AnimatedOpacity(
+                        opacity: isBuyer.value == null ? 0 : 1,
+                        duration: const Duration(milliseconds: 300),
+                        child: BouncingEffect(
+                          onTap: () {
+                            context.pushNamed(
+                              AppPath
+                                  .auth.signup.path,
+                            );
+                          },
+                          child: CustomElevatedButton(
+                            text: l10n.next,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),

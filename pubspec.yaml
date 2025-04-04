@@ -4,10 +4,10 @@ version: 1.0.0+2
 publish_to: none
 
 environment:
-  sdk: ^3.4.0
+  sdk: ^3.5.3
 
 dependencies:
-  agora_rtc_engine: ^6.5.0
+#  agora_rtc_engine: ^6.5.0
   bloc: ^8.1.4
   dio: ^5.7.0
   envied: ^1.1.1
@@ -54,6 +54,8 @@ dependencies:
   timer_count_down: ^2.2.2
   toastification: ^2.3.0
   webview_flutter: ^4.10.0
+  lottie: ^3.2.0
+  video_player: ^2.9.5
 
 dev_dependencies:
   bloc_test: ^9.1.7
@@ -73,6 +75,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/fonts/
+    - assets/animations/
   fonts:
     - family: WorkSans
       fonts:

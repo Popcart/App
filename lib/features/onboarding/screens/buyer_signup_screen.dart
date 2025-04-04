@@ -79,7 +79,7 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
   void sendOtp() {
     context.read<OnboardingCubit>()
       ..phoneNumber = _textEditingController.text
-      ..registerBuyer();
+      ..registerUser();
   }
 
   @override
@@ -93,7 +93,7 @@ class _BuyerSignupScreenState extends State<BuyerSignupScreen>
           onboardingFailure: (message) => context.showError(message),
           onboardingSuccess: () => context.read<OnboardingCubit>().sendOtp(),
           sendOtpSuccess: () => context.pushNamed(
-            AppPath.auth.buyerSignup.verifyPhoneNumber.path,
+            AppPath.auth.signup.path,
           ),
           sendOtpFailure: (message) => context.showError(message),
         );

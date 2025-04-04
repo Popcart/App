@@ -138,7 +138,7 @@ class BuyerProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CircleAvatar(
-            backgroundColor: const Color(0xff111214).withValues(alpha: 0.45),
+            backgroundColor: const Color(0xff111214).withOpacity(0.45),
             radius: 24,
             child: icon,
           ),

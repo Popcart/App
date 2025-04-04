@@ -98,7 +98,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   String get businessAddress => _businessAddress;
 
-  Future<void> registerBuyer() async {
+  Future<void> registerUser() async {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.setOnboardingCompleted(
       firstName: _firstName,
@@ -106,7 +106,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       username: _username,
       phone: _phoneNumber,
       email: _email,
-      userType: _userType?.name ?? 'buyer',
+      userType: _userType?.name ?? 'buyer', businessName: _businessName,
+      registeredBusiness: _isRegisteredSeller,
     );
     response.when(
       success: (data) {

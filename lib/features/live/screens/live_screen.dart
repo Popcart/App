@@ -371,7 +371,7 @@ class ActiveLiveStream extends HookWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xff4B4444).withValues(alpha: 0.5),
+                      color: const Color(0xff4B4444).withOpacity(0.5),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: const Row(

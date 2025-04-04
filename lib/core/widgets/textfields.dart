@@ -22,10 +22,9 @@ class CustomTextFormField extends TextFormField {
     super.textInputAction,
     super.textCapitalization,
     super.inputFormatters,
+    Widget? prefixIcon
   }) : super(
-          onTapOutside: kDebugMode
-              ? (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus()
-              : null,
+          onTapOutside: (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus(),
           style: const TextStyle(
             color: AppColors.white,
             fontWeight: FontWeight.w700,
@@ -34,23 +33,27 @@ class CustomTextFormField extends TextFormField {
           cursorHeight: 20,
           decoration: InputDecoration(
             hintText: hintText ?? '',
-            hintStyle: TextStyle(color: AppColors.white.withValues(alpha: 0.2)),
+            hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: prefixIcon,
+            ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(100),
+              borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: AppColors.white),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(100),
+              borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: Color(0xff50535B)),
             ),
             disabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(100),
+              borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: Color(0xff50535B)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(100),
+              borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: AppColors.orange),
             ),
           ),

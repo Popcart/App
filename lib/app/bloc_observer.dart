@@ -174,7 +174,7 @@ Future<void> bootstrap(
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
     final isFirstTime = locator<SharedPrefs>().firstTime;
     if (isFirstTime == null) {
-      await downloadSplashFromServer();
+      // await downloadSplashFromServer();
       locator<SharedPrefs>().firstTime = false;
     }
     final isLoggedIn = locator.get<SharedPrefs>().loggedIn;

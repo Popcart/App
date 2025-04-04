@@ -18,16 +18,8 @@ import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
 import 'package:popcart/features/live/screens/seller_livestream_screen.dart';
-import 'package:popcart/features/onboarding/screens/business_signup_screen.dart';
-import 'package:popcart/features/onboarding/screens/buyer_signup_screen.dart';
-import 'package:popcart/features/onboarding/screens/choose_username_screen.dart';
-import 'package:popcart/features/onboarding/screens/complete_buyer_registration_screen.dart';
-import 'package:popcart/features/onboarding/screens/complete_individual_business_signup_screen.dart';
-import 'package:popcart/features/onboarding/screens/complete_registered_business_signup_screen.dart';
+import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/login_screen.dart';
-import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
-import 'package:popcart/features/onboarding/screens/select_seller_type_screen.dart';
-// import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
@@ -64,134 +56,45 @@ final router = GoRouter(
     ),
     GoRoute(
       path: AppPath.auth.goRoute,
-      // builder: (context, state) => const SelectUserTypeScreen(),
       pageBuilder: (context, state) => CustomTransitionPage(
-        child: const SelectUserTypeScreen(),
+        child: const LoginScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
       ),
       routes: [
         GoRoute(
-          path: AppPath.auth.selectSellerType.goRoute,
-          name: AppPath.auth.selectSellerType.path,
-          // builder: (context, state) => const SelectSellerTypeScreen(),
+          path: AppPath.auth.otp.goRoute,
+          name: AppPath.auth.otp.path,
           pageBuilder: (context, state) => CustomTransitionPage(
-            child: const SelectSellerTypeScreen(),
+            child: const VerifyPhoneNumberScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
           ),
-          routes: [
-            GoRoute(
-              path: AppPath.auth.login.goRoute,
-              name: AppPath.auth.login.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const LoginScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-            ),
-            GoRoute(
-              path: AppPath.auth.sellerSignup.businessSignup.goRoute,
-              name: AppPath.auth.sellerSignup.businessSignup.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const BusinessSignupScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-              routes: [
-                GoRoute(
-                  path: AppPath.auth.sellerSignup.businessSignup
-                      .completeRegisteredBusinessSignup.goRoute,
-                  name: AppPath.auth.sellerSignup.businessSignup
-                      .completeRegisteredBusinessSignup.path,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: const CompleteRegisteredBusinessSignupScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                ),
-                GoRoute(
-                  path: AppPath.auth.sellerSignup.businessSignup
-                      .completeIndividualBusinessSignup.goRoute,
-                  name: AppPath.auth.sellerSignup.businessSignup
-                      .completeIndividualBusinessSignup.path,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: const CompleteIndividualBusinessSignupScreen(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ],
         ),
         GoRoute(
-          path: AppPath.auth.buyerSignup.goRoute,
-          name: AppPath.auth.buyerSignup.path,
+          path: AppPath.auth.accountType.goRoute,
+          name: AppPath.auth.accountType.path,
           pageBuilder: (context, state) => CustomTransitionPage(
-            child: const BuyerSignupScreen(),
+            child: const SelectUserTypeScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
             },
           ),
-          routes: [
-            GoRoute(
-              path: AppPath.auth.buyerSignup.verifyPhoneNumber.goRoute,
-              name: AppPath.auth.buyerSignup.verifyPhoneNumber.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const VerifyPhoneNumberScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-            ),
-            GoRoute(
-              path: AppPath.auth.buyerSignup.chooseUsername.goRoute,
-              name: AppPath.auth.buyerSignup.chooseUsername.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const ChooseUsernameScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-            ),
-            GoRoute(
-              path: AppPath.auth.buyerSignup.completeBuyerSignup.goRoute,
-              name: AppPath.auth.buyerSignup.completeBuyerSignup.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const CompleteBuyerRegistrationScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-            ),
-            GoRoute(
-              path: AppPath.auth.buyerSignup.selectInterests.goRoute,
-              name: AppPath.auth.buyerSignup.selectInterests.path,
-              pageBuilder: (context, state) => CustomTransitionPage(
-                child: const SelectInterestsScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
-              ),
-            ),
-          ],
+        ),
+        GoRoute(
+          path: AppPath.auth.signup.goRoute,
+          name: AppPath.auth.signup.path,
+          pageBuilder: (context, state) => CustomTransitionPage(
+            child: const SignUpScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
         ),
       ],
     ),

@@ -9,6 +9,8 @@ sealed class OnboardingRepo {
     required String phone,
     required String email,
     required String userType,
+    required String businessName,
+    required bool registeredBusiness,
   });
 
   Future<ApiResponse<void>> sendOtp({
@@ -41,6 +43,8 @@ class OnboardingRepoImpl implements OnboardingRepo {
     required String phone,
     required String email,
     required String userType,
+    required String businessName,
+    required bool registeredBusiness,
   }) async {
     return _apiHelper.request(
       path: 'register',
@@ -53,7 +57,8 @@ class OnboardingRepoImpl implements OnboardingRepo {
         'phone': phone,
         'email': email,
         'userType': userType,
-        'businessName': 'business',
+        'businessName': businessName,
+        'registeredBusiness': registeredBusiness,
       },
     );
   }

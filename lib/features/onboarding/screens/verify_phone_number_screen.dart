@@ -84,30 +84,12 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
 
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
-    if (onboardingCubit.userType == null) {
+    if (onboardingCubit.userType == UserType.buyer) {
       context.go(AppPath.authorizedUser.live.path);
       return;
-    }
-    if (onboardingCubit.userType == UserType.buyer) {
-      context.pushNamed(AppPath.auth.buyerSignup.selectInterests.path);
+    }else{
+      context.go(AppPath.authorizedUser.live.path);
       return;
-    }
-
-    if (onboardingCubit.userType != UserType.buyer) {
-      if (onboardingCubit.isRegisteredSeller) {
-        context.pushNamed(
-          AppPath.auth.sellerSignup.businessSignup
-              .completeRegisteredBusinessSignup.path,
-        );
-        return;
-      }
-      if (!onboardingCubit.isRegisteredSeller) {
-        context.pushNamed(
-          AppPath.auth.sellerSignup.businessSignup
-              .completeIndividualBusinessSignup.path,
-        );
-        return;
-      }
     }
   }
 
@@ -176,6 +158,11 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                     controller: _textEditingController,
                   ),
                 ),
+                SizedBox(height: 20,),
+                if (otpSent.value)
+                  OTPCountdownTimer(
+                    onResendPressed: handleResendOTP,
+                  ),
                 const Spacer(),
                 ListenableBuilder(
                   listenable: _textEditingController,
@@ -208,12 +195,6 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                     );
                   },
                 ),
-                if (otpSent.value)
-                  Center(
-                    child: OTPCountdownTimer(
-                      onResendPressed: handleResendOTP,
-                    ),
-                  ),
               ],
             ),
           ),
@@ -249,7 +230,7 @@ class OTPCountdownTimer extends HookWidget {
               const Text(
                 'Resend OTP in ',
                 style: TextStyle(
-                  color: AppColors.orange,
+                  color: AppColors.white,
                   fontSize: 14,
                 ),
               ),
@@ -264,7 +245,7 @@ class OTPCountdownTimer extends HookWidget {
                     '$minutes:$seconds',
                     style: const TextStyle(
                       color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
                   );
