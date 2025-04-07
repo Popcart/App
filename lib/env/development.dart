@@ -8,6 +8,9 @@ part 'development.g.dart';
 
 @Envied(path: 'assets/env/development.env', name: 'Env', obfuscate: true)
 final class DevEnv implements Env, EnvFields {
+  @override
+  @EnviedField(varName: 'INTRO_GIF_URL')
+  final String introGifUrl = _Env.introGifUrl;
 
   @override
   @EnviedField(varName: 'SELLER_DASHBOARD_URL')
