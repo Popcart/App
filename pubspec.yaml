@@ -56,6 +56,7 @@ dependencies:
   webview_flutter: ^4.10.0
   lottie: ^3.2.0
   video_player: ^2.9.5
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   bloc_test: ^9.1.7
@@ -108,3 +109,9 @@ flutter_native_splash:
   android_12:
     color: "#111214"
     # icon_background_color: "#111214"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
