@@ -41,6 +41,7 @@ dependencies:
   haptic_feedback: ^0.5.1+1
   infinite_scroll_pagination: ^4.1.0
   intl: ^0.19.0
+  json_annotation: ^4.9.0
   keyboard_attachable: ^2.2.0
   mime: ^2.0.0
   path_provider: ^2.1.5
