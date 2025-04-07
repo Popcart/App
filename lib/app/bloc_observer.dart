@@ -191,18 +191,18 @@ Future<void> bootstrap(
   FlutterNativeSplash.remove();
 }
 
-Future<bool> downloadSplashFromServer() async {
-  final splashUrl = Env().introGifUrl;
-  final savePath = await getTemporaryDirectory();
-  final filePath = '${savePath.path}/splash.gif';
-  final fileExists = File(filePath).existsSync();
-  if (!fileExists) {
-    final response = await Dio().download(splashUrl, filePath);
-    if (response.statusCode == 200) {
-      return true;
-    }
-  } else {
-    return false;
-  }
-  return true;
-}
+// Future<bool> downloadSplashFromServer() async {
+  // final splashUrl = Env().introGifUrl;
+  // final savePath = await getTemporaryDirectory();
+  // final filePath = '${savePath.path}/splash.gif';
+  // final fileExists = File(filePath).existsSync();
+  // if (!fileExists) {
+  //   final response = await Dio().download(splashUrl, filePath);
+  //   if (response.statusCode == 200) {
+  //     return true;
+  //   }
+  // } else {
+  //   return false;
+  // }
+  // return true;
+// }
