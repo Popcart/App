@@ -218,11 +218,11 @@ class _AccountWebviewState extends State<AccountWebview> {
   @override
   void initState() {
     super.initState();
-    final url = Env().sellerDashboardUrl.addQueryParameters({
-      'state': 'app',
-      'accessToken': locator<SharedPrefs>().accessToken,
-    });
-    log(url, name: 'AccountWebview');
+    // final url = Env().sellerDashboardUrl.addQueryParameters({
+    //   'state': 'app',
+    //   'accessToken': locator<SharedPrefs>().accessToken,
+    // });
+    // log(url, name: 'AccountWebview');
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0xff111214))
@@ -240,14 +240,14 @@ class _AccountWebviewState extends State<AccountWebview> {
           },
         ),
       )
-      ..loadRequest(
-        Uri.parse(
-          Env().sellerDashboardUrl.addQueryParameters({
-            'state': 'app',
-            'accessToken': locator<SharedPrefs>().accessToken,
-          }),
-        ),
-      )
+      // ..loadRequest(
+        // Uri.parse(
+        //   Env().sellerDashboardUrl.addQueryParameters({
+        //     'state': 'app',
+        //     'accessToken': locator<SharedPrefs>().accessToken,
+        //   }),
+        // ),
+      // )
       ..enableZoom(false);
   }
 
