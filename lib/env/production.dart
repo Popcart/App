@@ -7,12 +7,6 @@ part 'production.g.dart';
 
 @Envied(path: 'assets/env/production.env', name: 'Env', obfuscate: true)
 final class ProdEnv implements Env, EnvFields {
-  @override
-  
-
-  @override
-  @EnviedField(varName: 'INTRO_GIF_URL')
-  final String introGifUrl = _Env.introGifUrl;
 
   @override
   @EnviedField(varName: 'SELLER_DASHBOARD_URL')
