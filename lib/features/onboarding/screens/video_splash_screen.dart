@@ -63,12 +63,6 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
             )
                 : Container(),
           ),
-
-          // Positioned.fill(
-          //   child: Lottie.asset('assets/animations/splash.json',
-          //       width: double.infinity,
-          //       height: double.infinity,),
-          // ),
           Positioned.fill(
             child: Padding(
               padding: const EdgeInsets.all(20),
