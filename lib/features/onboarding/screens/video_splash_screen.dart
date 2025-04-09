@@ -20,10 +20,11 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.asset("assets/animations/popcart.mp4");
-    _controller..addListener(() {
-      setState(() {});
-    })
-    ..setLooping(true);
+    _controller
+      ..addListener(() {
+        setState(() {});
+      })
+      ..setLooping(true);
     _controller.initialize().then((_) => setState(() {}));
     _controller.play();
   }
@@ -55,18 +56,18 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
           Positioned.fill(
             child: _controller.value.isInitialized
                 ? FittedBox(
-              fit: BoxFit.fitWidth,
-              child: SizedBox(
-                width: _controller.value.size.width,
-                height: _controller.value.size.height,
-                child: Container(
-                  padding: const EdgeInsets.only(left: 0.0, top: 15),
-                  child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller)),
-                ),
-              ),
-            )
+                    fit: BoxFit.fitWidth,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 0.0, top: 15),
+                        child: AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: VideoPlayer(_controller)),
+                      ),
+                    ),
+                  )
                 : Container(),
           ),
           Positioned.fill(
