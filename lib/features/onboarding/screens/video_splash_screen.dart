@@ -29,6 +29,12 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
@@ -74,6 +80,7 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
                   // ),
                   BouncingEffect(
                     onTap: () {
+                      _controller.pause();
                       context.push(AppPath.auth.path);
                     },
                     child: SizedBox(
