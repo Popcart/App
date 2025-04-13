@@ -4,10 +4,9 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
@@ -235,16 +234,13 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                       child: AnimatedOpacity(
                         opacity: isBuyer.value == null ? 0 : 1,
                         duration: const Duration(milliseconds: 300),
-                        child: BouncingEffect(
-                          onTap: () {
-                            context.pushNamed(
-                              AppPath
-                                  .auth.signup.path,
-                            );
-                          },
-                          child: CustomElevatedButton(
-                            text: l10n.next,
-                          ),
+                        child: CustomElevatedButton(
+                          text: l10n.next, onPressed: () {
+                          context.pushNamed(
+                            AppPath
+                                .auth.signup.path,
+                          );
+                        },
                         ),
                       ),
                     ),

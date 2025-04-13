@@ -97,7 +97,7 @@ class ProductCategory {
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       _$ProductCategoryFromJson(json);
 
-  @JsonKey(defaultValue: '')
+  @JsonKey(defaultValue: '_id')
   final String id;
   @JsonKey(defaultValue: '')
   final String name;

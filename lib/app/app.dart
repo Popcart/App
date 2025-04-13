@@ -25,7 +25,7 @@ class PopCart extends StatelessWidget {
           create: (context) => OnboardingCubit(),
         ),
         BlocProvider(
-          create: (context) => InterestListCubit()..getInterests(),
+          create: (context) => InterestCubit()..getInterests(),
         ),
         BlocProvider(
           create: (context) => ProfileCubit()..fetchUserProfile(),

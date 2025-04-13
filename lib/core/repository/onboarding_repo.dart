@@ -14,12 +14,12 @@ sealed class OnboardingRepo {
   });
 
   Future<ApiResponse<void>> sendOtp({
-    required String phone,
+    required String email,
   });
 
   Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
-    required String phone,
+    required String email,
   });
 
    Future<ApiResponse<void>> verifyEmail({
@@ -66,25 +66,25 @@ class OnboardingRepoImpl implements OnboardingRepo {
   @override
   Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
-    required String phone,
+    required String email,
   }) {
     return _apiHelper.request<TokenPair>(
-      path: 'verify-phone',
+      path: 'verify-email',
       method: MethodType.post,
       payload: {
         'code': otp,
-        'phone': phone,
+        'email': email,
       }, responseMapper:  TokenPair.fromJson,
     );
   }
   
   @override
-  Future<ApiResponse<void>> sendOtp({required String phone}) {
+  Future<ApiResponse<void>> sendOtp({required String email}) {
     return _apiHelper.request<void>(
       path: 'send-otp',
       method: MethodType.post,
       payload: {
-        'phone': phone,
+        'email': email,
       },
      
     );

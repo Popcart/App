@@ -5,12 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
 class ScheduleSessionScreen extends HookWidget {
@@ -73,19 +72,16 @@ class ScheduleSessionScreen extends HookWidget {
     });
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
-        child: BouncingEffect(
-          onTap: selectProducts,
-          child: CustomElevatedButton(
-            text: productIds.value.isEmpty
-                ? l10n.select_products
-                : isScheduled.value
-                    ? l10n.schedule_livestream
-                    : l10n.go_live,
-            loading: openLivestream.state.maybeWhen(
-              loading: () => true,
-              orElse: () => false,
-            ),
-          ),
+        child: CustomElevatedButton(
+          text: productIds.value.isEmpty
+              ? l10n.select_products
+              : isScheduled.value
+                  ? l10n.schedule_livestream
+                  : l10n.go_live,
+          loading: openLivestream.state.maybeWhen(
+            loading: () => true,
+            orElse: () => false,
+          ), onPressed: () { selectProducts; },
         ),
       ),
       body: BlocListener<OpenLivestreamCubit, OpenLivestreamState>(

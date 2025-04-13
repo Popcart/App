@@ -6,11 +6,10 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
@@ -33,9 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen>
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _businessNameController = TextEditingController();
-  final _phoneNumber = TextEditingController();
+  final _phoneNumber = TextEditingController(text: "+234");
 
-  bool isBusinessRegistered = true;
+  bool isBusinessRegistered = false;
 
   @override
   void initState() {
@@ -67,6 +66,7 @@ class _SignUpScreenState extends State<SignUpScreen>
   void _onProceed() {
     if (!_formKey.currentState!.validate()) return;
     context.read<OnboardingCubit>()
+      ..isLoggingIn = false
       ..email = _emailController.text
       ..username = _usernameController.text
       ..firstName = _firstNameController.text
@@ -88,8 +88,9 @@ class _SignUpScreenState extends State<SignUpScreen>
           listener: (context, state) {
             state.whenOrNull(
               onboardingFailure: (msg) => context.showError(msg),
-              onboardingSuccess: () =>
-                  context.pushNamed(AppPath.auth.otp.path),
+              onboardingSuccess: () {
+                context.pushNamed(AppPath.auth.otp.path);
+              },
             );
           },
           child: SingleChildScrollView(
@@ -192,15 +193,12 @@ class _SignUpScreenState extends State<SignUpScreen>
                   },
                   ..._buildField("Phone number", AppAssets.icons.phone.svg(), _phoneNumber),
                   const SizedBox(height: 24),
-                  BouncingEffect(
-                    onTap: _onProceed,
-                    child: CustomElevatedButton(
-                      text: l10n.next,
-                      loading: cubit.state.maybeWhen(
-                        loading: () => true,
-                        orElse: () => false,
-                      ),
-                    ),
+                  CustomElevatedButton(
+                    text: l10n.next,
+                    loading: cubit.state.maybeWhen(
+                      loading: () => true,
+                      orElse: () => false,
+                    ), onPressed: _onProceed,
                   ),
                   const SizedBox(height: 16),
                   Center(

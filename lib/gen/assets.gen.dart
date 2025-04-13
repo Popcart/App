@@ -15,14 +15,11 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsAnimationsGen {
   const $AssetsAnimationsGen();
 
-  /// File path: assets/animations/popcart.mp4
-  String get popcart => 'assets/animations/popcart.mp4';
-
-  /// File path: assets/animations/splash.json
-  String get splash => 'assets/animations/splash.json';
+  /// File path: assets/animations/splash_animation.mp4
+  String get splashAnimation => 'assets/animations/splash_animation.mp4';
 
   /// List of all assets
-  List<String> get values => [popcart, splash];
+  List<String> get values => [splashAnimation];
 }
 
 class $AssetsFontsGen {

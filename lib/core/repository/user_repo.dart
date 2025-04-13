@@ -18,6 +18,7 @@ sealed class UserRepository {
     String? businessName,
   });
   Future<ApiResponse<UserModel>> getUserProfile();
+  Future<ApiResponse<dynamic>> saveInterest(List<String> interests);
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -74,5 +75,17 @@ class UserRepositoryImpl implements UserRepository {
         'businessAddress': businessEmail,
       },
     );
+  }
+
+  @override
+  Future<ApiResponse<void>> saveInterest(List<String> interests) async {
+    final response = await _apiHelper.request<void>(
+      path: 'edit-profile',
+      method: MethodType.put,
+      payload: {
+        'interests': interests,
+      },
+    );
+    return response;
   }
 }

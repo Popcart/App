@@ -98,6 +98,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
 
   String get businessAddress => _businessAddress;
 
+  bool isLoggingIn = true;
+  bool isBusinessRegistered = false;
+
   Future<void> registerUser() async {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.setOnboardingCompleted(
@@ -106,7 +109,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       username: _username,
       phone: _phoneNumber,
       email: _email,
-      userType: _userType?.name ?? 'buyer', businessName: _businessName,
+      userType: _userType?.name ?? 'buyer',
+      businessName: _businessName,
       registeredBusiness: _isRegisteredSeller,
     );
     response.when(
@@ -129,7 +133,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.verifyOtp(
       otp: otp,
-      phone: _phoneNumber,
+      email: _email,
     );
     response.when(
       success: (data) {
@@ -183,14 +187,18 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
   }
 
-  Future<void> sendOtp() async {
+  Future<void> sendOtp({bool isResendingOtp = false}) async {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.sendOtp(
-      phone: _phoneNumber,
+      email: _email,
     );
     response.when(
       success: (data) {
-        emit(const OnboardingState.sendOtpSuccess());
+        if(!isResendingOtp){
+          emit(const OnboardingState.sendOtpSuccess());
+        }else{
+          emit(const OnboardingState.resendOtpSuccess());
+        }
       },
       error: (e) {
         emit(
@@ -202,24 +210,24 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
   }
 
-  Future<void> verifyEmail() async {
-    emit(const OnboardingState.loading());
-    final response = await _onboardingRepo.verifyEmail(
-      email: _email,
-    );
-    response.when(
-      success: (data) {
-        emit(const OnboardingState.verifyEmailSuccess());
-      },
-      error: (e) {
-        emit(
-          OnboardingState.verifyEmailFailure(
-            e.message ?? 'An error occurred',
-          ),
-        );
-      },
-    );
-  }
+  // Future<void> verifyEmail() async {
+  //   emit(const OnboardingState.loading());
+  //   final response = await _onboardingRepo.verifyEmail(
+  //     email: _email,
+  //   );
+  //   response.when(
+  //     success: (data) {
+  //       emit(const OnboardingState.verifyEmailSuccess());
+  //     },
+  //     error: (e) {
+  //       emit(
+  //         OnboardingState.verifyEmailFailure(
+  //           e.message ?? 'An error occurred',
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<void> verifyUsername() async {
     emit(const OnboardingState.loading());

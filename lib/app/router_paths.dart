@@ -16,6 +16,8 @@ class AuthPath extends Path<AuthPath> {
   Path get otp => Path('/otp');
   Path get accountType => Path('/account-type');
   Path get signup => Path('/signup');
+  Path get businessDetails => Path('/business-details');
+  Path get interestScreen => Path('/interest-screen');
 }
 
 

@@ -9,7 +9,6 @@ import 'package:popcart/app/router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart' show AppColors;
 import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -25,7 +24,7 @@ class LiveScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final interestListCubit = context.watch<InterestListCubit>();
+    final interestListCubit = context.watch<InterestCubit>();
     final profileCubit = context.watch<ProfileCubit>();
     final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
     final selectedInterest = useState<ProductCategory?>(null);
@@ -232,27 +231,24 @@ class LiveScreen extends HookWidget {
                                   ),
                                 ),
                                 Flexible(
-                                  child: BouncingEffect(
-                                    onTap: () {},
-                                    child: Container(
-                                      width: 48,
-                                      height: 48,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.orange,
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Center(
-                                        child: IconButton(
-                                          visualDensity: const VisualDensity(
-                                            horizontal: -4,
-                                            vertical: -4,
-                                          ),
-                                          icon: const Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: AppColors.white,
-                                          ),
-                                          onPressed: () {},
+                                  child: Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.orange,
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Center(
+                                      child: IconButton(
+                                        visualDensity: const VisualDensity(
+                                          horizontal: -4,
+                                          vertical: -4,
                                         ),
+                                        icon: const Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: AppColors.white,
+                                        ),
+                                        onPressed: () {},
                                       ),
                                     ),
                                   ),

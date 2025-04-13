@@ -4,27 +4,30 @@ import 'package:popcart/core/colors.dart';
 
 class CustomElevatedButton extends ElevatedButton {
   CustomElevatedButton({
-    // required VoidCallback super.onPressed,
+    required VoidCallback onPressed,
     required String text,
     bool loading = false,
+    bool enabled = true,
     super.key,
   }) : super(
-          onPressed: () {},
+    onPressed: enabled ? onPressed : null,
           child: loading
-              ? const CupertinoActivityIndicator()
+              ? const CircularProgressIndicator(color: AppColors.white,)
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       text,
-                      style: const TextStyle(
-                        color: AppColors.white,
+                      style: TextStyle(
+                        color: enabled ? AppColors.white : AppColors.white
+                            .withOpacity(.5),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward_ios,
-                      color: AppColors.white,
+                      color: enabled ? AppColors.white : AppColors.white
+                          .withOpacity(.5),
                       size: 16,
                     ),
                   ],
@@ -44,7 +47,7 @@ class CustomElevatedButton extends ElevatedButton {
               Size(double.infinity, 56),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              AppColors.orange,
+              enabled? AppColors.orange : AppColors.orange.withOpacity(.5),
             ),
           ),
         );
