@@ -7,4 +7,8 @@ class InterestListState with _$InterestListState {
   const factory InterestListState.loaded(List<ProductCategory> interests) =
       _Loaded;
   const factory InterestListState.error(String message) = _Error;
+
+  const factory InterestListState.saveInterestSuccess() = _SaveInterestSuccess;
+  const factory InterestListState.saveInterestFailure(String message) =
+  _SaveInterestFailure;
 }

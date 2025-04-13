@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -17,15 +16,14 @@ import 'package:timer_count_down/timer_count_down.dart';
 bool isSeller = false;
 bool isBusinessSeller = false;
 
-class VerifyPhoneNumberScreen extends StatefulHookWidget {
-  const VerifyPhoneNumberScreen({super.key});
+class VerifyOtpScreen extends StatefulHookWidget {
+  const VerifyOtpScreen({super.key});
 
   @override
-  State<VerifyPhoneNumberScreen> createState() =>
-      _VerifyPhoneNumberScreenState();
+  State<VerifyOtpScreen> createState() => _VerifyPhoneNumberScreenState();
 }
 
-class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
+class _VerifyPhoneNumberScreenState extends State<VerifyOtpScreen>
     with TickerProviderStateMixin {
   late Animation<Offset> _firstSlideAnimation;
   late Animation<Offset> _secondSlideAnimation;
@@ -82,13 +80,21 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
     super.dispose();
   }
 
+  void handleResendOTP() {
+    final onboardingCubit = context.read<OnboardingCubit>();
+    onboardingCubit.sendOtp(isResendingOtp: true);
+  }
+
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
-    if (onboardingCubit.userType == UserType.buyer) {
-      context.go(AppPath.authorizedUser.live.path);
-      return;
-    }else{
-      context.go(AppPath.authorizedUser.live.path);
+    if (onboardingCubit.isLoggingIn) {
+      context.push(AppPath.authorizedUser.live.path);
+    } else {
+      if (onboardingCubit.userType == UserType.buyer) {
+        context.pushNamed(AppPath.auth.interestScreen.path);
+      } else {
+        context.pushNamed(AppPath.auth.businessDetails.path);
+      }
       return;
     }
   }
@@ -98,12 +104,6 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
     final l10n = AppLocalizations.of(context);
     final onboardingCubit = context.watch<OnboardingCubit>();
     final otpSent = useState(false);
-
-    void handleResendOTP() {
-      // API call to resend OTP would go here
-      debugPrint('Resending OTP...');
-      otpSent.value = true;
-    }
 
     useEffect(
       () {
@@ -120,6 +120,9 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
             context.showError(message);
           },
           verifyOtpSuccess: _onProceed,
+          resendOtpSuccess: () {
+            otpSent.value = true;
+          },
         );
       },
       child: Scaffold(
@@ -146,7 +149,8 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                 SlideTransition(
                   position: _secondSlideAnimation,
                   child: Text(
-                    l10n.otp_code_sub,
+                    'We just sent the verification code to your email address '
+                    '${onboardingCubit.email}',
                     style: const TextStyle(color: AppColors.white),
                   ),
                 ),
@@ -158,7 +162,9 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                     controller: _textEditingController,
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 if (otpSent.value)
                   OTPCountdownTimer(
                     onResendPressed: handleResendOTP,
@@ -173,23 +179,21 @@ class _VerifyPhoneNumberScreenState extends State<VerifyPhoneNumberScreen>
                             orElse: () => false,
                             loading: () => true,
                           ),
-                      child: BouncingEffect(
-                        onTap: () {
-                          onboardingCubit.verifyOtp(
-                            otp: _textEditingController.text,
-                          );
-                        },
-                        child: AnimatedOpacity(
-                          opacity:
-                              _textEditingController.text.length == 5 ? 1 : 0,
-                          duration: const Duration(milliseconds: 300),
-                          child: CustomElevatedButton(
-                            text: l10n.next,
-                            loading: onboardingCubit.state.maybeWhen(
-                              orElse: () => false,
-                              loading: () => true,
-                            ),
+                      child: AnimatedOpacity(
+                        opacity:
+                            _textEditingController.text.length == 5 ? 1 : 0,
+                        duration: const Duration(milliseconds: 300),
+                        child: CustomElevatedButton(
+                          text: l10n.next,
+                          loading: onboardingCubit.state.maybeWhen(
+                            orElse: () => false,
+                            loading: () => true,
                           ),
+                          onPressed: () {
+                            onboardingCubit.verifyOtp(
+                              otp: _textEditingController.text,
+                            );
+                          },
                         ),
                       ),
                     );
@@ -210,6 +214,7 @@ class OTPCountdownTimer extends HookWidget {
     super.key,
     this.timerDuration = 120, // 2 minutes in seconds
   });
+
   final void Function() onResendPressed;
   final int timerDuration;
 

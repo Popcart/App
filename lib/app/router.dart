@@ -18,10 +18,12 @@ import 'package:popcart/features/live/screens/live_screen.dart';
 import 'package:popcart/features/live/screens/schedule_session_screen.dart';
 import 'package:popcart/features/live/screens/select_products_screen.dart';
 import 'package:popcart/features/live/screens/seller_livestream_screen.dart';
+import 'package:popcart/features/onboarding/screens/business_details_screen.dart';
+import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
 import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/login_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
-import 'package:popcart/features/onboarding/screens/verify_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
@@ -67,7 +69,7 @@ final router = GoRouter(
           path: AppPath.auth.otp.goRoute,
           name: AppPath.auth.otp.path,
           pageBuilder: (context, state) => CustomTransitionPage(
-            child: const VerifyPhoneNumberScreen(),
+            child: const VerifyOtpScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);
@@ -90,6 +92,28 @@ final router = GoRouter(
           name: AppPath.auth.signup.path,
           pageBuilder: (context, state) => CustomTransitionPage(
             child: const SignUpScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        ),
+        GoRoute(
+          path: AppPath.auth.businessDetails.goRoute,
+          name: AppPath.auth.businessDetails.path,
+          pageBuilder: (context, state) => CustomTransitionPage(
+            child: const BusinessDetailsScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+          ),
+        ),
+        GoRoute(
+          path: AppPath.auth.interestScreen.goRoute,
+          name: AppPath.auth.interestScreen.path,
+          pageBuilder: (context, state) => CustomTransitionPage(
+            child: const SelectInterestsScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
               return FadeTransition(opacity: animation, child: child);

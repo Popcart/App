@@ -9,9 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
-import 'package:popcart/core/utils.dart';
-import 'package:popcart/env/env.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 

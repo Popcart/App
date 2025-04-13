@@ -36,10 +36,10 @@ class CustomTextFormField extends TextFormField {
             hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            prefixIcon: Padding(
+            prefixIcon: prefixIcon != null ?Padding(
               padding: const EdgeInsets.all(15.0),
               child: prefixIcon,
-            ),
+            ): null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: AppColors.white),

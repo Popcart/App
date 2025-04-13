@@ -6,10 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
-import 'package:popcart/core/widgets/animated_widgets.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 
 class SelectProductsScreen extends StatefulHookWidget {
@@ -66,14 +65,11 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
       bottomNavigationBar: productIds.value.isEmpty
           ? null
           : BottomAppBar(
-              child: BouncingEffect(
-                onTap: () {
-                  context.pop(productIds.value);
-                },
-                child: CustomElevatedButton(
-                  text: 'Select ${productIds.value.length} Products'
-                      .replaceAll('1 Products', '1 Product'),
-                ),
+              child: CustomElevatedButton(
+                text: 'Select ${productIds.value.length} Products'
+                    .replaceAll('1 Products', '1 Product'), onPressed: () {
+                context.pop(productIds.value);
+              },
               ),
             ),
       body: SafeArea(

@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 
 class BouncingEffect extends StatefulWidget {
@@ -111,3 +112,4 @@ class _PulsingAnimationState extends State<PulsingAnimation>
     );
   }
 }
+*/

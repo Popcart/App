@@ -10,14 +10,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/onboarding/screens/enter_phone_number_screen.dart';
+import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
