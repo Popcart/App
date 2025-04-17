@@ -2,7 +2,7 @@ import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 
 sealed class OnboardingRepo {
-  Future<ApiResponse<RegisterResponse>> setOnboardingCompleted({
+  Future<ApiResponse<void>> setOnboardingCompleted({
     required String firstName,
     required String lastName,
     required String username,
@@ -25,6 +25,7 @@ sealed class OnboardingRepo {
    Future<ApiResponse<void>> verifyEmail({
     required String email,
   });
+
   Future<ApiResponse<void>> verifyUsername({
     required String username,
   });
@@ -36,7 +37,7 @@ class OnboardingRepoImpl implements OnboardingRepo {
   final ApiHandler _apiHelper;
 
   @override
-  Future<ApiResponse<RegisterResponse>> setOnboardingCompleted({
+  Future<ApiResponse<void>> setOnboardingCompleted({
     required String firstName,
     required String lastName,
     required String username,
@@ -46,21 +47,20 @@ class OnboardingRepoImpl implements OnboardingRepo {
     required String businessName,
     required bool registeredBusiness,
   }) async {
-    return _apiHelper.request(
-      path: 'register',
-      method: MethodType.post,
-      responseMapper: RegisterResponse.fromJson,
-      payload: {
-        'firstName': firstName,
-        'lastName': lastName,
-        'username': username,
-        'phone': phone,
-        'email': email,
-        'userType': userType,
-        'businessName': businessName,
-        'registeredBusiness': registeredBusiness,
-      },
-    );
+      return _apiHelper.request<void>(
+        path: 'register',
+        method: MethodType.post,
+        payload: {
+          'firstName': firstName,
+          'lastName': lastName,
+          'username': username,
+          'phone': phone,
+          'email': email,
+          'userType': userType,
+          'businessName': businessName,
+          'registeredBusiness': registeredBusiness,
+        },
+      );
   }
 
   @override
@@ -69,7 +69,7 @@ class OnboardingRepoImpl implements OnboardingRepo {
     required String email,
   }) {
     return _apiHelper.request<TokenPair>(
-      path: 'verify-email',
+      path: 'verify-otp',
       method: MethodType.post,
       payload: {
         'code': otp,

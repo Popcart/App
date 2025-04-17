@@ -114,9 +114,9 @@ class _LoginScreenState extends State<LoginScreen>
                   const SizedBox(height: 32),
                   SlideTransition(
                     position: _firstSlideAnimation,
-                    child: Text(
-                      "Email Address",
-                      style: const TextStyle(
+                    child: const Text(
+                      'Email Address',
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
                         color: AppColors.white,

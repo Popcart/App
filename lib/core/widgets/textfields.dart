@@ -22,6 +22,7 @@ class CustomTextFormField extends TextFormField {
     super.textInputAction,
     super.textCapitalization,
     super.inputFormatters,
+    super.onChanged,
     Widget? prefixIcon
   }) : super(
           onTapOutside: (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus(),
