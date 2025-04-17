@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,9 +34,43 @@ class _SignUpScreenState extends State<SignUpScreen>
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _businessNameController = TextEditingController();
-  final _phoneNumber = TextEditingController(text: "+234");
+  final _phoneNumber = TextEditingController(text: '+234');
 
   bool isBusinessRegistered = false;
+  Timer? _debounce;
+
+  bool isUsernameAvailable = false;
+  bool isEmailAvailable = false;
+  String usernameAvailability = '';
+  String emailAvailability = '';
+
+  void onChangedHandler(String value, String field) {
+    _formKey.currentState!.validate();
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (value.isNotEmpty) {
+        if (field == 'email') {
+          setState(() {
+            emailAvailability = '';
+          });
+          checkEmailAvailability(value);
+        } else if (field == 'username') {
+          setState(() {
+            usernameAvailability = '';
+          });
+          checkUsernameAvailability(value);
+        }
+      }
+    });
+  }
+
+  Future<void> checkEmailAvailability(String email) async {
+    await context.read<OnboardingCubit>().verifyEmail(email);
+  }
+
+  Future<void> checkUsernameAvailability(String username) async {
+    await context.read<OnboardingCubit>().verifyUsername(username);
+  }
 
   @override
   void initState() {
@@ -64,7 +100,8 @@ class _SignUpScreenState extends State<SignUpScreen>
   }
 
   void _onProceed() {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || !isUsernameAvailable ||
+        !isEmailAvailable) return;
     context.read<OnboardingCubit>()
       ..isLoggingIn = false
       ..email = _emailController.text
@@ -91,6 +128,22 @@ class _SignUpScreenState extends State<SignUpScreen>
               onboardingSuccess: () {
                 context.pushNamed(AppPath.auth.otp.path);
               },
+              verifyEmailSuccess: () => setState(() {
+                isEmailAvailable = true;
+                emailAvailability = 'Email is available';
+              }),
+              verifyEmailFailure: (msg) => setState(() {
+                isEmailAvailable = false;
+                emailAvailability = msg;
+              }),
+              verifyUsernameSuccess: () => setState(() {
+                isUsernameAvailable = true;
+                usernameAvailability = 'Username is available';
+              }),
+              verifyUsernameFailure: (msg) => setState(() {
+                isUsernameAvailable = false;
+                usernameAvailability = msg;
+              }),
             );
           },
           child: SingleChildScrollView(
@@ -105,7 +158,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                   SlideTransition(
                     position: _animation,
                     child: const Text(
-                      "Sign up for free",
+                      'Sign up for free',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
@@ -122,67 +175,147 @@ class _SignUpScreenState extends State<SignUpScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ..._buildField("Email Address", AppAssets.icons.mail.svg(),_emailController,
-                      validator: ValidationBuilder().required().add(
-                          dotValidator).build()),
-                  ..._buildField("Username", AppAssets.icons.username.svg(),_usernameController),
-                  ..._buildField("Last Name",AppAssets.icons.name.svg(), _lastNameController),
-                  ..._buildField("First Name", AppAssets.icons.name.svg(),_firstNameController),
-                  if(cubit.userType == UserType.seller)...{
-                    ..._buildField("Business Name", AppAssets.icons.business.svg(),_businessNameController),
-                    const SizedBox(height: 2),
+                  SlideTransition(
+                    position: _animation,
+                    child: const Text(
+                      'Email Address',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SlideTransition(
+                    position: _animation,
+                    child: CustomTextFormField(
+                      controller: _emailController,
+                      hintText: 'Email Address',
+                      validator: ValidationBuilder()
+                          .required()
+                          .add(dotValidator)
+                          .build(),
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: AppAssets.icons.mail.svg(),
+                      onChanged: (value) => onChangedHandler(value, 'email'),
+                    ),
+                  ),
+                  if (emailAvailability.isNotEmpty) ...{
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      emailAvailability,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: isEmailAvailable ? AppColors.green : AppColors.red,
+                      ),
+                    ),
+                  },
+                  const SizedBox(height: 16),
+                  SlideTransition(
+                    position: _animation,
+                    child: const Text(
+                      'Username',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SlideTransition(
+                    position: _animation,
+                    child: CustomTextFormField(
+                      controller: _usernameController,
+                      hintText: 'Username',
+                      validator: ValidationBuilder().required().build(),
+                      textInputAction: TextInputAction.next,
+                      prefixIcon: AppAssets.icons.mail.svg(),
+                      onChanged: (value) => onChangedHandler(value, 'username'),
+                    ),
+                  ),
+                  if (usernameAvailability.isNotEmpty) ...{
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      usernameAvailability,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        color: isUsernameAvailable ? AppColors.green : AppColors.red,
+                      ),
+                    ),
+                  },
+                  const SizedBox(height: 16),
+                  ..._buildField('Last Name', AppAssets.icons.name.svg(),
+                      _lastNameController),
+                  ..._buildField('First Name', AppAssets.icons.name.svg(),
+                      _firstNameController),
+                  if (cubit.userType == UserType.seller) ...{
+                    ..._buildField(
+                        'Business Name',
+                        AppAssets.icons.business.svg(),
+                        _businessNameController),
+                    const SizedBox(height: 10),
                     const Text(
-                      "Is your business registered?",
+                      'Is your business registered?',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AppColors.white,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
                     Row(
                       children: [
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
                                 color: AppColors.darkGrey,
-                                borderRadius: BorderRadius.circular(19.0)
-                            ),
-                            padding: EdgeInsets.only(left: 0, right: 50),
+                                borderRadius: BorderRadius.circular(19.0)),
+                            padding: const EdgeInsets.only(left: 0, right: 50),
                             child: Row(
                               children: [
                                 Radio<bool>(
                                   value: true,
                                   groupValue: isBusinessRegistered,
                                   onChanged: (value) {
-                                    setState(() => isBusinessRegistered = value!);
+                                    setState(
+                                        () => isBusinessRegistered = value!);
                                   },
                                 ),
-                                const Text("Yes",
+                                const Text('Yes',
                                     style: TextStyle(color: AppColors.white)),
                               ],
                             ),
                           ),
                         ),
-                        SizedBox(width: 20,),
+                        const SizedBox(
+                          width: 20,
+                        ),
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
                                 color: AppColors.darkGrey,
-                                borderRadius: BorderRadius.circular(19.0)
-                            ),
-                            padding: EdgeInsets.only(left: 0, right: 50),
+                                borderRadius: BorderRadius.circular(19.0)),
+                            padding: const EdgeInsets.only(left: 0, right: 50),
                             child: Row(
                               children: [
                                 Radio<bool>(
                                   value: false,
                                   groupValue: isBusinessRegistered,
                                   onChanged: (value) {
-                                    setState(() => isBusinessRegistered = value!);
+                                    setState(
+                                        () => isBusinessRegistered = value!);
                                   },
                                 ),
-                                const Text(
-                                    "No", style: TextStyle(color: AppColors.white)),
+                                const Text('No',
+                                    style: TextStyle(color: AppColors.white)),
                               ],
                             ),
                           ),
@@ -191,24 +324,26 @@ class _SignUpScreenState extends State<SignUpScreen>
                     ),
                     const SizedBox(height: 16),
                   },
-                  ..._buildField("Phone number", AppAssets.icons.phone.svg(), _phoneNumber),
+                  ..._buildField('Phone number', AppAssets.icons.phone.svg(),
+                      _phoneNumber),
                   const SizedBox(height: 24),
                   CustomElevatedButton(
                     text: l10n.next,
                     loading: cubit.state.maybeWhen(
                       loading: () => true,
                       orElse: () => false,
-                    ), onPressed: _onProceed,
+                    ),
+                    onPressed: _onProceed,
                   ),
                   const SizedBox(height: 16),
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: "Already have an account? ",
+                        text: 'Already have an account? ',
                         style: const TextStyle(color: AppColors.white),
                         children: [
                           TextSpan(
-                            text: "Sign in",
+                            text: 'Sign in',
                             style: const TextStyle(
                               color: AppColors.orange,
                               decoration: TextDecoration.underline,
@@ -231,11 +366,12 @@ class _SignUpScreenState extends State<SignUpScreen>
     );
   }
 
-  List<Widget> _buildField(String label,
-      Widget prefixIcon,
-      TextEditingController controller, {
-        String? Function(String?)? validator,
-      }) {
+  List<Widget> _buildField(
+    String label,
+    Widget prefixIcon,
+    TextEditingController controller, {
+    String? Function(String?)? validator,
+  }) {
     return [
       SlideTransition(
         position: _animation,
@@ -263,4 +399,3 @@ class _SignUpScreenState extends State<SignUpScreen>
     ];
   }
 }
-

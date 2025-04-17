@@ -7,9 +7,47 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:544061902527:android:6f7f2c9ce40757d74ac00a",
+        "android_client_info": {
+          "package_name": "com.popcart.africa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtsGwXdt-tIdqTKsPTV2wkJq8J3dPRcfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:544061902527:android:a8b20a1a9a0009514ac00a",
         "android_client_info": {
           "package_name": "com.popcart.africa.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtsGwXdt-tIdqTKsPTV2wkJq8J3dPRcfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544061902527:android:33cc08896f87845b4ac00a",
+        "android_client_info": {
+          "package_name": "com.popcart.africa.stg"
         }
       },
       "oauth_client": [],
