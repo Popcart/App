@@ -153,7 +153,8 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                       const SizedBox(height: 8),
                                       Text(
                                         textAlign: TextAlign.center,
-                                        l10n.buyer_sub,
+                                        // l10n.buyer_sub,
+                                        "Find and purchase\nproducts",
                                         style: const TextStyle(
                                           color: AppColors.white,
                                         ),
@@ -213,7 +214,8 @@ class _SelectUserTypeScreenState extends State<SelectUserTypeScreen>
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        l10n.seller_sub,
+                                        // l10n.seller_sub,
+                                        "List and sell your\nproducts with ease",
                                         textAlign: TextAlign.center,
                                         style: const TextStyle(
                                           color: AppColors.white,

@@ -100,7 +100,8 @@ class _SignUpScreenState extends State<SignUpScreen>
   }
 
   void _onProceed() {
-    if (!_formKey.currentState!.validate() || !isUsernameAvailable ||
+    if (!_formKey.currentState!.validate() ||
+        !isUsernameAvailable ||
         !isEmailAvailable) return;
     context.read<OnboardingCubit>()
       ..isLoggingIn = false
@@ -210,7 +211,8 @@ class _SignUpScreenState extends State<SignUpScreen>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        color: isEmailAvailable ? AppColors.green : AppColors.red,
+                        color:
+                            isEmailAvailable ? AppColors.green : AppColors.red,
                       ),
                     ),
                   },
@@ -247,7 +249,9 @@ class _SignUpScreenState extends State<SignUpScreen>
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w400,
-                        color: isUsernameAvailable ? AppColors.green : AppColors.red,
+                        color: isUsernameAvailable
+                            ? AppColors.green
+                            : AppColors.red,
                       ),
                     ),
                   },
@@ -261,7 +265,6 @@ class _SignUpScreenState extends State<SignUpScreen>
                         'Business Name',
                         AppAssets.icons.business.svg(),
                         _businessNameController),
-                    const SizedBox(height: 10),
                     const Text(
                       'Is your business registered?',
                       style: const TextStyle(
@@ -270,59 +273,62 @@ class _SignUpScreenState extends State<SignUpScreen>
                         color: AppColors.white,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.darkGrey,
-                                borderRadius: BorderRadius.circular(19.0)),
-                            padding: const EdgeInsets.only(left: 0, right: 50),
-                            child: Row(
-                              children: [
-                                Radio<bool>(
-                                  value: true,
-                                  groupValue: isBusinessRegistered,
-                                  onChanged: (value) {
-                                    setState(
-                                        () => isBusinessRegistered = value!);
-                                  },
-                                ),
-                                const Text('Yes',
-                                    style: TextStyle(color: AppColors.white)),
-                              ],
+                    Container(
+                      margin: EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColors.darkGrey,
+                                  borderRadius: BorderRadius.circular(19.0)),
+                              padding:
+                                  const EdgeInsets.only(left: 0, right: 50),
+                              child: Row(
+                                children: [
+                                  Radio<bool>(
+                                    value: true,
+                                    groupValue: isBusinessRegistered,
+                                    onChanged: (value) {
+                                      setState(
+                                          () => isBusinessRegistered = value!);
+                                    },
+                                  ),
+                                  const Text('Yes',
+                                      style: TextStyle(color: AppColors.white)),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColors.darkGrey,
-                                borderRadius: BorderRadius.circular(19.0)),
-                            padding: const EdgeInsets.only(left: 0, right: 50),
-                            child: Row(
-                              children: [
-                                Radio<bool>(
-                                  value: false,
-                                  groupValue: isBusinessRegistered,
-                                  onChanged: (value) {
-                                    setState(
-                                        () => isBusinessRegistered = value!);
-                                  },
-                                ),
-                                const Text('No',
-                                    style: TextStyle(color: AppColors.white)),
-                              ],
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Flexible(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColors.darkGrey,
+                                  borderRadius: BorderRadius.circular(19.0)),
+                              padding:
+                                  const EdgeInsets.only(left: 0, right: 50),
+                              child: Row(
+                                children: [
+                                  Radio<bool>(
+                                    value: false,
+                                    groupValue: isBusinessRegistered,
+                                    onChanged: (value) {
+                                      setState(
+                                          () => isBusinessRegistered = value!);
+                                    },
+                                  ),
+                                  const Text('No',
+                                      style: TextStyle(color: AppColors.white)),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 16),
                   },
                   ..._buildField('Phone number', AppAssets.icons.phone.svg(),
                       _phoneNumber),
