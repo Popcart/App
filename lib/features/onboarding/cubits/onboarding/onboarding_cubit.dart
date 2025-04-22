@@ -116,11 +116,11 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       );
       response.when(
         success: (data) {
-          print("Succcess message: $data");
+
           emit(const OnboardingState.onboardingSuccess());
         },
         error: (e) {
-          print("Error message: $e");
+
           emit(
             OnboardingState.onboardingFailure(
               e.message ?? 'An error occurred',
@@ -139,7 +139,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.verifyOtp(
       otp: otp,
-      email: _email,
+      email: _email, isLoggingIn: isLoggingIn,
     );
     response.when(
       success: (data) {

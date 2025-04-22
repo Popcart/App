@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
@@ -13,8 +12,7 @@ class VideoSplashScreen extends StatefulWidget {
   State<VideoSplashScreen> createState() => _VideoSplashScreenState();
 }
 
-class _VideoSplashScreenState extends State<VideoSplashScreen>
-    with WidgetsBindingObserver {
+class _VideoSplashScreenState extends State<VideoSplashScreen> {
   late VideoPlayerController _controller;
 
   @override
@@ -36,34 +34,6 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.inactive:
-        _pauseVideo();
-      case AppLifecycleState.resumed:
-        _playVideo();
-      default:
-        break;
-    }
-  }
-
-  Future<void> _playVideo() async {
-    if (!mounted) return;
-    if (!_controller.value.isInitialized) return;
-    if (_controller.value.isPlaying) return;
-    try {
-      await _controller.play();
-      if (!_controller.value.isLooping) await _controller.setLooping(true);
-    } on PlatformException catch (e) {}
-  }
-
-  void _pauseVideo() {
-    if (!_controller.value.isInitialized) return;
-    if (!_controller.value.isPlaying) return;
-    _controller.pause();
   }
 
   @override
@@ -108,7 +78,6 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: ElevatedButton(
                       onPressed: () {
-                        _controller.pause();
                         context.push(AppPath.auth.path);
                       },
                       style: ElevatedButton.styleFrom(
