@@ -13,9 +13,6 @@ import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
-bool isSeller = false;
-bool isBusinessSeller = false;
-
 class VerifyOtpScreen extends StatefulHookWidget {
   const VerifyOtpScreen({super.key});
 

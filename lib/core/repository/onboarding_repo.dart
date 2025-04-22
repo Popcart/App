@@ -20,6 +20,7 @@ sealed class OnboardingRepo {
   Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
     required String email,
+    required bool isLoggingIn,
   });
 
    Future<ApiResponse<void>> verifyEmail({
@@ -67,9 +68,10 @@ class OnboardingRepoImpl implements OnboardingRepo {
   Future<ApiResponse<TokenPair>> verifyOtp({
     required String otp,
     required String email,
+    required bool isLoggingIn,
   }) {
     return _apiHelper.request<TokenPair>(
-      path: 'verify-otp',
+      path: isLoggingIn ? 'verify-login-otp' : 'verify-otp',
       method: MethodType.post,
       payload: {
         'code': otp,
