@@ -56,14 +56,14 @@ class _VideoSplashScreenState extends State<VideoSplashScreen> {
           // ),
           Positioned.fill(
             child: _controller.value.isInitialized
-                ? FittedBox(
-                    fit: BoxFit.fitHeight,
-                    child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
-                      child: AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller)),
+                ? SizedBox.expand(
+                    child: FittedBox(
+                      fit: BoxFit.cover,
+                      child: SizedBox(
+                        width: _controller.value.size.width,
+                        height: _controller.value.size.height,
+                        child: VideoPlayer(_controller),
+                      ),
                     ),
                   )
                 : Container(),
