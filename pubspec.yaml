@@ -4,7 +4,7 @@ version: 1.0.0+2
 publish_to: none
 
 environment:
-  sdk: ^3.5.3
+  sdk: ^3.4.0
 
 dependencies:
 #  agora_rtc_engine: ^6.5.0
