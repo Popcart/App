@@ -24,7 +24,7 @@ dependencies:
   flutter_animate: ^4.5.2
   flutter_bloc: ^8.1.6
   flutter_gen: ^5.8.0
-  flutter_hooks: ^0.20.5
+  flutter_hooks: ^0.21.2
   flutter_image_compress: ^2.3.0
   flutter_local_notifications: ^18.0.1
   flutter_localizations:
