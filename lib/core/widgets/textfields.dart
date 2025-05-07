@@ -29,10 +29,12 @@ class CustomTextFormField extends TextFormField {
           style: const TextStyle(
             color: AppColors.white,
             fontWeight: FontWeight.w700,
-            fontSize: 20,
+            fontSize: 16,
           ),
           cursorHeight: 20,
           decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColors.textFieldFillColor,
             hintText: hintText ?? '',
             hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
             contentPadding:

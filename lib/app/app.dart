@@ -8,6 +8,7 @@ import 'package:popcart/features/live/cubits/active_livestream/active_livestream
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
+import 'package:popcart/features/seller/inventory/cubits/add_product/add_product_cubit.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:toastification/toastification.dart';
@@ -29,6 +30,9 @@ class PopCart extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ProfileCubit()..fetchUserProfile(),
+        ),
+        BlocProvider(
+          create: (context) => AddProductCubit()..getInterests(),
         ),
         BlocProvider(
           create: (context) => OpenLivestreamCubit(),
