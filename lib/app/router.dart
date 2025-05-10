@@ -63,7 +63,7 @@ final router = GoRouter(
           if (user != null) {
             return switch (user.userType) {
               UserType.seller => AppPath.authorizedUser.seller.analytics.path,
-              UserType.buyer => AppPath.authorizedUser.buyer.path,
+              UserType.buyer => AppPath.authorizedUser.seller.analytics.path,
             };
           }
           return AppPath.authorizedUser.seller.analytics.path;
@@ -310,7 +310,28 @@ final router = GoRouter(
             GoRoute(
                 path: AppPath.authorizedUser.seller.sellerAccount.goRoute,
                 builder: (context, state) => const AccountWebview(),
-                routes: []),
+                routes: [
+                  GoRoute(
+                    path: AppPath.authorizedUser.seller.sellerAccount.settings.goRoute,
+                    name: AppPath.authorizedUser.seller.sellerAccount.settings.path,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      child: const BuyerSetingsScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                ]),
           ],
         ),
       ],
@@ -375,16 +396,17 @@ class _AccountWebviewState extends State<AccountWebview> {
           builder: (context, state) {
             return state.maybeWhen(
               orElse: CupertinoActivityIndicator.new,
-              loaded: (user) => switch (user.userType) {
-                UserType.seller => loading
-                    ? const Center(
-                        child: CupertinoActivityIndicator(color: Colors.white),
-                      )
-                    : WebViewWidget(
-                        controller: controller,
-                      ),
-                UserType.buyer => const BuyerProfileScreen(),
-              },
+              loaded: (user) => const BuyerProfileScreen(),
+              // loaded: (user) => switch (user.userType) {
+                // UserType.seller => loading
+                //     ? const Center(
+                //         child: CupertinoActivityIndicator(color: Colors.white),
+                //       )
+                //     : WebViewWidget(
+                //         controller: controller,
+                //       ),
+                // UserType.buyer => const BuyerProfileScreen(),
+              // },
             );
           },
         ),

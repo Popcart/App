@@ -15,7 +15,7 @@ class BuyerProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              context.push(AppPath.authorizedUser.seller.sellerAccount.settings.path);
+              context.pushNamed(AppPath.authorizedUser.seller.sellerAccount.settings.path);
             },
             icon: AppAssets.icons.gear.svg(),
           ),
