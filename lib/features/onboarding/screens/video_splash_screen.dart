@@ -21,15 +21,19 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(AppAssets.animations.splashAnimation);
+    initVideoPlayer();
+  }
+
+  void initVideoPlayer() {
+    _controller =
+        VideoPlayerController.asset(AppAssets.animations.splashAnimation);
     _controller
-      ..addListener(() {
-        setState(() {});
-      })
       ..setVolume(0)
       ..setLooping(true);
-    _controller.initialize().then((_) => setState(() {}));
-    _controller.play();
+    _controller.initialize().then((_) {
+      setState(() {});
+      _controller.play();
+    });
   }
 
   @override
@@ -73,29 +77,18 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
       backgroundColor: AppColors.white,
       body: Stack(
         children: [
-          // Positioned.fill(
-          //   child: switch (loading) {
-          //     true => const SizedBox(),
-          //     false => Image.file(
-          //         splashVideoFile,
-          //         width: double.infinity,
-          //         height: double.infinity,
-          //         fit: BoxFit.cover,
-          //       )
-          //   },
-          // ),
           Positioned.fill(
             child: _controller.value.isInitialized
                 ? FittedBox(
-              fit: BoxFit.fitHeight,
-              child: SizedBox(
-                width: _controller.value.size.width,
-                height: _controller.value.size.height,
-                child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller)),
-              ),
-            )
+                    fit: BoxFit.fitHeight,
+                    child: SizedBox(
+                      width: _controller.value.size.width,
+                      height: _controller.value.size.height,
+                      child: AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: VideoPlayer(_controller)),
+                    ),
+                  )
                 : Container(),
           ),
           Positioned.fill(

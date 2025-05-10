@@ -20,7 +20,7 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
 
   void _onTabTap(int index) {
     setState(() => _selectedIndex = index);
-    _tabController.animateTo(index, duration: Duration(milliseconds: 300), curve: Curves.ease);
+    _tabController.animateTo(index, duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
   @override
   void initState() {
@@ -49,11 +49,11 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
               selectedIndex: _selectedIndex,
               onTap: _onTabTap,
             ),
-            SizedBox(height: 20,),
+            const SizedBox(height: 20,),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 children: tabs.map((type) => ProductTabView(type: type)).toList(),
               ),
             ),

@@ -50,9 +50,9 @@ class InventoryPath extends Path<InventoryPath> {
 }
 
 class SellerAccountPath extends Path<SellerAccountPath> {
-  SellerAccountPath() : super('/seller-account');
+  SellerAccountPath() : super('/seller');
 
-  Path get settings => Path('/settings');
+  Path get settings => Path('/seller-settings');
 }
 
 class BuyerPath extends Path<BuyerPath> {

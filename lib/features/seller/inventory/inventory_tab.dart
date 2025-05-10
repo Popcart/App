@@ -44,7 +44,7 @@ class _ProductTabViewState extends State<ProductTabView> {
         switch (widget.type) {
           case 'Low stock':
             data?.data?.results.removeWhere(
-                (element) => element.stockUnit > 5 || element.stockUnit < 1);
+                (element) => element.stockUnit > 4 || element.stockUnit < 1);
           case 'Out of stock':
             data?.data?.results.removeWhere((element) => element.stockUnit > 0);
           default:

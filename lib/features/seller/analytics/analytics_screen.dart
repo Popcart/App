@@ -51,8 +51,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       // Handle inventory products response
       inventoryProductsResponse.maybeWhen(
         success: (data) {
-          data?.data?.results.removeWhere(
-                  (element) => element.stockUnit > 5);
+          data?.data?.results.removeWhere((element) => element.stockUnit > 5);
           final results = data?.data?.results ?? <Product>[];
           inventoryProducts.addAll(results);
         },
@@ -189,41 +188,39 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                if (topProducts.isNotEmpty)
-                  CustomExpansionTile(
-                    title: 'Top Products',
-                    showSeeMore: true,
-                    onSeeMore: () {
-                      context.pushNamed(
-                        AppPath.authorizedUser.seller.analytics.topProduct.path,
-                      );
-                    },
-                    children: [
-                      ...topProducts
-                          .map((e) =>
-                              topProductWidget(e, topProducts.indexOf(e)))
-                          .toList(),
-                    ],
-                  ),
+                CustomExpansionTile(
+                  title: 'Top Products',
+                  showSeeMore: topProducts.isNotEmpty,
+                  onSeeMore: () {
+                    context.pushNamed(
+                      AppPath.authorizedUser.seller.analytics.topProduct.path,
+                    );
+                  },
+                  children: [
+                    ...topProducts
+                        .map((e) => topProductWidget(e, topProducts.indexOf(e)))
+                        .toList(),
+                  ],
+                ),
                 const SizedBox(
                   height: 10,
                 ),
-                if (inventoryProducts.isNotEmpty)
-                  CustomExpansionTile(
-                    title: 'Inventory Alerts',
-                    showSeeMore: true,
-                    onSeeMore: () {
-                      context.pushNamed(
-                        AppPath.authorizedUser.seller.analytics.inventoryProduct.path,
-                      );
-                    },
-                    children: [
-                      ...inventoryProducts
-                          .map((e) =>
-                              inventoryAlertWidget(e, inventoryProducts.indexOf(e)))
-                          .toList(),
-                    ],
-                  ),
+                CustomExpansionTile(
+                  title: 'Inventory Alerts',
+                  showSeeMore: inventoryProducts.isNotEmpty,
+                  onSeeMore: () {
+                    context.pushNamed(
+                      AppPath.authorizedUser.seller.analytics.inventoryProduct
+                          .path,
+                    );
+                  },
+                  children: [
+                    ...inventoryProducts
+                        .map((e) => inventoryAlertWidget(
+                            e, inventoryProducts.indexOf(e)))
+                        .toList(),
+                  ],
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -320,9 +317,8 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
                 },
                 child: Text(
                   'See more',
-                  style: TextStyles.titleHeading.copyWith(
-                    decoration: TextDecoration.underline
-                  ),
+                  style: TextStyles.titleHeading
+                      .copyWith(decoration: TextDecoration.underline),
                 ),
               ),
           ],
