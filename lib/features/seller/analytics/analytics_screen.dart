@@ -25,6 +25,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   void initState() {
     super.initState();
+
     fetchTopProducts();
   }
 
