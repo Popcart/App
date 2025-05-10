@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:firebase_performance_dio/firebase_performance_dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 // ignore: depend_on_referenced_packages
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -160,6 +161,8 @@ class ApiHandler {
     T? Function(Map<String, dynamic> json)? responseMapper,
     bool authenticate = true,
     Map<String, File>? files,
+    List<XFile>? filesList,
+    String? imagesKey,
   }) async {
     final modifiedPayload = <String, dynamic>{}..addAll(payload ?? {});
     if (files != null) {
@@ -190,6 +193,37 @@ class ApiHandler {
             (response.data['data'] as List<dynamic>).firstOrNull ?? '';
       }
     }
+    if (filesList != null) {
+      final uploadedImageUrls = <dynamic>[];
+      for (final file in filesList) {
+        final compressedFile = await FileCompressor.compressFile(File(file.path));
+        final data = dio.FormData.fromMap({
+          'files': await dio.MultipartFile.fromFile(compressedFile.path),
+        });
+        final uploadInstance = dio.Dio()
+          ..interceptors.add(
+            PrettyDioLogger(
+              requestBody: true,
+              requestHeader: true,
+              responseHeader: true,
+              logPrint: (value) {
+                if (kDebugMode) {
+                  log(value.toString(), name: 'Dio');
+                }
+              },
+            ),
+          );
+        // ignore: inference_failure_on_function_invocation
+        final response = await uploadInstance.post(
+          '${Env().authServiceBaseUrl}/upload',
+          data: data,
+        );
+        final imageUrl = (response.data['data'] as List).firstOrNull ?? '';
+        uploadedImageUrls.add(imageUrl);
+      }
+      modifiedPayload[imagesKey??'images'] = uploadedImageUrls;
+    }
+
     try {
       if (!authenticate) {
         _dio.options.headers.remove('Authorization');

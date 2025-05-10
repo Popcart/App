@@ -8,28 +8,54 @@ class CustomElevatedButton extends ElevatedButton {
     required String text,
     bool loading = false,
     bool enabled = true,
+    bool showIcon = true,
+    IconData? icon,
     super.key,
   }) : super(
-    onPressed: enabled ? onPressed : null,
+          onPressed: enabled ? onPressed : null,
           child: loading
-              ? const CircularProgressIndicator(color: AppColors.white,)
+              ? const CircularProgressIndicator(
+                  color: AppColors.white,
+                )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      text,
-                      style: TextStyle(
-                        color: enabled ? AppColors.white : AppColors.white
-                            .withOpacity(.5),
+                    if (showIcon) ...[
+                      if (icon != null)
+                        Icon(
+                          icon,
+                          color: enabled
+                              ? AppColors.white
+                              : AppColors.white.withOpacity(.5),
+                        ),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: enabled
+                              ? AppColors.white
+                              : AppColors.white.withOpacity(.5),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: enabled ? AppColors.white : AppColors.white
-                          .withOpacity(.5),
-                      size: 16,
-                    ),
+                      if (icon == null) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: enabled
+                              ? AppColors.white
+                              : AppColors.white.withOpacity(.5),
+                          size: 16,
+                        ),
+                      ],
+                    ] else ...[
+                      Text(
+                        text,
+                        style: TextStyle(
+                          color: enabled
+                              ? AppColors.white
+                              : AppColors.white.withOpacity(.5),
+                        ),
+                      ),
+                    ]
                   ],
                 ),
           style: ButtonStyle(
@@ -47,7 +73,7 @@ class CustomElevatedButton extends ElevatedButton {
               Size(double.infinity, 56),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              enabled? AppColors.orange : AppColors.orange.withOpacity(.5),
+              enabled ? AppColors.orange : AppColors.orange.withOpacity(.5),
             ),
           ),
         );

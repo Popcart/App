@@ -31,11 +31,17 @@ class AuthorizedUserPath extends Path<AuthorizedUserPath> {
 class SellerPath extends Path<SellerPath> {
   SellerPath() : super('/seller');
 
-  Path get analytics => Path('/analytics');
+  AnalyticPath get analytics => AnalyticPath();
   Path get orders => Path('/orders');
   InventoryPath get inventory => InventoryPath();
   Path get live => Path('/live');
   SellerAccountPath get sellerAccount => SellerAccountPath();
+}
+class AnalyticPath extends Path<AnalyticPath> {
+  AnalyticPath() : super('/analytics');
+
+  Path get topProduct => Path('/top-product');
+  Path get inventoryProduct => Path('/inventory-product');
 }
 class InventoryPath extends Path<InventoryPath> {
   InventoryPath() : super('/inventory');

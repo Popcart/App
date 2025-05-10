@@ -16,7 +16,6 @@ class AddProductVariant extends StatefulWidget {
 
 class _AddProductVariantState extends State<AddProductVariant> {
   TextEditingController variantType = TextEditingController();
-  TextEditingController stockLevel = TextEditingController();
   final List<TextEditingController> _controllers = [TextEditingController()];
   final List<FocusNode> _focusNodes = [FocusNode()];
 
@@ -37,7 +36,6 @@ class _AddProductVariantState extends State<AddProductVariant> {
   @override
   void dispose() {
     variantType.dispose();
-    stockLevel.dispose();
     for (final controller in _controllers) {
       controller.dispose();
     }
@@ -53,7 +51,6 @@ class _AddProductVariantState extends State<AddProductVariant> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Align(
-              alignment: Alignment.center,
               child: Text('Add Product Variant',
                   textAlign: TextAlign.center, style: TextStyles.heading),
             ),
@@ -77,6 +74,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 ...List.generate(_controllers.length, (index) {
                   return Column(
@@ -109,7 +107,6 @@ class _AddProductVariantState extends State<AddProductVariant> {
                           controller: _controllers[index],
                           hintText: '',
                           focusNode: _focusNodes[index],
-                          textInputAction: TextInputAction.next,
                         ),
                       ),
                     ],
@@ -131,19 +128,6 @@ class _AddProductVariantState extends State<AddProductVariant> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            const Text(
-              'Stock level',
-              style: TextStyles.textTitle,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CustomTextFormField(
-              validator: ValidationBuilder().required().build(),
-              controller: stockLevel,
-              hintText: 'Stock level',
-            ),
             const SizedBox(
               height: 20,
             ),
@@ -151,7 +135,6 @@ class _AddProductVariantState extends State<AddProductVariant> {
               text: 'Save',
               onPressed: () {
                 if (variantType.text.isEmpty ||
-                    stockLevel.text.isEmpty ||
                     _getValues().any((element) => element.isEmpty)) {
                   return;
                 }
@@ -159,8 +142,7 @@ class _AddProductVariantState extends State<AddProductVariant> {
                     context,
                     VariantModel(
                         variant: variantType.text,
-                        options: _getValues(),
-                        stockLevel: stockLevel.text));
+                        options: _getValues(),));
               },
             )
           ],

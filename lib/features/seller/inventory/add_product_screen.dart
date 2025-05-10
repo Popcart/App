@@ -1,19 +1,21 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/dropdown_widget.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
-import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
-import 'package:popcart/features/seller/inventory/add_product_variant.dart'
-    show AddProductVariant, VariantModel;
-import 'package:popcart/features/seller/inventory/cubits/add_product/add_product_cubit.dart';
+import 'package:popcart/features/seller/cubits/product/product_cubit.dart';
+import 'package:popcart/features/seller/inventory/add_product_variant.dart';
+import 'package:popcart/features/seller/inventory/product_uploaded.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
@@ -32,6 +34,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController price = TextEditingController();
   final TextEditingController salesPrice = TextEditingController();
   final TextEditingController discount = TextEditingController();
+  TextEditingController stockLevel = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool selling = false;
@@ -48,6 +51,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
+  @override
+  void initState() {
+    context.read<ProductCubit>().getInterests();
+    super.initState();
+  }
+
   void removeImage(int index) {
     setState(() => _images.removeAt(index));
   }
@@ -60,16 +69,50 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   @override
+  void dispose() {
+    stockLevel.dispose();
+    productName.dispose();
+    productDesc.dispose();
+    price.dispose();
+    salesPrice.dispose();
+    discount.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final productCubit = context.watch<AddProductCubit>();
-    return BlocListener<AddProductCubit, AddProductState>(
+    final productCubit = context.watch<ProductCubit>();
+    return BlocListener<ProductCubit, AddProductState>(
       listener: (context, state) {
         state.whenOrNull(
           loading: () {},
           loaded: (product) {
             selectedProductCategory = product[0];
           },
-          error: (message) {},
+          error: (message) {
+            context.showError(message);
+          },
+          saveProduct: () async {
+            await showModalBottomSheet<void>(
+              context: context,
+              builder: (_) => Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: const ProductUploaded(),
+              ),
+            );
+            context.push(AppPath.authorizedUser.seller.inventory.path);
+          },
+          saveProductFailure: (message) {
+            context.showError(message);
+          },
         );
       },
       child: Scaffold(
@@ -255,7 +298,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       'Product categories',
                       style: TextStyles.textTitle,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 11),
                     CustomDropDownWidget<ProductCategory>(
                       title: 'Select Product Category',
                       items: productCubit.interestsList,
@@ -265,12 +308,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       },
                       value: selectedProductCategory,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 21),
                     const Text(
                       'Product description',
                       style: TextStyles.textTitle,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     CustomTextFormField(
                       validator: ValidationBuilder().required().build(),
                       controller: productDesc,
@@ -278,7 +321,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 19,
                     ),
                     Row(
                       children: [
@@ -297,6 +340,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 validator:
                                     ValidationBuilder().required().build(),
                                 controller: price,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 hintText: 'Amount',
                                 textInputAction: TextInputAction.next,
                               ),
@@ -322,6 +368,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                     ValidationBuilder().required().build(),
                                 controller: salesPrice,
                                 hintText: 'Amount',
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 textInputAction: TextInputAction.next,
                               ),
                             ],
@@ -346,6 +395,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                     ValidationBuilder().required().build(),
                                 controller: discount,
                                 hintText: 'Amount',
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                ],
                                 textInputAction: TextInputAction.next,
                               ),
                             ],
@@ -354,7 +406,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 18,
                     ),
                     const Text('Status', style: TextStyles.textTitle),
                     Container(
@@ -411,6 +463,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Stock level',
+                      style: TextStyles.textTitle,
+                    ),
+                    const SizedBox(
+                      height: 13,
+                    ),
+                    CustomTextFormField(
+                      validator: ValidationBuilder().required().build(),
+                      controller: stockLevel,
+                      hintText: 'Stock level',
+                    ),
                     if (variants.isEmpty) ...{
                       const SizedBox(
                         height: 20,
@@ -454,7 +519,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                     },
                     const SizedBox(
-                      height: 20,
+                      height: 17,
                     ),
                     Visibility(
                         visible: variants.isNotEmpty,
@@ -466,22 +531,28 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ],
                         )),
                     const SizedBox(
-                      height: 20,
+                      height: 15,
                     ),
                     CustomElevatedButton(
                       text: 'Save',
-                      onPressed: () {
+                      showIcon: false,
+                      loading: productCubit.state.maybeWhen(
+                        orElse: () => false,
+                        loading: () => true,
+                      ),
+                      onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          productCubit.addProduct(
-                              productName: '${productName.text}',
-                              productDescription: '${productDesc.text}',
-                              productPrice: '${price.text}',
-                              salesPrice: '${salesPrice.text}',
-                              discount: '${discount.text}',
+                          await productCubit.addProduct(
+                              productName: productName.text,
+                              productDescription: productDesc.text,
+                              productPrice: price.text,
+                              salesPrice: salesPrice.text,
+                              discount: discount.text,
                               status: selling,
                               images: _images,
                               category: selectedProductCategory,
-                              variants: variants);
+                              variants: variants,
+                              stockUnit: int.parse(stockLevel.text));
                         }
                       },
                     )
@@ -507,33 +578,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(variant.variant, style: TextStyles.body),
-              const Spacer(),
-              const Text('Stock level', style: TextStyles.body),
-            ],
-          ),
+          Text(variant.variant, style: TextStyles.body),
           const SizedBox(height: 4),
           Row(
             children: [
-              Row(
-                children: [
-                  ...List.generate(variant.options.length, (index) {
-                    return Container(
-                      padding: EdgeInsets.all(4),
-                      margin: EdgeInsets.only(right: 4),
-                      decoration: BoxDecoration(
-                          color: AppColors.black,
-                          borderRadius: BorderRadius.all(Radius.circular(3))),
-                      child: Text(variant.options[index],
-                          style: TextStyles.caption),
-                    );
-                  })
-                ],
-              ),
-              const Spacer(),
-              Text(variant.stockLevel, style: TextStyles.caption),
+              ...List.generate(variant.options.length, (index) {
+                return Container(
+                  padding: EdgeInsets.all(4),
+                  margin: EdgeInsets.only(right: 4),
+                  decoration: BoxDecoration(
+                      color: AppColors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(3))),
+                  child:
+                      Text(variant.options[index], style: TextStyles.caption),
+                );
+              })
             ],
           ),
         ],

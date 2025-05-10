@@ -28,6 +28,8 @@ import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/seller/analytics/analytics_screen.dart';
+import 'package:popcart/features/seller/analytics/inventory_product_screen.dart';
+import 'package:popcart/features/seller/analytics/top_product_screen.dart';
 import 'package:popcart/features/seller/inventory/add_product_screen.dart';
 import 'package:popcart/features/seller/inventory/inventory_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
@@ -146,6 +148,48 @@ final router = GoRouter(
             GoRoute(
               path: AppPath.authorizedUser.seller.analytics.goRoute,
               builder: (context, state) => const AnalyticsScreen(),
+                routes: [
+                  GoRoute(
+                    path: AppPath.authorizedUser.seller.analytics.topProduct.goRoute,
+                    name: AppPath.authorizedUser.seller.analytics.topProduct.path,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      child: const TopProductScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                  GoRoute(
+                    path: AppPath.authorizedUser.seller.analytics.inventoryProduct.goRoute,
+                    name: AppPath.authorizedUser.seller.analytics.inventoryProduct.path,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      child: const InventoryProductScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                ]
             ),
           ],
         ),

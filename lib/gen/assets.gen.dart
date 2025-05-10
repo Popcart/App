@@ -18,8 +18,12 @@ class $AssetsAnimationsGen {
   /// File path: assets/animations/splash_animation.mp4
   String get splashAnimation => 'assets/animations/splash_animation.mp4';
 
+  /// File path: assets/animations/success.gif
+  AssetGenImage get success =>
+      const AssetGenImage('assets/animations/success.gif');
+
   /// List of all assets
-  List<String> get values => [splashAnimation];
+  List<dynamic> get values => [splashAnimation, success];
 }
 
 class $AssetsFontsGen {

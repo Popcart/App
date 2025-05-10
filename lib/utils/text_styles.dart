@@ -47,4 +47,10 @@ class TextStyles {
     color: Colors.white,
     fontSize: 12,
   );
+
+  static const styleW500S12 = TextStyle(
+    color: AppColors.darkBlue,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+  );
 }

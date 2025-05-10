@@ -1,8 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:popcart/app/router_paths.dart';
+import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/widgets/widgets.dart';
+import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
@@ -14,6 +19,51 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
+  List<Product> topProducts = [];
+  List<Product> inventoryProducts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTopProducts();
+  }
+
+  Future<void> fetchTopProducts() async {
+    try {
+      final results = await Future.wait([
+        locator<InventoryRepo>().getTopProducts(page: 1, limit: 4),
+        locator<InventoryRepo>().getAllProducts(page: 1, limit: 4),
+      ]);
+
+      final topProductsResponse = results[0];
+      final inventoryProductsResponse = results[1];
+      // Handle top products response
+      topProductsResponse.maybeWhen(
+        success: (data) {
+          final results = data?.data?.results ?? <Product>[];
+          topProducts.addAll(results);
+        },
+        orElse: () {
+          // Handle other cases if necessary
+        },
+      );
+
+      // Handle inventory products response
+      inventoryProductsResponse.maybeWhen(
+        success: (data) {
+          data?.data?.results.removeWhere(
+                  (element) => element.stockUnit > 5);
+          final results = data?.data?.results ?? <Product>[];
+          inventoryProducts.addAll(results);
+        },
+        orElse: () {
+          // Handle other cases if necessary
+        },
+      );
+      setState(() {});
+    } catch (e) {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -139,21 +189,41 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                CustomExpansionTile(
-                  title: 'Top Products',
-                  children: [
-                    TopProductWidget(),
-                    TopProductWidget(),
-                    TopProductWidget(),
-                  ],
-                ),
+                if (topProducts.isNotEmpty)
+                  CustomExpansionTile(
+                    title: 'Top Products',
+                    showSeeMore: true,
+                    onSeeMore: () {
+                      context.pushNamed(
+                        AppPath.authorizedUser.seller.analytics.topProduct.path,
+                      );
+                    },
+                    children: [
+                      ...topProducts
+                          .map((e) =>
+                              topProductWidget(e, topProducts.indexOf(e)))
+                          .toList(),
+                    ],
+                  ),
                 const SizedBox(
                   height: 10,
                 ),
-                const CustomExpansionTile(
-                  title: 'Inventory Alerts',
-                  children: [],
-                ),
+                if (inventoryProducts.isNotEmpty)
+                  CustomExpansionTile(
+                    title: 'Inventory Alerts',
+                    showSeeMore: true,
+                    onSeeMore: () {
+                      context.pushNamed(
+                        AppPath.authorizedUser.seller.analytics.inventoryProduct.path,
+                      );
+                    },
+                    children: [
+                      ...inventoryProducts
+                          .map((e) =>
+                              inventoryAlertWidget(e, inventoryProducts.indexOf(e)))
+                          .toList(),
+                    ],
+                  ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -213,11 +283,15 @@ class CustomExpansionTile extends StatefulWidget {
   const CustomExpansionTile({
     required this.title,
     required this.children,
+    this.showSeeMore = false,
+    this.onSeeMore,
     super.key,
   });
 
+  final bool showSeeMore;
   final String title;
   final List<Widget> children;
+  final Function()? onSeeMore;
 
   @override
   State<CustomExpansionTile> createState() => _CustomExpansionTileState();
@@ -232,9 +306,26 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
-        title: Text(
-          widget.title,
-          style: TextStyles.titleHeading,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.title,
+              style: TextStyles.titleHeading,
+            ),
+            if (widget.showSeeMore)
+              GestureDetector(
+                onTap: () {
+                  widget.onSeeMore?.call();
+                },
+                child: Text(
+                  'See more',
+                  style: TextStyles.titleHeading.copyWith(
+                    decoration: TextDecoration.underline
+                  ),
+                ),
+              ),
+          ],
         ),
         trailing: AnimatedRotation(
           turns: _expanded ? 0.5 : 0.0,

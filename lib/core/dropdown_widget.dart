@@ -3,20 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:popcart/core/colors.dart';
 
 class CustomDropDownWidget<T> extends StatefulWidget {
+
+  const CustomDropDownWidget({
+    required this.title, required this.value, required this.items,
+    required this.itemLabel, required this.onChanged, super.key,
+  });
+
   final String title;
   final T? value;
   final List<T> items;
   final String Function(T) itemLabel;
   final ValueChanged<T> onChanged;
-
-  const CustomDropDownWidget({
-    super.key,
-    required this.title,
-    required this.value,
-    required this.items,
-    required this.itemLabel,
-    required this.onChanged,
-  });
 
   @override
   State<CustomDropDownWidget<T>> createState() =>
@@ -45,11 +42,17 @@ class _CustomDropDownWidgetState<T> extends State<CustomDropDownWidget<T>> {
         ),
       ),
       isExpanded: true,
-      value: widget.value,
-      hint: Text(
-        widget.title,
-        style: const TextStyle(fontSize: 16, color: AppColors.black),
+      iconStyleData: const IconStyleData(
+        icon: Padding(
+          padding: EdgeInsets.only(right: 20),
+          child: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppColors.white,
+            size: 20,
+          ),
+        ),
       ),
+      value: widget.value,
       items: widget.items
           .map((item) => DropdownMenuItem<T>(
                 value: item,
