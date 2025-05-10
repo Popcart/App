@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -25,6 +27,11 @@ import 'package:popcart/features/onboarding/screens/login_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
+import 'package:popcart/features/seller/analytics/analytics_screen.dart';
+import 'package:popcart/features/seller/analytics/inventory_product_screen.dart';
+import 'package:popcart/features/seller/analytics/top_product_screen.dart';
+import 'package:popcart/features/seller/inventory/add_product_screen.dart';
+import 'package:popcart/features/seller/inventory/inventory_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -36,13 +43,9 @@ final router = GoRouter(
   debugLogDiagnostics: kDebugMode,
   navigatorKey: rootNavigatorKey,
   initialLocation: AppPath.splash.path,
-  observers: [
-    // FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
-  ],
   routes: [
     GoRoute(
       path: AppPath.splash.goRoute,
-      // builder: (context, state) => const VideoSplashScreen(),
       pageBuilder: (context, state) => CustomTransitionPage(
         child: const VideoSplashScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -51,7 +54,19 @@ final router = GoRouter(
       ),
       redirect: (context, state) {
         if (locator<SharedPrefs>().loggedIn) {
-          return AppPath.authorizedUser.live.path;
+          final profileCubit = context.read<ProfileCubit>();
+          final user = profileCubit.state.maybeWhen(
+            loaded: (user) => user,
+            orElse: () => null,
+          );
+
+          if (user != null) {
+            return switch (user.userType) {
+              UserType.seller => AppPath.authorizedUser.seller.analytics.path,
+              UserType.buyer => AppPath.authorizedUser.buyer.path,
+            };
+          }
+          return AppPath.authorizedUser.seller.analytics.path;
         }
         return null;
       },
@@ -131,7 +146,57 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppPath.authorizedUser.auctions.goRoute,
+              path: AppPath.authorizedUser.seller.analytics.goRoute,
+              builder: (context, state) => const AnalyticsScreen(),
+                routes: [
+                  GoRoute(
+                    path: AppPath.authorizedUser.seller.analytics.topProduct.goRoute,
+                    name: AppPath.authorizedUser.seller.analytics.topProduct.path,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      child: const TopProductScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                  GoRoute(
+                    path: AppPath.authorizedUser.seller.analytics.inventoryProduct.goRoute,
+                    name: AppPath.authorizedUser.seller.analytics.inventoryProduct.path,
+                    pageBuilder: (context, state) => CustomTransitionPage(
+                      child: const InventoryProductScreen(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  ),
+                ]
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppPath.authorizedUser.seller.orders.goRoute,
               builder: (context, state) => const Scaffold(),
             ),
           ],
@@ -139,15 +204,14 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppPath.authorizedUser.live.goRoute,
-              builder: (context, state) => const LiveScreen(),
+              path: AppPath.authorizedUser.seller.inventory.goRoute,
+              builder: (context, state) => const InventoryScreen(),
               routes: [
                 GoRoute(
-                  path: AppPath.authorizedUser.live.scheduleSession.goRoute,
-                  name: AppPath.authorizedUser.live.scheduleSession.path,
+                  path: AppPath.authorizedUser.seller.inventory.addProduct.goRoute,
+                  name: AppPath.authorizedUser.seller.inventory.addProduct.path,
                   pageBuilder: (context, state) => CustomTransitionPage(
-                    child: const ScheduleSessionScreen(),
-                    // implement a slide up transition
+                    child: const AddProductScreen(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       const begin = Offset(0, 1);
@@ -163,49 +227,80 @@ final router = GoRouter(
                     },
                   ),
                 ),
-                GoRoute(
-                  path: AppPath.authorizedUser.live.selectProducts.goRoute,
-                  name: AppPath.authorizedUser.live.selectProducts.path,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: const SelectProductsScreen(),
-                    // implement a slide up transition
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                ),
-                GoRoute(
-                  path: AppPath.authorizedUser.live.sellerLivestream.goRoute,
-                  name: AppPath.authorizedUser.live.sellerLivestream.path,
-                  parentNavigatorKey: rootNavigatorKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: SellerLivestreamScreen(
-                      channelName:
-                          state.uri.queryParameters['channelName'] ?? '',
-                      token: state.uri.queryParameters['token'] ?? '',
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                ),
-                GoRoute(
-                  path: AppPath.authorizedUser.live.buyerLivestream.goRoute,
-                  name: AppPath.authorizedUser.live.buyerLivestream.path,
-                  parentNavigatorKey: rootNavigatorKey,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: BuyerLivestreamScreen(
-                      liveStream: state.extra! as LiveStream,
-                      token: state.uri.queryParameters['token'] ?? '',
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
-                  ),
-                ),
+              ]
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppPath.authorizedUser.seller.live.goRoute,
+              builder: (context, state) => const SizedBox(),
+              routes: [
+                // GoRoute(
+                //   path: AppPath.authorizedUser.live.scheduleSession.goRoute,
+                //   name: AppPath.authorizedUser.live.scheduleSession.path,
+                //   pageBuilder: (context, state) => CustomTransitionPage(
+                //     child: const ScheduleSessionScreen(),
+                //     // implement a slide up transition
+                //     transitionsBuilder:
+                //         (context, animation, secondaryAnimation, child) {
+                //       const begin = Offset(0, 1);
+                //       const end = Offset.zero;
+                //       const curve = Curves.ease;
+                //       final tween = Tween(begin: begin, end: end)
+                //           .chain(CurveTween(curve: curve));
+                //       final offsetAnimation = animation.drive(tween);
+                //       return SlideTransition(
+                //         position: offsetAnimation,
+                //         child: child,
+                //       );
+                //     },
+                //   ),
+                // ),
+                // GoRoute(
+                //   path: AppPath.authorizedUser.live.selectProducts.goRoute,
+                //   name: AppPath.authorizedUser.live.selectProducts.path,
+                //   pageBuilder: (context, state) => CustomTransitionPage(
+                //     child: const SelectProductsScreen(),
+                //     // implement a slide up transition
+                //     transitionsBuilder:
+                //         (context, animation, secondaryAnimation, child) {
+                //       return FadeTransition(opacity: animation, child: child);
+                //     },
+                //   ),
+                // ),
+                // GoRoute(
+                //   path: AppPath.authorizedUser.live.sellerLivestream.goRoute,
+                //   name: AppPath.authorizedUser.live.sellerLivestream.path,
+                //   parentNavigatorKey: rootNavigatorKey,
+                //   pageBuilder: (context, state) => CustomTransitionPage(
+                //     child: SellerLivestreamScreen(
+                //       channelName:
+                //           state.uri.queryParameters['channelName'] ?? '',
+                //       token: state.uri.queryParameters['token'] ?? '',
+                //     ),
+                //     transitionsBuilder:
+                //         (context, animation, secondaryAnimation, child) {
+                //       return FadeTransition(opacity: animation, child: child);
+                //     },
+                //   ),
+                // ),
+                // GoRoute(
+                //   path: AppPath.authorizedUser.live.buyerLivestream.goRoute,
+                //   name: AppPath.authorizedUser.live.buyerLivestream.path,
+                //   parentNavigatorKey: rootNavigatorKey,
+                //   pageBuilder: (context, state) => CustomTransitionPage(
+                //     child: BuyerLivestreamScreen(
+                //       liveStream: state.extra! as LiveStream,
+                //       token: state.uri.queryParameters['token'] ?? '',
+                //     ),
+                //     transitionsBuilder:
+                //         (context, animation, secondaryAnimation, child) {
+                //       return FadeTransition(opacity: animation, child: child);
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ],
@@ -213,13 +308,9 @@ final router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: AppPath.authorizedUser.account.goRoute,
-              builder: (context, state) => const AccountWebview(),
-            ),
-            GoRoute(
-              path: AppPath.authorizedUser.account.settings.goRoute,
-              builder: (context, state) => const BuyerSetingsScreen(),
-            ),
+                path: AppPath.authorizedUser.seller.sellerAccount.goRoute,
+                builder: (context, state) => const AccountWebview(),
+                routes: []),
           ],
         ),
       ],
@@ -239,6 +330,7 @@ class AccountWebview extends StatefulWidget {
 class _AccountWebviewState extends State<AccountWebview> {
   late final WebViewController controller;
   bool loading = true;
+
   @override
   void initState() {
     super.initState();
@@ -339,45 +431,65 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final profileCubit = context.watch<ProfileCubit>();
-    return Scaffold(
-      body: body,
-      bottomNavigationBar: profileCubit.state.whenOrNull(
-        loaded: (user) => switch (user.userType) {
-          UserType.seller => null,
-          UserType.buyer => BottomNavigationBar(
-              currentIndex: selectedIndex,
-              backgroundColor: const Color(0xff111214),
-              onTap: onDestinationSelected,
-              selectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
-              ),
-              showUnselectedLabels: false,
-              selectedItemColor: Colors.white,
-              unselectedItemColor: Colors.white,
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-              ),
-              items: [
-                BottomNavigationBarItem(
-                  activeIcon: AppAssets.icons.auctionsSelected.svg(),
-                  icon: AppAssets.icons.auctionsUnselected.svg(),
-                  label: 'Auctions',
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(
+        statusBarBrightness: Brightness.dark,
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: Scaffold(
+        body: SafeArea(child: body),
+        bottomNavigationBar: profileCubit.state.whenOrNull(
+          loaded: (user) => switch (user.userType) {
+            UserType.seller => null,
+            UserType.buyer => Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: AppColors.appBackground,
                 ),
-                BottomNavigationBarItem(
-                  activeIcon: AppAssets.icons.liveSelected.svg(),
-                  icon: AppAssets.icons.liveUnselected.svg(),
-                  label: 'Live',
+                child: BottomNavigationBar(
+                  currentIndex: selectedIndex,
+                  onTap: onDestinationSelected,
+                  selectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                  selectedItemColor: Colors.white,
+                  unselectedItemColor: Colors.white,
+                  showUnselectedLabels: false,
+                  unselectedLabelStyle: const TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: Colors.white),
+                  items: [
+                    BottomNavigationBarItem(
+                      activeIcon: AppAssets.icons.analyticSelected.svg(),
+                      icon: AppAssets.icons.analyticUnselected.svg(),
+                      label: 'Analytics',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon: AppAssets.icons.orderSelected.svg(),
+                      icon: AppAssets.icons.orderUnselected.svg(),
+                      label: 'Orders',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon: AppAssets.icons.auctionsSelected.svg(),
+                      icon: AppAssets.icons.auctionsUnselected.svg(),
+                      label: 'Inventory',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon: AppAssets.icons.liveSelected.svg(),
+                      icon: AppAssets.icons.liveUnselected.svg(),
+                      label: 'Live',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon: AppAssets.icons.profileSelected.svg(),
+                      icon: AppAssets.icons.profileUnselected.svg(),
+                      label: 'Account',
+                    ),
+                  ],
                 ),
-                BottomNavigationBarItem(
-                  activeIcon: AppAssets.icons.profileSelected.svg(),
-                  icon: AppAssets.icons.profileUnselected.svg(),
-                  label: 'Account',
-                ),
-              ],
-            )
-        },
+              )
+          },
+        ),
       ),
     );
   }

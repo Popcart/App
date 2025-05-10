@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:video_player/video_player.dart';
 
@@ -20,7 +21,7 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset("assets/animations/splash_animation.mp4");
+    _controller = VideoPlayerController.asset(AppAssets.animations.splashAnimation);
     _controller
       ..addListener(() {
         setState(() {});

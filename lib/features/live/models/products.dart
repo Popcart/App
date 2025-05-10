@@ -44,7 +44,6 @@ class Product {
 
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
-  @JsonKey(name: 'name', defaultValue: '')
   final String name;
   @SellerConverter()
   @JsonKey(name: 'seller', defaultValue: UserModel.empty)

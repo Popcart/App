@@ -8,7 +8,6 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 import 'package:timer_count_down/timer_count_down.dart';
@@ -78,14 +77,16 @@ class _VerifyPhoneNumberScreenState extends State<VerifyOtpScreen>
   }
 
   void handleResendOTP() {
-    final onboardingCubit = context.read<OnboardingCubit>();
-    onboardingCubit.sendOtp(isResendingOtp: true);
+    context.read<OnboardingCubit>().sendOtp(isResendingOtp: true);
   }
 
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
     if (onboardingCubit.isLoggingIn) {
-      context.push(AppPath.authorizedUser.live.path);
+      /*
+      Add check for user type before navigating to either seller or buyer view
+       */
+      context.push(AppPath.authorizedUser.seller.analytics.path);
     } else {
       if (onboardingCubit.userType == UserType.buyer) {
         context.pushNamed(AppPath.auth.interestScreen.path);

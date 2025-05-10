@@ -12,7 +12,6 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
 class BusinessDetailsScreen extends StatefulWidget {
@@ -209,9 +208,9 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen>
       listener: (context, state) {
         state.whenOrNull(
           onboardingFailure: (message) => context.showError(message),
-          onboardingSuccess: () => context.go(AppPath.authorizedUser.live.path),
+          onboardingSuccess: () => context.go(AppPath.authorizedUser.seller.analytics.path),
           submitRegisteredBusinessInformationSuccess: () {
-            context.go(AppPath.authorizedUser.live.path);
+            context.go(AppPath.authorizedUser.seller.analytics.path);
           },
         );
       },

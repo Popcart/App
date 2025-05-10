@@ -9,7 +9,6 @@ import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/onboarding/screens/app_back_button.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
 
 class ScheduleSessionScreen extends HookWidget {
@@ -58,17 +57,17 @@ class ScheduleSessionScreen extends HookWidget {
         await context.showError('Please select a start time');
         return;
       }
-      final ids = await context.pushNamed<List<String>>(
-        AppPath.authorizedUser.live.selectProducts.path,
-      );
-      if (ids != null) {
-        productIds.value = ids;
-        await openLivestream.createLivestreamSession(
-          name: livestreamTitleController.text,
-          products: productIds.value,
-          scheduled: isScheduled.value,
-        );
-      }
+      // final ids = await context.pushNamed<List<String>>(
+        // AppPath.authorizedUser.live.selectProducts.path,
+      // );
+      // if (ids != null) {
+      //   productIds.value = ids;
+      //   await openLivestream.createLivestreamSession(
+      //     name: livestreamTitleController.text,
+      //     products: productIds.value,
+      //     scheduled: isScheduled.value,
+      //   );
+      // }
     });
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
@@ -99,14 +98,14 @@ class ScheduleSessionScreen extends HookWidget {
               context.showError(message);
             },
             generateTokenSuccess: (token) {
-              context.pushReplacementNamed(
-                AppPath.authorizedUser.live.sellerLivestream.path,
-                extra: true,
-                queryParameters: {
-                  'token': token,
-                  'channelName': generatedLiveStream.value?.id,
-                },
-              );
+              // context.pushReplacementNamed(
+              //   AppPath.authorizedUser.live.sellerLivestream.path,
+              //   extra: true,
+              //   queryParameters: {
+              //     'token': token,
+              //     'channelName': generatedLiveStream.value?.id,
+              //   },
+              // );
             },
             generateTokenError: (message) {
               context.showError(message);

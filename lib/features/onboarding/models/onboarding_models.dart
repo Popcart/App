@@ -97,13 +97,10 @@ class ProductCategory {
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       _$ProductCategoryFromJson(json);
 
-  @JsonKey(defaultValue: '_id')
+  @JsonKey(name: '_id')
   final String id;
-  @JsonKey(defaultValue: '')
   final String name;
-  @JsonKey(defaultValue: DateTime.now)
   final DateTime createdAt;
-  @JsonKey(defaultValue: DateTime.now)
   final DateTime updatedAt;
 
   @override

@@ -34,9 +34,9 @@ class LiveScreen extends HookWidget {
         loaded: (user) => switch (user.userType) {
           UserType.seller => FloatingActionButton.extended(
               onPressed: () {
-                context.pushNamed(
-                  AppPath.authorizedUser.live.scheduleSession.path,
-                );
+                // context.pushNamed(
+                //   AppPath.authorizedUser.live.scheduleSession.path,
+                // );
               },
               label: const Text('Go Live'),
               icon: const Icon(Icons.live_tv),
@@ -323,28 +323,28 @@ class ActiveLiveStream extends HookWidget {
             error: (message) => context.showError(message),
             generateTokenSuccess: (token) async {
               if (userId == liveStream.user.id) {
-                await context.pushNamed(
-                  AppPath.authorizedUser.live.sellerLivestream.path,
-                  extra: true,
-                  queryParameters: {
-                    'token': token,
-                    'channelName': liveStream.id,
-                  },
-                );
+                // await context.pushNamed(
+                //   AppPath.authorizedUser.live.sellerLivestream.path,
+                //   extra: true,
+                //   queryParameters: {
+                //     'token': token,
+                //     'channelName': liveStream.id,
+                //   },
+                // );
               }
               // ignore: use_build_context_synchronously
-              final shouldRefresh = await context.pushNamed<bool>(
-                AppPath.authorizedUser.live.buyerLivestream.path,
-                extra: liveStream,
-                queryParameters: {
-                  'token': token,
-                },
-              );
-              if (shouldRefresh != null && shouldRefresh && context.mounted) {
-                await context
-                    .read<ActiveLivestreamsCubit>()
-                    .getActiveLivestreams();
-              }
+              // final shouldRefresh = await context.pushNamed<bool>(
+              //   AppPath.authorizedUser.live.buyerLivestream.path,
+              //   extra: liveStream,
+              //   queryParameters: {
+              //     'token': token,
+              //   },
+              // );
+              // if (shouldRefresh != null && shouldRefresh && context.mounted) {
+              //   await context
+              //       .read<ActiveLivestreamsCubit>()
+              //       .getActiveLivestreams();
+              // }
             },
           );
         },

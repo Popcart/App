@@ -2,12 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/inventory_repo.dart';
+import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 
-import '../../../../core/repository/user_repo.dart';
-
 part 'interest_list_cubit.freezed.dart';
-
 part 'interest_list_state.dart';
 
 class InterestCubit extends Cubit<InterestListState> {
