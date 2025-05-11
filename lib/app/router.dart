@@ -462,8 +462,54 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
         body: SafeArea(child: body),
         bottomNavigationBar: profileCubit.state.whenOrNull(
           loaded: (user) => switch (user.userType) {
-            UserType.seller => null,
             UserType.buyer => Theme(
+              data: Theme.of(context).copyWith(
+                canvasColor: AppColors.appBackground,
+              ),
+              child: BottomNavigationBar(
+                currentIndex: selectedIndex,
+                onTap: onDestinationSelected,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
+                selectedItemColor: Colors.white,
+                unselectedItemColor: Colors.white,
+                showUnselectedLabels: false,
+                unselectedLabelStyle: const TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    color: Colors.white),
+                items: [
+                  BottomNavigationBarItem(
+                    activeIcon: AppAssets.icons.analyticSelected.svg(),
+                    icon: AppAssets.icons.analyticUnselected.svg(),
+                    label: 'Analytics',
+                  ),
+                  BottomNavigationBarItem(
+                    activeIcon: AppAssets.icons.orderSelected.svg(),
+                    icon: AppAssets.icons.orderUnselected.svg(),
+                    label: 'Orders',
+                  ),
+                  BottomNavigationBarItem(
+                    activeIcon: AppAssets.icons.auctionsSelected.svg(),
+                    icon: AppAssets.icons.auctionsUnselected.svg(),
+                    label: 'Inventory',
+                  ),
+                  BottomNavigationBarItem(
+                    activeIcon: AppAssets.icons.liveSelected.svg(),
+                    icon: AppAssets.icons.liveUnselected.svg(),
+                    label: 'Live',
+                  ),
+                  BottomNavigationBarItem(
+                    activeIcon: AppAssets.icons.profileSelected.svg(),
+                    icon: AppAssets.icons.profileUnselected.svg(),
+                    label: 'Account',
+                  ),
+                ],
+              ),
+            ),
+            UserType.seller => Theme(
                 data: Theme.of(context).copyWith(
                   canvasColor: AppColors.appBackground,
                 ),

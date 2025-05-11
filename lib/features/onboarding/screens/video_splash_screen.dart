@@ -16,29 +16,35 @@ class VideoSplashScreen extends StatefulWidget {
 
 class _VideoSplashScreenState extends State<VideoSplashScreen>
     with WidgetsBindingObserver {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
 
   @override
   void initState() {
     super.initState();
-    initVideoPlayer();
-  }
-
-  void initVideoPlayer() {
-    _controller =
-        VideoPlayerController.asset(AppAssets.animations.splashAnimation);
-    _controller
-      ..setVolume(0)
-      ..setLooping(true);
-    _controller.initialize().then((_) {
-      setState(() {});
-      _controller.play();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initVideoPlayer();
     });
   }
 
+  void initVideoPlayer() {
+    _controller = VideoPlayerController.asset(AppAssets.animations.splashAnimation)
+      ..setVolume(0)
+      ..setLooping(true);
+
+    _controller!.initialize().then((_) {
+      if (mounted) {
+        setState(() {});
+        _controller!.play();
+      }
+    }).catchError((e) {
+      debugPrint('Video player init error: $e');
+    });
+  }
+
+
   @override
   void dispose() {
-    _controller.dispose();
+    _controller!.dispose();
     super.dispose();
   }
 
@@ -56,37 +62,42 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
 
   Future<void> _playVideo() async {
     if (!mounted) return;
-    if (!_controller.value.isInitialized) return;
-    if (_controller.value.isPlaying) return;
+    if (!_controller!.value.isInitialized) return;
+    if (_controller!.value.isPlaying) return;
     try {
-      await _controller.play();
-      if (!_controller.value.isLooping) await _controller.setLooping(true);
+      await _controller!.play();
+      if (!_controller!.value.isLooping) await _controller!.setLooping(true);
     } on PlatformException catch (e) {}
   }
 
   void _pauseVideo() {
-    if (!_controller.value.isInitialized) return;
-    if (!_controller.value.isPlaying) return;
-    _controller.pause();
+    if (!_controller!.value.isInitialized) return;
+    if (!_controller!.value.isPlaying) return;
+    _controller!.pause();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return Container(
+        color: AppColors.orange,
+      );
+    }
     return Scaffold(
       backgroundColor: AppColors.white,
       body: Stack(
         children: [
           Positioned.fill(
-            child: _controller.value.isInitialized
+            child: _controller!.value.isInitialized
                 ? FittedBox(
                     fit: BoxFit.fitHeight,
                     child: SizedBox(
-                      width: _controller.value.size.width,
-                      height: _controller.value.size.height,
+                      width: _controller!.value.size.width,
+                      height: _controller!.value.size.height,
                       child: AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          child: VideoPlayer(_controller)),
+                          aspectRatio: _controller!.value.aspectRatio,
+                          child: VideoPlayer(_controller!)),
                     ),
                   )
                 : Container(),
