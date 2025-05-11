@@ -89,6 +89,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               children: [
                 CustomExpansionTile(
                   title: 'Sales Overview',
+                  expandedByDefault: true,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -282,11 +283,13 @@ class CustomExpansionTile extends StatefulWidget {
     required this.title,
     required this.children,
     this.showSeeMore = false,
+    this.expandedByDefault = false,
     this.onSeeMore,
     super.key,
   });
 
   final bool showSeeMore;
+  final bool expandedByDefault;
   final String title;
   final List<Widget> children;
   final Function()? onSeeMore;
@@ -304,6 +307,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     return Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: ExpansionTile(
+        initiallyExpanded: widget.expandedByDefault,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
