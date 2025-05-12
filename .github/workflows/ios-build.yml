@@ -10,7 +10,7 @@ on:
 jobs:
   ios-app-store:
     name: Publish to iOS app store
-    runs-on: macos-14
+    runs-on: macos-15.4.1
     env:
       APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
       APPLE_ID_USERNAME: ${{ secrets.APPLE_ID_USERNAME }}
@@ -27,6 +27,11 @@ jobs:
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
     steps:
+      - name: Select Xcode 16.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
