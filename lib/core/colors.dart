@@ -25,6 +25,7 @@ class AppColors {
   static const textFieldFillColor = Color(0xFF24262B);
   static const tabContainerColor = Color(0xFF393C43);
   static const tabSelectedContainerColor = Color(0xFF676C75);
+  static const popUpMenuBg = Color(0xFF252525);
 
   static const tabUnSelectedTextColor = Color(0xFF9EA0A5);
   static const tabSelectedBorderColor = Color(0xFF363739);

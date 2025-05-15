@@ -105,6 +105,13 @@ class $AssetsIconsGen {
   SvgGenImage get deleteAccount =>
       const SvgGenImage('assets/icons/delete_account.svg');
 
+  /// File path: assets/icons/delete_product.svg
+  SvgGenImage get deleteProduct =>
+      const SvgGenImage('assets/icons/delete_product.svg');
+
+  /// File path: assets/icons/edit.svg
+  SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
+
   /// File path: assets/icons/engagement.svg
   SvgGenImage get engagement =>
       const SvgGenImage('assets/icons/engagement.svg');
@@ -152,6 +159,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/mail.svg
   SvgGenImage get mail => const SvgGenImage('assets/icons/mail.svg');
+
+  /// File path: assets/icons/menu.svg
+  SvgGenImage get menu => const SvgGenImage('assets/icons/menu.svg');
 
   /// File path: assets/icons/messages.svg
   SvgGenImage get messages => const SvgGenImage('assets/icons/messages.svg');
@@ -234,6 +244,8 @@ class $AssetsIconsGen {
     checkicon,
     delete,
     deleteAccount,
+    deleteProduct,
+    edit,
     engagement,
     errorIcon,
     expand,
@@ -248,6 +260,7 @@ class $AssetsIconsGen {
     liveUnselected,
     logOut,
     mail,
+    menu,
     messages,
     name,
     notifications,
@@ -282,6 +295,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/auth_bg.png
   AssetGenImage get authBg => const AssetGenImage('assets/images/auth_bg.png');
 
+  /// File path: assets/images/bag.png
+  AssetGenImage get bag => const AssetGenImage('assets/images/bag.png');
+
   /// File path: assets/images/box.png
   AssetGenImage get box => const AssetGenImage('assets/images/box.png');
 
@@ -304,6 +320,7 @@ class $AssetsImagesGen {
     addImage,
     appLogo,
     authBg,
+    bag,
     box,
     buyer,
     dottedLines,

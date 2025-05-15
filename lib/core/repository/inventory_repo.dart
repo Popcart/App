@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/api/pagination.dart';
@@ -22,6 +21,19 @@ sealed class InventoryRepo {
     required List<VariantModel> productVariant,
   });
 
+  Future<ApiResponse<void>> editProduct({
+    required String productId,
+    required String productName,
+    required String productDesc,
+    required String category,
+    required int price,
+    required String salesPrice,
+    required String discount,
+    required bool selling,
+    required int stockUnit,
+    required List<VariantModel> productVariant,
+  });
+
   Future<ApiResponse<PaginationResponse<Product>>> getTopProducts({
     required int page,
     required int limit,
@@ -33,6 +45,10 @@ sealed class InventoryRepo {
   });
 
   Future<ApiResponse<Product>> getProduct({
+    required String productId,
+  });
+
+  Future<ApiResponse<void>> deleteProduct({
     required String productId,
   });
 }
@@ -65,18 +81,46 @@ class InventoryRepoImpl implements InventoryRepo {
     required List<VariantModel> productVariant,
   }) async {
     return _apiHelper.request(
-      path: 'add-product',
-      method: MethodType.post,
-      payload: {
-        'name': productName,
-        'category': category,
-        'description': productDesc,
-        'stockUnit': stockUnit,
-        'price': price,
-        'variants': productVariant.map((variant) => variant.toJson()).toList(),
-      },
-      filesList: productImages,
-      imagesKey: 'images'
+        path: 'add-product',
+        method: MethodType.post,
+        payload: {
+          'name': productName,
+          'category': category,
+          'description': productDesc,
+          'stockUnit': stockUnit,
+          'price': price,
+          'variants':
+              productVariant.map((variant) => variant.toJson()).toList(),
+        },
+        filesList: productImages,
+        imagesKey: 'images');
+  }
+
+  @override
+  Future<ApiResponse<void>> editProduct({
+    required String productId,
+    required String productName,
+    required String productDesc,
+    required String category,
+    required int price,
+    required String salesPrice,
+    required String discount,
+    required bool selling,
+    required int stockUnit,
+    required List<VariantModel> productVariant,
+  }) async {
+    return _apiHelper.request(
+        path: '$productId/edit',
+        method: MethodType.put,
+        payload: {
+          'name': productName,
+          'category': category,
+          'description': productDesc,
+          'stockUnit': stockUnit,
+          'price': price,
+          'variants':
+              productVariant.map((variant) => variant.toJson()).toList(),
+        },
     );
   }
 
@@ -95,12 +139,13 @@ class InventoryRepoImpl implements InventoryRepo {
       responseMapper: (v) {
         return PaginationResponse<Product>.fromJson(
           v,
-              (i) => Product.fromJson(i! as Map<String, dynamic>),
+          (i) => Product.fromJson(i! as Map<String, dynamic>),
           'products',
         );
       },
     );
   }
+
   @override
   Future<ApiResponse<PaginationResponse<Product>>> getAllProducts({
     required int page,
@@ -117,7 +162,7 @@ class InventoryRepoImpl implements InventoryRepo {
       responseMapper: (v) {
         return PaginationResponse<Product>.fromJson(
           v,
-              (i) => Product.fromJson(i! as Map<String, dynamic>),
+          (i) => Product.fromJson(i! as Map<String, dynamic>),
           'products',
         );
       },
@@ -130,6 +175,14 @@ class InventoryRepoImpl implements InventoryRepo {
       path: productId,
       method: MethodType.get,
       responseMapper: Product.fromJson,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> deleteProduct({required String productId}) async {
+    return _apiHelper.request(
+      path: '$productId/delete',
+      method: MethodType.delete,
     );
   }
 }
