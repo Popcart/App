@@ -61,7 +61,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         },
       );
       setState(() {});
-    } catch (e) {}
+    } catch (e, stackTrace) {
+      print(stackTrace);
+    }
   }
 
   @override

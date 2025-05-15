@@ -47,6 +47,7 @@ class InventoryPath extends Path<InventoryPath> {
   InventoryPath() : super('/inventory');
 
   Path get addProduct => Path('/add-product');
+  Path get editProduct => Path('/edit-product');
 }
 
 class SellerAccountPath extends Path<SellerAccountPath> {

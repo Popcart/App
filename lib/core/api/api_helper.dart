@@ -286,8 +286,9 @@ class ApiHandler {
       );
       log(finalResponse.toString(), name: 'DioResponse');
       return finalResponse;
-    } on dio.DioException catch (e) {
+    } on dio.DioException catch (e, stackTrace) {
       log('Error: $e', name: 'DioError');
+      log('StackTrace: $stackTrace', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(
           message: (e.response?.data != null && e.response?.data is Map)
@@ -298,8 +299,9 @@ class ApiHandler {
       );
 
       return error;
-    } catch (e) {
+    } catch (e, stackTrace) {
       log('Error: $e', name: 'DioError');
+      log('Error stackTrace: $stackTrace', name: 'DioError');
       // log('StackTrace: $s', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(message: 'Unknown error occurred: $e')..code = 500,

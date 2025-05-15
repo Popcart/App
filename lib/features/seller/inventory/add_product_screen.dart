@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,6 +13,7 @@ import 'package:popcart/core/dropdown_widget.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/features/seller/cubits/product/product_cubit.dart';
 import 'package:popcart/features/seller/inventory/add_product_variant.dart';
@@ -94,20 +96,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
             context.showError(message);
           },
           saveProduct: () async {
-            await showModalBottomSheet<void>(
-              context: context,
-              builder: (_) => Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(16),
-                    topRight: Radius.circular(16),
+              await showModalBottomSheet<void>(
+                context: context,
+                builder: (_) => Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
+                    ),
+                  ),
+                  child: const ProductUploaded(
+                    title: 'Product Added Successfully!',
+                    description:
+                        'Your new item is now live in your inventory. Ready to manage, edit, or start selling!',
                   ),
                 ),
-                child: const ProductUploaded(),
-              ),
-            );
+              );
             context.push(AppPath.authorizedUser.seller.inventory.path);
           },
           saveProductFailure: (message) {
@@ -120,7 +126,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           title: const Text('Add Product'),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
@@ -364,8 +370,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 height: 10,
                               ),
                               CustomTextFormField(
-                                validator:
-                                    ValidationBuilder().required().build(),
                                 controller: salesPrice,
                                 hintText: 'Amount',
                                 inputFormatters: [
@@ -391,8 +395,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                 height: 10,
                               ),
                               CustomTextFormField(
-                                validator:
-                                    ValidationBuilder().required().build(),
                                 controller: discount,
                                 hintText: 'Amount',
                                 inputFormatters: [
@@ -417,7 +419,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                   color: AppColors.darkGrey,
-                                  borderRadius: BorderRadius.circular(19.0)),
+                                  borderRadius: BorderRadius.circular(19)),
                               padding:
                                   const EdgeInsets.only(left: 0, right: 50),
                               child: Row(
@@ -442,7 +444,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                             child: Container(
                               decoration: BoxDecoration(
                                   color: AppColors.darkGrey,
-                                  borderRadius: BorderRadius.circular(19.0)),
+                                  borderRadius: BorderRadius.circular(19)),
                               padding:
                                   const EdgeInsets.only(left: 0, right: 50),
                               child: Row(
@@ -475,64 +477,72 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       validator: ValidationBuilder().required().build(),
                       controller: stockLevel,
                       hintText: 'Stock level',
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
                     ),
-                    if (variants.isEmpty) ...{
+                    if (variants.isNotEmpty) ...[
                       const SizedBox(
-                        height: 20,
+                        height: 17,
                       ),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () async {
-                          final variant =
-                              await showModalBottomSheet<VariantModel>(
-                            context: context,
-                            isScrollControlled: true,
-                            builder: (_) => Container(
-                              height: MediaQuery.of(context).size.height * 0.5,
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
-                                ),
+                      Column(
+                        children: [
+                          ...List.generate(variants.length, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: variantItem(
+                                variant: variants[index],
+                                context: context,
+                                callback: () {
+                                  variants.removeAt(index);
+                                  setState(() {});
+                                },
                               ),
-                              child: const AddProductVariant(),
-                            ),
-                          );
-                          if (variant != null) {
-                            setState(() {
-                              variants.add(variant);
-                            });
-                          }
-                        },
-                        child: Row(
-                          children: [
-                            AppAssets.icons.addIcon.svg(),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            const Text('Add Product variant',
-                                style: TextStyles.textTitle),
-                          ],
-                        ),
+                            );
+                          }),
+                        ],
                       ),
-                    },
-                    const SizedBox(
-                      height: 17,
-                    ),
-                    Visibility(
-                        visible: variants.isNotEmpty,
-                        child: Column(
-                          children: [
-                            ...List.generate(variants.length, (index) {
-                              return variantItem(variant: variants[index]);
-                            })
-                          ],
-                        )),
+                    ],
                     const SizedBox(
                       height: 15,
                     ),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        final variant =
+                            await showModalBottomSheet<VariantModel>(
+                          context: context,
+                          isScrollControlled: true,
+                          builder: (_) => Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                            ),
+                            child: const AddProductVariant(),
+                          ),
+                        );
+                        if (variant != null) {
+                          setState(() {
+                            variants.add(variant);
+                          });
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          AppAssets.icons.addIcon.svg(),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          const Text('Add Product variant',
+                              style: TextStyles.textTitle),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     CustomElevatedButton(
                       text: 'Save',
                       showIcon: false,
@@ -562,40 +572,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget variantItem({
-    required VariantModel variant,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.textFieldFillColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(variant.variant, style: TextStyles.body),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              ...List.generate(variant.options.length, (index) {
-                return Container(
-                  padding: EdgeInsets.all(4),
-                  margin: EdgeInsets.only(right: 4),
-                  decoration: BoxDecoration(
-                      color: AppColors.black,
-                      borderRadius: BorderRadius.all(Radius.circular(3))),
-                  child:
-                      Text(variant.options[index], style: TextStyles.caption),
-                );
-              })
-            ],
-          ),
-        ],
       ),
     );
   }

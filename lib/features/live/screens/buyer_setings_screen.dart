@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/app/theme_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class BuyerSetingsScreen extends StatelessWidget {
@@ -97,6 +99,33 @@ class BuyerSetingsScreen extends StatelessWidget {
                     title: 'Delete account',
                     onTap: () {},
                     color: const Color(0xfffdbc3c),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -4),
+                    leading: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xfffdbc3c),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: AppAssets.icons.deleteAccount.svg(),
+                    ),
+                    title: Text(
+                      'Switch app theme',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    trailing: Switch(
+                      value: context.watch<ThemeCubit>().state == ThemeMode.dark,
+                      onChanged: (val) {
+                        context.read<ThemeCubit>().toggleTheme(val);
+                      },
+                    )
                   ),
                 ],
               ),

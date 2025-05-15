@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class BuyerProfileScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class BuyerProfileScreen extends StatelessWidget {
             onPressed: () {
               context.pushNamed(AppPath.authorizedUser.seller.sellerAccount.settings.path);
             },
-            icon: AppAssets.icons.gear.svg(),
+            icon: AppAssets.icons.gear.themedIcon(context),
           ),
         ],
       ),

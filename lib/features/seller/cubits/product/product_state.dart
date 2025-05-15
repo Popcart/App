@@ -13,5 +13,7 @@ class AddProductState with _$AddProductState {
   const factory AddProductState.error(String message) = _Error;
 
   const factory AddProductState.saveProduct() = _SaveProductSuccess;
+  const factory AddProductState.deleteProductSuccess(String message) = _DeleteProductSuccess;
+  const factory AddProductState.deletingProduct() = _DeletingSuccess;
   const factory AddProductState.saveProductFailure(String message) =_SaveProductFailure;
 }

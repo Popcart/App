@@ -9,29 +9,26 @@ import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
-import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
+import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/live/screens/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/screens/buyer_profile_screen.dart';
 import 'package:popcart/features/live/screens/buyer_setings_screen.dart';
-import 'package:popcart/features/live/screens/live_screen.dart';
-import 'package:popcart/features/live/screens/schedule_session_screen.dart';
-import 'package:popcart/features/live/screens/select_products_screen.dart';
-import 'package:popcart/features/live/screens/seller_livestream_screen.dart';
 import 'package:popcart/features/onboarding/screens/business_details_screen.dart';
-import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
-import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/login_screen.dart';
+import 'package:popcart/features/onboarding/screens/select_interests_screen.dart';
 import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart';
+import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/seller/analytics/analytics_screen.dart';
 import 'package:popcart/features/seller/analytics/inventory_product_screen.dart';
 import 'package:popcart/features/seller/analytics/top_product_screen.dart';
 import 'package:popcart/features/seller/inventory/add_product_screen.dart';
+import 'package:popcart/features/seller/inventory/edit_product_screen.dart';
 import 'package:popcart/features/seller/inventory/inventory_screen.dart';
+import 'package:popcart/features/seller/orders/orders_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -197,7 +194,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: AppPath.authorizedUser.seller.orders.goRoute,
-              builder: (context, state) => const Scaffold(),
+              builder: (context, state) => const OrdersScreen(),
             ),
           ],
         ),
@@ -226,6 +223,29 @@ final router = GoRouter(
                       );
                     },
                   ),
+                ),
+                GoRoute(
+                  path: AppPath.authorizedUser.seller.inventory.editProduct.goRoute,
+                  name: AppPath.authorizedUser.seller.inventory.editProduct.path,
+                  pageBuilder: (context, state){
+                    final product = state.extra! as Product;
+                    return CustomTransitionPage(
+                      child: EditProductScreen(productModal: product),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0, 1);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        final tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    );
+                  }
                 ),
               ]
             ),
@@ -462,100 +482,68 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
         body: SafeArea(child: body),
         bottomNavigationBar: profileCubit.state.whenOrNull(
           loaded: (user) => switch (user.userType) {
-            UserType.buyer => Theme(
-              data: Theme.of(context).copyWith(
-                canvasColor: AppColors.appBackground,
-              ),
-              child: BottomNavigationBar(
-                currentIndex: selectedIndex,
-                onTap: onDestinationSelected,
-                selectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
+            UserType.buyer => BottomNavigationBar(
+              currentIndex: selectedIndex,
+              onTap: onDestinationSelected,
+              items: [
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.analyticSelected.themedIcon(context),
+                  icon: AppAssets.icons.analyticUnselected.themedIcon(context),
+                  label: 'Analytics',
                 ),
-                selectedItemColor: Colors.white,
-                unselectedItemColor: Colors.white,
-                showUnselectedLabels: false,
-                unselectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    color: Colors.white),
-                items: [
-                  BottomNavigationBarItem(
-                    activeIcon: AppAssets.icons.analyticSelected.svg(),
-                    icon: AppAssets.icons.analyticUnselected.svg(),
-                    label: 'Analytics',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon: AppAssets.icons.orderSelected.svg(),
-                    icon: AppAssets.icons.orderUnselected.svg(),
-                    label: 'Orders',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon: AppAssets.icons.auctionsSelected.svg(),
-                    icon: AppAssets.icons.auctionsUnselected.svg(),
-                    label: 'Inventory',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon: AppAssets.icons.liveSelected.svg(),
-                    icon: AppAssets.icons.liveUnselected.svg(),
-                    label: 'Live',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon: AppAssets.icons.profileSelected.svg(),
-                    icon: AppAssets.icons.profileUnselected.svg(),
-                    label: 'Account',
-                  ),
-                ],
-              ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.orderSelected.themedIcon(context),
+                  icon: AppAssets.icons.orderUnselected.themedIcon(context),
+                  label: 'Orders',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.auctionsSelected.themedIcon(context),
+                  icon: AppAssets.icons.auctionsUnselected.themedIcon(context),
+                  label: 'Inventory',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.liveSelected.themedIcon(context),
+                  icon: AppAssets.icons.liveUnselected.themedIcon(context),
+                  label: 'Live',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.profileSelected.themedIcon(context),
+                  icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                  label: 'Account',
+                ),
+              ],
             ),
-            UserType.seller => Theme(
-                data: Theme.of(context).copyWith(
-                  canvasColor: AppColors.appBackground,
+            UserType.seller => BottomNavigationBar(
+              currentIndex: selectedIndex,
+              onTap: onDestinationSelected,
+              items: [
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.analyticSelected.themedIcon(context),
+                  icon: AppAssets.icons.analyticUnselected.themedIcon(context),
+                  label: 'Analytics',
                 ),
-                child: BottomNavigationBar(
-                  currentIndex: selectedIndex,
-                  onTap: onDestinationSelected,
-                  selectedLabelStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                  selectedItemColor: Colors.white,
-                  unselectedItemColor: Colors.white,
-                  showUnselectedLabels: false,
-                  unselectedLabelStyle: const TextStyle(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 12,
-                      color: Colors.white),
-                  items: [
-                    BottomNavigationBarItem(
-                      activeIcon: AppAssets.icons.analyticSelected.svg(),
-                      icon: AppAssets.icons.analyticUnselected.svg(),
-                      label: 'Analytics',
-                    ),
-                    BottomNavigationBarItem(
-                      activeIcon: AppAssets.icons.orderSelected.svg(),
-                      icon: AppAssets.icons.orderUnselected.svg(),
-                      label: 'Orders',
-                    ),
-                    BottomNavigationBarItem(
-                      activeIcon: AppAssets.icons.auctionsSelected.svg(),
-                      icon: AppAssets.icons.auctionsUnselected.svg(),
-                      label: 'Inventory',
-                    ),
-                    BottomNavigationBarItem(
-                      activeIcon: AppAssets.icons.liveSelected.svg(),
-                      icon: AppAssets.icons.liveUnselected.svg(),
-                      label: 'Live',
-                    ),
-                    BottomNavigationBarItem(
-                      activeIcon: AppAssets.icons.profileSelected.svg(),
-                      icon: AppAssets.icons.profileUnselected.svg(),
-                      label: 'Account',
-                    ),
-                  ],
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.orderSelected.themedIcon(context),
+                  icon: AppAssets.icons.orderUnselected.themedIcon(context),
+                  label: 'Orders',
                 ),
-              )
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.auctionsSelected.themedIcon(context),
+                  icon: AppAssets.icons.auctionsUnselected.themedIcon(context),
+                  label: 'Inventory',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.liveSelected.themedIcon(context),
+                  icon: AppAssets.icons.liveUnselected.themedIcon(context),
+                  label: 'Live',
+                ),
+                BottomNavigationBarItem(
+                  activeIcon: AppAssets.icons.profileSelected.themedIcon(context),
+                  icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                  label: 'Account',
+                ),
+              ],
+            )
           },
         ),
       ),

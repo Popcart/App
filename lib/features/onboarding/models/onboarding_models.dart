@@ -80,32 +80,68 @@ class User {
 
 @JsonSerializable(createToJson: false)
 class ProductCategory {
-  ProductCategory({
-    required this.id,
-    required this.name,
-    required this.createdAt,
-    required this.updatedAt,
-  });
+  ProductCategory(
+      {required this.id,
+      required this.name,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.value});
 
   factory ProductCategory.init() => ProductCategory(
         id: '',
         name: '',
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
+        value: 0,
       );
 
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       _$ProductCategoryFromJson(json);
+
+
+  factory ProductCategory.withId(String id) => ProductCategory(
+    id: id,
+    name: '',
+    createdAt: DateTime.now(),
+    updatedAt: DateTime.now(),
+    value: 0,
+  );
 
   @JsonKey(name: '_id')
   final String id;
   final String name;
   final DateTime createdAt;
   final DateTime updatedAt;
+  @JsonKey(name: '__v')
+  final dynamic value;
 
   @override
   String toString() {
     return '''ProductCategory(id: $id, name: $name, createdAt: $createdAt, updatedAt: $updatedAt)''';
+  }
+}
+
+class CategoryConverter implements JsonConverter<ProductCategory, dynamic> {
+  const CategoryConverter();
+
+  @override
+  ProductCategory fromJson(dynamic json) {
+    // If it's a string (just the ID)
+    if (json is String) {
+      return ProductCategory.withId(json);
+    }
+    // If it's a Map/object with category details
+    else if (json is Map<String, dynamic>) {
+      return ProductCategory.fromJson(json);
+    }
+    // Default case
+    return ProductCategory.init();
+  }
+
+  @override
+  dynamic toJson(ProductCategory category) {
+    // Since you're using createToJson: false, this isn't strictly necessary
+    return category.id;
   }
 }
 

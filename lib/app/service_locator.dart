@@ -4,6 +4,7 @@ import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
+import 'package:popcart/core/repository/order_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/env/env.dart';
@@ -11,7 +12,7 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory , seller, livestreams}
+enum ApiService { auth, user, inventory, seller, livestreams, orders }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -31,14 +32,22 @@ Future<void> setupLocator({
       () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/inventory/'),
       instanceName: ApiService.inventory.name,
     )
-     ..registerLazySingleton<ApiHandler>(
+    ..registerLazySingleton<ApiHandler>(
       () => ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/sellers/'),
       instanceName: ApiService.seller.name,
     )
-      ..registerLazySingleton<ApiHandler>(
-      () => ApiHandler(baseUrl: '${Env().livestreamServiceBaseUrl}/livestreams/'),
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: '${Env().livestreamServiceBaseUrl}/livestreams/'),
       instanceName: ApiService.livestreams.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/orders/'),
+      instanceName: ApiService.orders.name,
+    )
+
+
     ..registerLazySingleton<LivestreamsRepo>(
       () => LivestreamsRepoImpl(
         locator.get<ApiHandler>(
@@ -53,7 +62,7 @@ Future<void> setupLocator({
         ),
       ),
     )
-     ..registerLazySingleton<SellersRepo>(
+    ..registerLazySingleton<SellersRepo>(
       () => SellersRepoImpl(
         locator.get<ApiHandler>(
           instanceName: ApiService.seller.name,
@@ -71,6 +80,13 @@ Future<void> setupLocator({
       () => OnboardingRepoImpl(
         locator.get<ApiHandler>(
           instanceName: ApiService.auth.name,
+        ),
+      ),
+    )
+    ..registerLazySingleton<OrderRepo>(
+      () => OrderRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.orders.name,
         ),
       ),
     );
