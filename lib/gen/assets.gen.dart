@@ -206,6 +206,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/rewards.svg
   SvgGenImage get rewards => const SvgGenImage('assets/icons/rewards.svg');
 
+  /// File path: assets/icons/selected.svg
+  SvgGenImage get selected => const SvgGenImage('assets/icons/selected.svg');
+
   /// File path: assets/icons/storefront.svg
   SvgGenImage get storefront =>
       const SvgGenImage('assets/icons/storefront.svg');
@@ -221,6 +224,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/total_views.svg
   SvgGenImage get totalViews =>
       const SvgGenImage('assets/icons/total_views.svg');
+
+  /// File path: assets/icons/unselected.svg
+  SvgGenImage get unselected =>
+      const SvgGenImage('assets/icons/unselected.svg');
 
   /// File path: assets/icons/username.svg
   SvgGenImage get username => const SvgGenImage('assets/icons/username.svg');
@@ -273,10 +280,12 @@ class $AssetsIconsGen {
     profileUnselected,
     purchases,
     rewards,
+    selected,
     storefront,
     totalRevenue,
     totalSales,
     totalViews,
+    unselected,
     username,
   ];
 }

@@ -28,6 +28,7 @@ import 'package:popcart/features/seller/analytics/top_product_screen.dart';
 import 'package:popcart/features/seller/inventory/add_product_screen.dart';
 import 'package:popcart/features/seller/inventory/edit_product_screen.dart';
 import 'package:popcart/features/seller/inventory/inventory_screen.dart';
+import 'package:popcart/features/seller/live/live_screen.dart';
 import 'package:popcart/features/seller/orders/orders_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
@@ -255,7 +256,7 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: AppPath.authorizedUser.seller.live.goRoute,
-              builder: (context, state) => const SizedBox(),
+              builder: (context, state) => const LiveScreen(),
               routes: [
                 // GoRoute(
                 //   path: AppPath.authorizedUser.live.scheduleSession.goRoute,
