@@ -1,7 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:popcart/core/colors.dart';
 
-final lightTheme = ThemeData.light().copyWith(
+final lightTheme = ThemeData(
+  brightness: Brightness.light,
+  fontFamily: 'WorkSans',
+).copyWith(
   canvasColor: AppColors.white,
   scaffoldBackgroundColor: AppColors.white,
   progressIndicatorTheme:
@@ -11,6 +15,15 @@ final lightTheme = ThemeData.light().copyWith(
       const TextSelectionThemeData(cursorColor: AppColors.orange),
   radioTheme:
       RadioThemeData(fillColor: WidgetStateProperty.all(AppColors.orange)),
+  cupertinoOverrideTheme: const CupertinoThemeData(
+    textTheme: CupertinoTextThemeData(
+      textStyle: TextStyle(
+        color: AppColors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+  ),
   bottomSheetTheme: const BottomSheetThemeData(
     showDragHandle: true,
     dragHandleColor: Color(0xff393C43),
@@ -57,7 +70,9 @@ final lightTheme = ThemeData.light().copyWith(
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
       selectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.w600, fontSize: 12, color: AppColors.appBackground),
+          fontWeight: FontWeight.w600,
+          fontSize: 12,
+          color: AppColors.appBackground),
       unselectedLabelStyle: TextStyle(
           fontWeight: FontWeight.w400, fontSize: 12, color: AppColors.darkGrey),
       selectedIconTheme: IconThemeData(
@@ -68,7 +83,10 @@ final lightTheme = ThemeData.light().copyWith(
       )),
 );
 
-final darkTheme = ThemeData.dark().copyWith(
+final darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  fontFamily: 'WorkSans',
+).copyWith(
   canvasColor: AppColors.textFieldFillColor,
   scaffoldBackgroundColor: AppColors.appBackground,
   progressIndicatorTheme:
@@ -82,6 +100,15 @@ final darkTheme = ThemeData.dark().copyWith(
     showDragHandle: true,
     dragHandleColor: Color(0xff393C43),
     backgroundColor: Color(0xff111214),
+  ),
+  cupertinoOverrideTheme: const CupertinoThemeData(
+    textTheme: CupertinoTextThemeData(
+      textStyle: TextStyle(
+        color: AppColors.white,
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
   ),
   listTileTheme: const ListTileThemeData(
     contentPadding: EdgeInsets.zero,

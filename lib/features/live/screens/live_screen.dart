@@ -146,6 +146,7 @@ class LiveScreen extends HookWidget {
                         ),
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
                           itemBuilder: (_, index) => Skeletonizer(
                             enabled: activeLivestreamsCubit.state.maybeWhen(
                               orElse: () => false,
