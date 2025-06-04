@@ -508,7 +508,7 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
         statusBarIconBrightness: Brightness.light,
       ),
       child: Scaffold(
-        body: SafeArea(child: body),
+        body: body,
         bottomNavigationBar: profileCubit.state.whenOrNull(
           loaded: (user) => switch (user.userType) {
             UserType.buyer => BottomNavigationBar(

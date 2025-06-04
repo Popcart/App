@@ -50,7 +50,9 @@ class _SetMinimumPriceState extends State<SetMinimumPrice> {
             context.showError(message);
           },
           generateTokenSuccess: (token) {
-            context.pushReplacementNamed(
+            context..pop()
+            ..pop()
+            ..pushReplacementNamed(
               AppPath.authorizedUser.seller.live.goLive.path,
               extra: true,
               queryParameters: {
@@ -224,6 +226,7 @@ class _EditPriceProductItemState extends State<EditPriceProductItem> {
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                 ],
+                keyboardType: TextInputType.number,
                 hintText: 'minimum price',
               ),
             ),

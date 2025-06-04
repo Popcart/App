@@ -15,6 +15,7 @@ import 'package:keyboard_attachable/keyboard_attachable.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
@@ -22,7 +23,7 @@ import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -43,11 +44,19 @@ class BuyerLivestreamScreen extends StatefulWidget {
 class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
   late RtcEngine _engine;
   bool _localUserJoined = false;
-  int userJoined = 0;
+  final ValueNotifier<int> userJoined = ValueNotifier(0);
   late RtmClient rtmClient;
   final _controller = TextEditingController();
-  final List<String> _messages = [];
+  final ValueNotifier<List<MessageModel>> messages = ValueNotifier([]);
+  final ScrollController scrollController = ScrollController();
 
+  void scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      }
+    });
+  }
   @override
   void initState() {
     super.initState();
@@ -68,35 +77,29 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     super.deactivate();
   }
 
-  List<String> messages = [];
-
   void closeLivestream() {
     showCupertinoDialog<void>(
       context: context,
-      builder: (_) => CupertinoAlertDialog(
+      builder: (dialogContext) => CupertinoAlertDialog(
         title: const Text('Livestream Ended'),
         content: const Text('The seller has ended the livestream'),
         actions: [
           CupertinoDialogAction(
             child: const Text('OK'),
             onPressed: () {
-              if(mounted)
-              context.pop(true);
+              Navigator.of(dialogContext).pop();
+              Navigator.of(context).pop();
             },
           ),
         ],
       ),
-    ).then((_) {
-      if (mounted) {
-        context.pop();
-      }
-    });
+    );
+
   }
 
   Future<void> initAgora() async {
     try {
       await [Permission.camera, Permission.microphone].request();
-      // Create RTC Engine
       _engine = createAgoraRtcEngine();
       await _engine.initialize(
         RtcEngineContext(
@@ -104,36 +107,24 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
         ),
       );
-      // Set up event handlers
       _engine.registerEventHandler(
         RtcEngineEventHandler(
           onUserOffline: (connection, remoteUid, reason) {
-            print("On user offline $remoteUid");
-            log(
-              connection.toJson().toString(),
-              name: 'AGORA onUserOffline connection',
-            );
-            log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
-            log(reason.toString(), name: 'AGORA onUserOffline reason');
             // if (remoteUid.toString() == widget.liveStream.agoraId) {
-              closeLivestream();
+            closeLivestream();
             // }
           },
           onJoinChannelSuccess: (connection, elapsed) {
-            print("On user joined $connection");
-            log(
-              connection.toJson().toString(),
-              name: 'AGORA onJoinChannelSuccess connection',
-            );
-            log(elapsed.toString(), name: 'AGORA onJoinChannelSuccess elapsed');
             setState(() {
               _localUserJoined = true;
             });
           },
+          onUserJoined: (connection, remoteUid, elapsed) {
+            setState(() {
+              userJoined.value++;
+            });
+          },
           onError: (err, msg) async {
-            print("On user joined $msg");
-            log(err.toString(), name: 'AGORA onError err');
-            log(msg, name: 'AGORA onError msg');
             await context.showError(msg);
             if (mounted) {
               context.pop();
@@ -141,18 +132,12 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
           },
         ),
       );
-      await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
       await _engine.joinChannel(
         token: widget.token,
         channelId: widget.liveStream.id,
         uid: 1,
-        options: const ChannelMediaOptions(
-          publishMicrophoneTrack: false,
-          publishCameraTrack: false,
-          autoSubscribeAudio: true,
-          autoSubscribeVideo: true,
-          clientRoleType: ClientRoleType.clientRoleAudience,
-        ),
+        options: const ChannelMediaOptions(),
       );
       await _engine.startPreview();
       await initRtm();
@@ -163,87 +148,70 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
 
   Future<void> initRtm() async {
     try {
-      // Create rtm client
-      String userId = locator<SharedPrefs>().userUid;
-      final openLivestream = context.read<OpenLivestreamCubit>();
-      final token = await openLivestream.generateAgoraRTMToken(userId: userId);
-      print('Token from RTM $token');
-      if(token != null) {
+      final userId = locator<SharedPrefs>().userUid;
         final (status, client) = await RTM(Env().agoraAppId, userId);
         if (status.error == true) {
-          print('${status.operation} failed due to ${status
-              .reason}, error code: ${status.errorCode}');
         } else {
           rtmClient = client;
-          print('Initialize success!');
         }
         rtmClient.addListener(
-          // Add message event handler
             message: (event) {
-              print('received a message from channel: ${event
-                  .channelName}, channel type : ${event.channelType}');
-              print('message content: ${utf8.decode(
-                  event.message!)}, customer type: ${event.customType}');
-              _messages.add(utf8.decode(event.message!));
-              setState(() {});
+              final updated = List<MessageModel>.from(messages.value)
+                ..add(MessageModel(
+                    userId: event.publisher ?? '',
+                    message: utf8.decode(event.message!)));
+              messages.value = updated;
+              scrollToBottom();
             },
-            // Add linkState event handler
-            linkState: (event) {
-              print('link state changed from ${event.previousState} to ${event
-                  .currentState}');
-              print('reason: ${event.reason}, due to operation ${event
-                  .operation}');
-            });
-        await loginToSignal(token);
-      }
-    } catch (e) {
-    }
+            linkState: (event) {});
+        await loginToSignal();
+    } catch (e) {}
   }
 
   Future<void> _send() async {
     try {
-      var (status, response) = await rtmClient.publish(
-          widget.liveStream.id,
-          _controller.text,
-          channelType: RtmChannelType.message,
-          customType: 'PlainText'
-      );
-      if (status.error == true ){
-        print('${status.operation} failed, errorCode: ${status.errorCode}, due to ${status.reason}');
+      final (status, response) = await rtmClient.publish(
+          widget.liveStream.id, _controller.text,
+          customType: 'PlainText');
+      if (status.error == true) {
+        print(
+            '${status.operation} failed, errorCode: ${status.errorCode}, due to ${status.reason}');
       } else {
+        final userId = locator<SharedPrefs>().userUid;
+        final updated = List<MessageModel>.from(messages.value)
+          ..add(MessageModel(message: _controller.text, userId: userId));
+        messages.value = updated;
         _controller.clear();
-        _messages.add(_controller.text);
-        setState(() {});
-        print('${status.operation} success! message number:');
+        scrollToBottom();
       }
     } catch (e) {
       print('Failed to publish message: $e');
     }
   }
 
-  Future<void> loginToSignal(String token) async {
+  Future<void> loginToSignal() async {
     try {
-      // Login to Signaling
-      final (status,response) = await rtmClient.login('007eJxSYGA/ULadKb+qf+tDd2UOyyzV4xafM2LNLbfNu3z/S6xXToQCg0GSebKxuWGikZlJqolhqqWlZXJSmnFyUrKZpVmKaYqhjoxdRkMgI8PKsx9ZGRmYGBgZGBlAfAYGQAAAAP//Qc8dBQ==');
-      print("Login token $token");
-      if (status.error == true) {
-        print('${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
-      } else {
-        print('login RTM success!');
-        await subscribeToIncomingMessages();
+      final openLivestream = context.read<OpenLivestreamCubit>();
+      final userId = locator<SharedPrefs>().userUid;
+      final token = await openLivestream.generateAgoraRTMToken(userId: userId);
+      if(token != null) {
+        final (status, response) = await rtmClient.login(token);
+        if (status.error == true) {} else {
+          await subscribeToIncomingMessages();
+        }
       }
     } catch (e) {
-      print('Failed to login: $e');
-
+      print("error occurred logging in ............ $e");
     }
   }
 
   Future<void> subscribeToIncomingMessages() async {
     try {
-      // Subscribe to a channel
-      var (status,response) = await rtmClient.subscribe(widget.liveStream.id);
+      final (status, response) =
+          await rtmClient.subscribe(widget.liveStream.id);
       if (status.error == true) {
-        print('${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
+        print(
+            '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
       } else {
         print('subscribe channel: ${widget.liveStream.id} success!');
       }
@@ -292,121 +260,125 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
             child: _renderVideo(),
           ),
           Positioned.fill(
+            top: 50,
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: SafeArea(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const AppBackButton(),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 12,
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.liveStream.user.username,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                            const Text(
-                              '0 followers',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xfff97316),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'Follow',
-                            style: TextStyle(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const AppBackButton(),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 12,
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.liveStream.user.username,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
                               color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
+                          const Text(
+                            '0 followers',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
                         ),
-                        const Spacer(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xff4B4444).withOpacity(0.5),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.remove_red_eye_outlined,
-                                    color: Colors.white,
-                                    size: 12,
+                        decoration: BoxDecoration(
+                          color: const Color(0xfff97316),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Follow',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff4B4444).withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.remove_red_eye_outlined,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 4),
+                                ValueListenableBuilder<int>(
+                                    valueListenable: userJoined,
+                                    builder: (context, count, _) {
+                                      return Text(
+                                        count.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      );
+                                    }),
+                                const SizedBox(width: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                    vertical: 2,
                                   ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    userJoined.toString(),
-                                    style: const TextStyle(
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffcc0000),
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child: const Text(
+                                    'Live',
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 4,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xffcc0000),
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: const Text(
-                                      'Live',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
           Positioned.fill(
+            top: 50,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: SafeArea(
@@ -416,16 +388,39 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(width: 20, height: 20, color: Colors.white,),
                           SizedBox(
                             height: 400,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: _messages.length,
-                              itemBuilder: (context, i) =>
-                                  ListTile(title: Text(_messages[i])),
-                            ),
+                            width: MediaQuery.of(context).size.width * .8,
+                            child: ValueListenableBuilder<List<MessageModel>>(
+                                valueListenable: messages,
+                                builder: (context, messages, _) {
+                                  return ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: messages.length,
+                                      controller: scrollController,
+                                      itemBuilder: (context, i) => ListTile(
+                                            leading: const Icon(
+                                              Icons.account_circle_rounded,
+                                              color: AppColors.white,
+                                            ),
+                                            title: Text(messages[i].userId,
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w600,
+                                                  color: Colors.white,
+                                                )),
+                                            subtitle: Text(messages[i].message,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  overflow: TextOverflow.clip,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: Colors.white
+                                                      .withOpacity(0.8),
+                                                )),
+                                          ));
+                                }),
                           ),
                           Row(
                             children: [
@@ -433,8 +428,6 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                                 flex: 5,
                                 child: chatBox(),
                               ),
-                              const SizedBox(width: 16),
-                              IconButton(icon: Icon(Icons.send), onPressed: _send),
                               const SizedBox(width: 16),
                               Flexible(
                                 child: GestureDetector(
@@ -473,6 +466,10 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
   TextField chatBox() {
     return TextField(
       controller: _controller,
+      onSubmitted: (value) {
+        _send();
+      },
+      textInputAction: TextInputAction.send,
       onTapOutside: (event) => FocusScope.of(context).unfocus(),
       decoration: const InputDecoration(
         border: OutlineInputBorder(
@@ -500,7 +497,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         ? AgoraVideoView(
             controller: VideoViewController.remote(
               rtcEngine: _engine,
-              canvas: VideoCanvas(
+              canvas: const VideoCanvas(
                 renderMode: RenderModeType.renderModeHidden,
                 uid: 3340305716,
               ),

@@ -28,26 +28,27 @@ class BuyerLiveScreen extends HookWidget {
     final profileCubit = context.watch<ProfileCubit>();
     final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
     final selectedInterest = useState<ProductCategory?>(null);
-    return Scaffold(
-      floatingActionButton: profileCubit.state.maybeWhen(
-        orElse: () => null,
-        loaded: (user) => switch (user.userType) {
-          UserType.seller => FloatingActionButton.extended(
-              onPressed: () {
-                // context.pushNamed(
-                //   AppPath.authorizedUser.live.scheduleSession.path,
-                // );
-              },
-              label: const Text('Go Live'),
-              icon: const Icon(Icons.live_tv),
-            ),
-          UserType.buyer => null,
-        },
-      ),
-      body: profileCubit.state.maybeWhen(
-        orElse: CupertinoActivityIndicator.new,
-        loaded: (user) => SafeArea(
-          child: RefreshIndicator.adaptive(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        floatingActionButton: profileCubit.state.maybeWhen(
+          orElse: () => null,
+          loaded: (user) => switch (user.userType) {
+            UserType.seller => FloatingActionButton.extended(
+                onPressed: () {
+                  // context.pushNamed(
+                  //   AppPath.authorizedUser.live.scheduleSession.path,
+                  // );
+                },
+                label: const Text('Go Live'),
+                icon: const Icon(Icons.live_tv),
+              ),
+            UserType.buyer => null,
+          },
+        ),
+        body: profileCubit.state.maybeWhen(
+          orElse: CupertinoActivityIndicator.new,
+          loaded: (user) => RefreshIndicator.adaptive(
             onRefresh: () async {
               unawaited(activeLivestreamsCubit.getActiveLivestreams());
             },
@@ -259,8 +260,8 @@ class BuyerLiveScreen extends HookWidget {
                 ],
               ),
             ),
-          ),
-        )
+          )
+        ),
       ),
     );
   }

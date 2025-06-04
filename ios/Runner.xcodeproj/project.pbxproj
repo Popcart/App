@@ -542,7 +542,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = Popcart;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -647,7 +647,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = Popcart;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -747,7 +747,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = Popcart;
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -852,7 +852,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = "[DEV] Popcart";
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -862,7 +862,7 @@
 					"@executable_path/Frameworks",
 				);
 				PACKAGE_CONFIG = .dart_tool/package_config.json;
-				PRODUCT_BUNDLE_IDENTIFIER = com.popcart.africa.mine.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.popcart.africa.mine.dev2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -955,7 +955,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = "[DEV] Popcart";
 				INFOPLIST_FILE = Runner/Info.plist;
@@ -1057,7 +1057,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = 9626W7L8GL;
+				DEVELOPMENT_TEAM = C74S6S2V68;
 				ENABLE_BITCODE = NO;
 				FLAVOR_APP_NAME = "[DEV] Popcart";
 				INFOPLIST_FILE = Runner/Info.plist;
