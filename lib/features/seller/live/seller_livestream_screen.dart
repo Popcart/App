@@ -102,7 +102,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
     }
     rtmClient.addListener(
         message: (event) {
-          print('Message received: ${event.message}');
           final updated = List<MessageModel>.from(messages.value)
             ..add(MessageModel(
                 userId: event.publisher ?? "",
