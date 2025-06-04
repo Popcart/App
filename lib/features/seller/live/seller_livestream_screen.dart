@@ -102,6 +102,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
     }
     rtmClient.addListener(
         message: (event) {
+          print('Message received: ${event.message}');
           final updated = List<MessageModel>.from(messages.value)
             ..add(MessageModel(
                 userId: event.publisher ?? "",
@@ -401,37 +402,33 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
               top: 400,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  height: 400,
-                  width: MediaQuery.of(context).size.width * .8,
-                  child: ValueListenableBuilder<List<MessageModel>>(
-                      valueListenable: messages,
-                      builder: (context, messages, _) {
-                        return ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: messages.length,
-                            controller: scrollController,
-                            itemBuilder: (context, i) => ListTile(
-                                  leading: const Icon(
-                                    Icons.account_circle_rounded,
-                                    color: AppColors.white,
-                                  ),
-                                  title: Text(messages[i].userId,
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      )),
-                                  subtitle: Text(messages[i].message,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        overflow: TextOverflow.clip,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white.withOpacity(0.8),
-                                      )),
-                                ));
-                      }),
-                ),
+                child: ValueListenableBuilder<List<MessageModel>>(
+                    valueListenable: messages,
+                    builder: (context, messages, _) {
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: messages.length,
+                          controller: scrollController,
+                          itemBuilder: (context, i) => ListTile(
+                                leading: const Icon(
+                                  Icons.account_circle_rounded,
+                                  color: AppColors.white,
+                                ),
+                                title: Text(messages[i].userId,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    )),
+                                subtitle: Text(messages[i].message,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      overflow: TextOverflow.clip,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white.withOpacity(0.8),
+                                    )),
+                              ));
+                    }),
               ),
             )
           ],

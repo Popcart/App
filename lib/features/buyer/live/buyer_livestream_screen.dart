@@ -177,6 +177,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         print(
             '${status.operation} failed, errorCode: ${status.errorCode}, due to ${status.reason}');
       } else {
+        print("message sent successfully: ${response}");
         final userId = locator<SharedPrefs>().userUid;
         final updated = List<MessageModel>.from(messages.value)
           ..add(MessageModel(message: _controller.text, userId: userId));
