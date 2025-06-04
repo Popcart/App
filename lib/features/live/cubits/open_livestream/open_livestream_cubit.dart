@@ -64,4 +64,13 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
       },
     );
   }
+
+  Future<String?> generateAgoraRTMToken({required String userId}) async {
+    final response = await _livestreamsRepo.generateAgoraRTMToken(userId: userId);
+
+    return response.when(
+      success: (data) => data?.data,
+      error: (error) => null,
+    );
+  }
 }

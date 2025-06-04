@@ -144,7 +144,7 @@ class BuyerSetingsScreen extends StatelessWidget {
                     title: 'Log out',
                     onTap: () {
                       locator<SharedPrefs>().loggedIn = false;
-                      context.go(AppPath.splash.path);
+                      context.pushReplacement(AppPath.auth.path);
                     },
                     color: const Color(0xffcc0000),
                     textColor: const Color(0xffcc0000),

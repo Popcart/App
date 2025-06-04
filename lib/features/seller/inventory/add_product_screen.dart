@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -114,7 +113,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   ),
                 ),
               );
-            context.push(AppPath.authorizedUser.seller.inventory.path);
+            await context.push(AppPath.authorizedUser.seller.inventory.path);
           },
           saveProductFailure: (message) {
             context.showError(message);

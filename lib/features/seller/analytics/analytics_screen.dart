@@ -68,177 +68,178 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('Welcome back!', style: TextStyles.heading),
-              AppAssets.icons.chat.svg(),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Here is how your store is performing today.',
-            style: TextStyles.subheading,
-          ),
-          const SizedBox(height: 24),
-          Expanded(
-            child: ListView(
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CustomExpansionTile(
-                  title: 'Sales Overview',
-                  expandedByDefault: true,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: boxItem(
-                              icon: AppAssets.icons.totalSales.svg(),
-                              label: 'Total Sales',
-                              color: AppColors.lemon,
-                              textColor: AppColors.textBlack2,
-                              value: '1,800'),
-                        ),
-                        const SizedBox(
-                          width: 20,
-                        ),
-                        Expanded(
-                          child: boxItem(
-                              icon: AppAssets.icons.totalRevenue.svg(),
-                              label: 'Total Sales',
-                              textColor: AppColors.textBlack2,
-                              value: '#50m',
-                              color: AppColors.blue),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 200,
-                      child: LineChart(
-                        LineChartData(
-                          gridData: const FlGridData(show: false),
-                          titlesData: const FlTitlesData(show: false),
-                          borderData: FlBorderData(show: false),
-                          lineBarsData: [
-                            LineChartBarData(
-                              spots: const [
-                                FlSpot(0, 1),
-                                FlSpot(1, 1.5),
-                                FlSpot(2, 1.4),
-                                FlSpot(3, 3.4),
-                                FlSpot(4, 2),
-                                FlSpot(5, 2.2),
-                                FlSpot(6, 1.8),
-                              ],
-                              isCurved: true,
-                              color: Colors.blue,
-                              barWidth: 2,
-                              dotData: const FlDotData(show: false),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                CustomExpansionTile(
-                  title: 'Live Stream Insights',
-                  children: [
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 48) / 2,
-                          child: boxItem(
-                            textColor: AppColors.white,
-                            icon: AppAssets.icons.totalViews.svg(),
-                            label: 'Total Views',
-                            color: AppColors.boxGrey,
-                            value: '1,800',
-                          ),
-                        ),
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 48) / 2,
-                          child: boxItem(
-                            textColor: AppColors.white,
-                            icon: AppAssets.icons.avgWatch.svg(),
-                            label: 'Avg. Watch',
-                            color: AppColors.boxGrey,
-                            value: '1,800',
-                          ),
-                        ),
-                        SizedBox(
-                          width: (MediaQuery.of(context).size.width - 48) / 2,
-                          child: boxItem(
-                            textColor: AppColors.white,
-                            icon: AppAssets.icons.engagement.svg(),
-                            label: 'Engagements',
-                            color: AppColors.boxGrey,
-                            value: '1,800',
-                          ),
-                        ),
-                        // Add more boxItem() if needed
-                      ],
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CustomExpansionTile(
-                  title: 'Top Products',
-                  showSeeMore: topProducts.isNotEmpty,
-                  onSeeMore: () {
-                    context.pushNamed(
-                      AppPath.authorizedUser.seller.analytics.topProduct.path,
-                    );
-                  },
-                  children: [
-                    ...topProducts
-                        .map((e) => topProductWidget(e, topProducts.indexOf(e)))
-                        .toList(),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CustomExpansionTile(
-                  title: 'Inventory Alerts',
-                  showSeeMore: inventoryProducts.isNotEmpty,
-                  onSeeMore: () {
-                    context.pushNamed(
-                      AppPath.authorizedUser.seller.analytics.inventoryProduct
-                          .path,
-                    );
-                  },
-                  children: [
-                    ...inventoryProducts
-                        .map((e) => inventoryAlertWidget(
-                            e, inventoryProducts.indexOf(e)))
-                        .toList(),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                const CustomExpansionTile(
-                  title: 'Ongoing Orders',
-                  children: [],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
+                Text('Welcome back!', style: TextStyles.heading),
               ],
             ),
-          )
-        ],
+            const SizedBox(height: 8),
+            const Text(
+              'Here is how your store is performing today.',
+              style: TextStyles.subheading,
+            ),
+            const SizedBox(height: 24),
+            Expanded(
+              child: ListView(
+                children: [
+                  CustomExpansionTile(
+                    title: 'Sales Overview',
+                    expandedByDefault: true,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: boxItem(
+                                icon: AppAssets.icons.totalSales.svg(),
+                                label: 'Total Sales',
+                                color: AppColors.lemon,
+                                textColor: AppColors.textBlack2,
+                                value: '1,800'),
+                          ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Expanded(
+                            child: boxItem(
+                                icon: AppAssets.icons.totalRevenue.svg(),
+                                label: 'Total Sales',
+                                textColor: AppColors.textBlack2,
+                                value: '#50m',
+                                color: AppColors.blue),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        height: 200,
+                        child: LineChart(
+                          LineChartData(
+                            gridData: const FlGridData(show: false),
+                            titlesData: const FlTitlesData(show: false),
+                            borderData: FlBorderData(show: false),
+                            lineBarsData: [
+                              LineChartBarData(
+                                spots: const [
+                                  FlSpot(0, 1),
+                                  FlSpot(1, 1.5),
+                                  FlSpot(2, 1.4),
+                                  FlSpot(3, 3.4),
+                                  FlSpot(4, 2),
+                                  FlSpot(5, 2.2),
+                                  FlSpot(6, 1.8),
+                                ],
+                                isCurved: true,
+                                color: Colors.blue,
+                                barWidth: 2,
+                                dotData: const FlDotData(show: false),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  CustomExpansionTile(
+                    title: 'Live Stream Insights',
+                    children: [
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 48) / 2,
+                            child: boxItem(
+                              textColor: AppColors.white,
+                              icon: AppAssets.icons.totalViews.svg(),
+                              label: 'Total Views',
+                              color: AppColors.boxGrey,
+                              value: '1,800',
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 48) / 2,
+                            child: boxItem(
+                              textColor: AppColors.white,
+                              icon: AppAssets.icons.avgWatch.svg(),
+                              label: 'Avg. Watch',
+                              color: AppColors.boxGrey,
+                              value: '1,800',
+                            ),
+                          ),
+                          SizedBox(
+                            width: (MediaQuery.of(context).size.width - 48) / 2,
+                            child: boxItem(
+                              textColor: AppColors.white,
+                              icon: AppAssets.icons.engagement.svg(),
+                              label: 'Engagements',
+                              color: AppColors.boxGrey,
+                              value: '1,800',
+                            ),
+                          ),
+                          // Add more boxItem() if needed
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CustomExpansionTile(
+                    title: 'Top Products',
+                    showSeeMore: topProducts.isNotEmpty,
+                    onSeeMore: () {
+                      context.pushNamed(
+                        AppPath.authorizedUser.seller.analytics.topProduct.path,
+                      );
+                    },
+                    children: [
+                      ...topProducts
+                          .map((e) => topProductWidget(e, topProducts.indexOf(e)))
+                          .toList(),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CustomExpansionTile(
+                    title: 'Inventory Alerts',
+                    showSeeMore: inventoryProducts.isNotEmpty,
+                    onSeeMore: () {
+                      context.pushNamed(
+                        AppPath.authorizedUser.seller.analytics.inventoryProduct
+                            .path,
+                      );
+                    },
+                    children: [
+                      ...inventoryProducts
+                          .map((e) => inventoryAlertWidget(
+                              e, inventoryProducts.indexOf(e)))
+                          .toList(),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  const CustomExpansionTile(
+                    title: 'Ongoing Orders',
+                    children: [],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

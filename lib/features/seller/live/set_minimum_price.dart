@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/repository/inventory_repo.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
-import 'package:popcart/core/widgets/widgets.dart';
+import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class SetMinimumPrice extends StatefulWidget {
-  const SetMinimumPrice({super.key, required this.products});
+  const SetMinimumPrice(
+      {super.key,
+      required this.products,
+      required this.scheduledDate,
+      required this.roomName});
 
   final List<Product> products;
+  final String roomName;
+  final String? scheduledDate;
 
   @override
   State<SetMinimumPrice> createState() => _SetMinimumPriceState();
@@ -24,80 +30,127 @@ class SetMinimumPrice extends StatefulWidget {
 
 class _SetMinimumPriceState extends State<SetMinimumPrice> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Stream? generatedLiveStream;
+
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: const Icon(
-                  Icons.arrow_back_ios_new,
-                  color: AppColors.white,
-                ),
-              ),
-              const Text('Set minimum price', style: TextStyles.titleHeading),
-              const SizedBox(),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
+    final openLivestream = context.watch<OpenLivestreamCubit>();
+    return BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          success: (liveStream) {
+            generatedLiveStream = liveStream;
+            openLivestream.generateAgoraToken(
+              channelName: liveStream.id,
+              agoraRole: 0,
+              uid: 0,
+            );
+          },
+          error: (message) {
+            context.showError(message);
+          },
+          generateTokenSuccess: (token) {
+            context..pop()
+            ..pop()
+            ..pushReplacementNamed(
+              AppPath.authorizedUser.seller.live.goLive.path,
+              extra: true,
+              queryParameters: {
+                'token': token,
+                'channelName': generatedLiveStream?.id,
+              },
+            );
+          },
+          generateTokenError: (message) {
+            context.showError(message);
+          },
+        );
+      },
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  textAlign: TextAlign.center,
-                  'Product',
-                  style: TextStyles.subheadingBlackOnWhite,
+                IconButton(
+                  onPressed: () {
+                    context.pop();
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: AppColors.white,
+                  ),
                 ),
-                Text(
-                  textAlign: TextAlign.center,
-                  'Price',
-                  style: TextStyles.subheadingBlackOnWhite,
-                ),
+                const Text('Set minimum price', style: TextStyles.titleHeading),
+                const SizedBox(),
               ],
             ),
-          ),
-          const SizedBox(
-            height: 5,
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: ListView.builder(
-                  itemCount: widget.products.length,
-                  itemBuilder: (context, itemIndex) {
-                    return EditPriceProductItem(
-                      product: widget.products[itemIndex],
-                    );
-                  }),
+            const SizedBox(
+              height: 5,
             ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: CustomElevatedButton(
-              showIcon: false,
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {}
-                },
-                text: 'Go live'),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-        ],
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    textAlign: TextAlign.center,
+                    'Product',
+                    style: TextStyles.subheadingBlackOnWhite,
+                  ),
+                  Text(
+                    textAlign: TextAlign.center,
+                    'Price',
+                    style: TextStyles.subheadingBlackOnWhite,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ListView.builder(
+                    itemCount: widget.products.length,
+                    itemBuilder: (context, itemIndex) {
+                      return EditPriceProductItem(
+                        product: widget.products[itemIndex],
+                      );
+                    }),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: CustomElevatedButton(
+                  showIcon: false,
+                  loading: openLivestream.state.maybeWhen(
+                    orElse: () => false,
+                    loading: () => true,
+                  ),
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final openLivestream = context.read<OpenLivestreamCubit>();
+                      await openLivestream.createLivestreamSession(
+                        name: widget.roomName,
+                        products: widget.products.map((e) => e.id).toList(),
+                        scheduled: widget.scheduledDate != null,
+                        startTime: widget.scheduledDate,
+                      );
+                    }
+                  },
+                  text: 'Go live'),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -173,6 +226,7 @@ class _EditPriceProductItemState extends State<EditPriceProductItem> {
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                 ],
+                keyboardType: TextInputType.number,
                 hintText: 'minimum price',
               ),
             ),

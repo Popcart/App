@@ -34,15 +34,23 @@ class SellerPath extends Path<SellerPath> {
   AnalyticPath get analytics => AnalyticPath();
   Path get orders => Path('/orders');
   InventoryPath get inventory => InventoryPath();
-  Path get live => Path('/live');
-  SellerAccountPath get sellerAccount => SellerAccountPath();
+  SellerLiveStreamPath get live => SellerLiveStreamPath();
+  SellerAccountPath get account => SellerAccountPath();
 }
+
 class AnalyticPath extends Path<AnalyticPath> {
   AnalyticPath() : super('/analytics');
 
   Path get topProduct => Path('/top-product');
   Path get inventoryProduct => Path('/inventory-product');
 }
+
+class SellerLiveStreamPath extends Path<SellerLiveStreamPath> {
+  SellerLiveStreamPath() : super('/seller-live');
+
+  Path get goLive => Path('/seller-go-live');
+}
+
 class InventoryPath extends Path<InventoryPath> {
   InventoryPath() : super('/inventory');
 
@@ -59,6 +67,21 @@ class SellerAccountPath extends Path<SellerAccountPath> {
 class BuyerPath extends Path<BuyerPath> {
   BuyerPath() : super('/buyer');
 
-  Path get settings => Path('/settings');
+  Path get auctions => Path('/auction');
+  Path get stores => Path('/stores');
+  BuyerLiveStreamPath get buyerLive => BuyerLiveStreamPath();
+  BuyerAccountPath get buyerAccount => BuyerAccountPath();
+}
+
+class BuyerAccountPath extends Path<BuyerAccountPath> {
+  BuyerAccountPath() : super('/buyer-account');
+
+  Path get settings => Path('/buyer-settings');
+}
+
+class BuyerLiveStreamPath extends Path<BuyerLiveStreamPath> {
+  BuyerLiveStreamPath() : super('/buyer-live');
+
+  Path get goLive => Path('/buyer-go-live');
 }
 

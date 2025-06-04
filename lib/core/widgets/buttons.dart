@@ -80,14 +80,19 @@ class CustomElevatedButton extends ElevatedButton {
 }
 
 class AppBackButton extends StatelessWidget {
-  const AppBackButton({super.key});
+  const AppBackButton({super.key, this.onPressed});
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        Navigator.pop(context);
+        if(onPressed != null) {
+          onPressed!();
+        }else {
+          Navigator.pop(context);
+        }
       },
       child: Container(
         width: 48,

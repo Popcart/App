@@ -13,6 +13,9 @@ sealed class LivestreamsRepo {
     required int agoraRole,
     required int uid,
   });
+  Future<ApiResponse<String>> generateAgoraRTMToken({
+    required String userId,
+  });
   Future<ListApiResponse<LiveStream>> getActiveLivestreams();
   Future<ApiResponse<void>> setSellerAgoraId({
     required String agoraId,
@@ -61,6 +64,20 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
         'uid': uid,
       },
       method: MethodType.post,
+      responseMapper: (json) => json['token'] as String,
+    );
+  }
+
+  @override
+  Future<ApiResponse<String>> generateAgoraRTMToken({
+    required String userId,
+  }) {
+    return _apiHandler.request<String>(
+      path: 'generate-rtm-token',
+      queryParameters: {
+        'userId': userId,
+      },
+      method: MethodType.get,
       responseMapper: (json) => json['token'] as String,
     );
   }

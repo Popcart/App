@@ -12,6 +12,7 @@ class SharedPrefs {
   String? get accessToken => _sharedPrefs.getString('accessToken');
   String? get refreshToken => _sharedPrefs.getString('refreshToken');
   bool get loggedIn => _sharedPrefs.getBool('loggedIn') ?? false;
+  String get userUid => _sharedPrefs.getString('uid') ?? '';
 
   set firstTime(bool? value) {
     _sharedPrefs.setBool('firstTime', value!);
@@ -27,6 +28,10 @@ class SharedPrefs {
 
   set loggedIn(bool value) {
     _sharedPrefs.setBool('loggedIn', value);
+  }
+
+  set userUid(String value) {
+    _sharedPrefs.setString('uid', value);
   }
 
 }

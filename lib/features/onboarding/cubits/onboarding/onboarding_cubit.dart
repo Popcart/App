@@ -9,6 +9,7 @@ import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 
 part 'onboarding_cubit.freezed.dart';
+
 part 'onboarding_state.dart';
 
 class OnboardingCubit extends Cubit<OnboardingState> {
@@ -116,11 +117,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
       );
       response.when(
         success: (data) {
-
           emit(const OnboardingState.onboardingSuccess());
         },
         error: (e) {
-
           emit(
             OnboardingState.onboardingFailure(
               e.message ?? 'An error occurred',
@@ -128,7 +127,7 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           );
         },
       );
-    }catch(e, stackTrace){
+    } catch (e, stackTrace) {
       // print(stackTrace);
     }
   }
@@ -139,7 +138,8 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     emit(const OnboardingState.loading());
     final response = await _onboardingRepo.verifyOtp(
       otp: otp,
-      email: _email, isLoggingIn: isLoggingIn,
+      email: _email,
+      isLoggingIn: isLoggingIn,
     );
     response.when(
       success: (data) {
@@ -147,6 +147,11 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           ..accessToken = data?.data?.token ?? ''
           ..loggedIn = true
           ..refreshToken = data?.data?.refreshToken ?? '';
+        if (data?.data?.mode == 'buyer') {
+          userType = UserType.buyer;
+        } else {
+          userType = UserType.seller;
+        }
         locator.setApiHandlerToken(data?.data?.token ?? '');
         emit(const OnboardingState.verifyOtpSuccess());
       },
@@ -200,9 +205,9 @@ class OnboardingCubit extends Cubit<OnboardingState> {
     );
     response.when(
       success: (data) {
-        if(!isResendingOtp){
+        if (!isResendingOtp) {
           emit(const OnboardingState.sendOtpSuccess());
-        }else{
+        } else {
           emit(const OnboardingState.resendOtpSuccess());
         }
       },
