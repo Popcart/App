@@ -53,7 +53,7 @@ class PopCart extends StatelessWidget {
               builder: (context, themeMode) {
                 return MaterialApp.router(
                   debugShowCheckedModeBanner: false,
-                  theme: lightTheme,
+                  theme: darkTheme,
                   darkTheme: darkTheme,
                   themeMode: themeMode,
                   routerConfig: router,

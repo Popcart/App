@@ -1,28 +1,35 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
+import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/choose_product.dart';
 import 'package:popcart/utils/text_styles.dart';
 
-class LiveScreen extends StatefulWidget {
-  const LiveScreen({super.key});
+class SellerLiveNav extends StatefulWidget {
+  const SellerLiveNav({super.key});
 
   @override
-  State<LiveScreen> createState() => _LiveScreenState();
+  State<SellerLiveNav> createState() => _SellerLiveNavState();
 }
 
 enum StreamingType { auction, liveSales }
 
 enum ScheduleOption { instant, scheduled }
 
-class _LiveScreenState extends State<LiveScreen> {
+class _SellerLiveNavState extends State<SellerLiveNav> {
   StreamingType _streamingType = StreamingType.auction;
   ScheduleOption _scheduleOption = ScheduleOption.instant;
   final TextEditingController roomNameCtrl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Stream? generatedLiveStream;
 
   @override
   void initState() {
@@ -226,20 +233,49 @@ class _LiveScreenState extends State<LiveScreen> {
                         ),
                       },
                       CustomElevatedButton(
-                        text: _streamingType == StreamingType.auction ? 'Next' :
-                        _scheduleOption == ScheduleOption.scheduled ? 'Schedule live' :
-                        'Go live',
+                        text: _streamingType == StreamingType.auction
+                            ? 'Next'
+                            : _scheduleOption == ScheduleOption.scheduled
+                                ? 'Schedule live'
+                                : 'Go live',
+                        loading: context
+                                .watch<OpenLivestreamCubit>()
+                                .state
+                                .whenOrNull(
+                                  loading: () => true,
+                                ) ??
+                            false,
                         showIcon: false,
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            if(_streamingType == StreamingType.auction) {
+                            if (_streamingType == StreamingType.auction) {
                               await showModalBottomSheet<void>(
-                                  context: context,
-                                  builder: (context) {
-                                    return const ChooseProduct();
-                                  },);
+                                context: context,
+                                builder: (context) {
+                                  return ChooseProduct(
+                                    roomName: roomNameCtrl.text,
+                                    scheduledDate: _scheduleOption ==
+                                            ScheduleOption.scheduled
+                                        ? _selectedDate
+                                            .toUtc()
+                                            .toIso8601String()
+                                        : null,
+                                  );
+                                },
+                              );
                             } else {
-
+                              final openLivestream =
+                                  context.read<OpenLivestreamCubit>();
+                              await openLivestream.createLivestreamSession(
+                                name: roomNameCtrl.text,
+                                products: [],
+                                scheduled:
+                                    _scheduleOption == ScheduleOption.scheduled,
+                                startTime: _scheduleOption ==
+                                        ScheduleOption.scheduled
+                                    ? _selectedDate.toUtc().toIso8601String()
+                                    : null,
+                              );
                             }
                           }
                         },
@@ -258,15 +294,46 @@ class _LiveScreenState extends State<LiveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final openLivestream = context.watch<OpenLivestreamCubit>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Live Stream'),
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: GestureDetector(
-            onTap: _showPrepareLiveSheet,
-            child: const Text('Your main screen content here')),
+      body: BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            success: (liveStream) {
+              generatedLiveStream = liveStream;
+              openLivestream.generateAgoraToken(
+                channelName: liveStream.id,
+                agoraRole: 0,
+                uid: 0,
+              );
+            },
+            error: (message) {
+              context.showError(message);
+            },
+            generateTokenSuccess: (token) {
+              context.pushReplacementNamed(
+                AppPath.authorizedUser.seller.live.goLive.path,
+                extra: true,
+                queryParameters: {
+                  'token': token,
+                  'channelName': generatedLiveStream?.id,
+                },
+              );
+            },
+            generateTokenError: (message) {
+              context.showError(message);
+            },
+          );
+        },
+        child: Center(
+          child: GestureDetector(
+              onTap: _showPrepareLiveSheet,
+              child: const Text('Click here to bring out the dialog')),
+        ),
       ),
     );
   }

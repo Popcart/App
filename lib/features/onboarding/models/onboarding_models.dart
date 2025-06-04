@@ -150,6 +150,7 @@ class TokenPair {
   TokenPair({
     required this.token,
     required this.refreshToken,
+    required this.mode,
   });
 
   factory TokenPair.fromJson(Map<String, dynamic> json) =>
@@ -159,9 +160,10 @@ class TokenPair {
   final String token;
   @JsonKey(defaultValue: '')
   final String refreshToken;
+  final String mode;
 
   @override
   String toString() {
-    return 'TokenPair(token: $token, refreshToken: $refreshToken)';
+    return 'TokenPair(token: $token, refreshToken: $refreshToken, mode: $mode)';
   }
 }

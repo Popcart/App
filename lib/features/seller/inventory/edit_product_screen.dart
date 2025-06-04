@@ -112,7 +112,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           title: const Text('Edit Product'),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,

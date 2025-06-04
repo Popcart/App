@@ -73,11 +73,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Welcome back!', style: TextStyles.heading),
-              AppAssets.icons.chat.svg(),
+              Text('Welcome back!', style: TextStyles.heading),
             ],
           ),
           const SizedBox(height: 8),

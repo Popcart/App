@@ -1,6 +1,7 @@
-import 'dart:developer';
+import 'dart:convert';
 
-// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,8 +9,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/widgets/buttons.dart';
+import 'package:popcart/env/env.dart';
+import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 
@@ -28,22 +32,57 @@ class SellerLivestreamScreen extends StatefulHookWidget {
 }
 
 class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
-  // late RtcEngine _engine;
-  bool _localUserJoined = false;
+  late RtcEngine _engine;
   int userJoined = 0;
+  final List<String> _messages = [];
+  late RtmClient rtmClient;
+  bool _localUserJoined = false;
+  bool showToast = false;
+  String joinedUserId = '';
+
   @override
   void initState() {
     super.initState();
     initAgora();
+    print('The channel name: ${widget.channelName}');
   }
 
   @override
   void dispose() {
-    // _engine
-    //   ..leaveChannel()
-    //   ..release();
-    // endLivestream();
+    _engine
+      ..leaveChannel()
+      ..release();
+    endLivestream();
     super.dispose();
+  }
+
+  Future<void> initRtm() async {
+    final userId = locator<SharedPrefs>().userUid;
+    final openLivestream = context.read<OpenLivestreamCubit>();
+    final token = await openLivestream.generateAgoraRTMToken(userId: userId);
+    if(token != null) {
+      final (status, client) = await RTM(Env().agoraAppId, userId);
+      if (status.error == true) {
+      } else {
+        rtmClient = client;
+      }
+      rtmClient.addListener(
+          message: (event) {
+            _messages.add(utf8.decode(event.message!));
+            setState(() {});
+          },
+          linkState: (event) {
+          });
+      await loginToSignal(token);
+    }
+  }
+
+  Future<void> loginToSignal(String token) async {
+    final (status,response) = await rtmClient.login(token);
+    if (status.error == true) {
+    } else {
+      await rtmClient.subscribe(widget.channelName);
+    }
   }
 
   Future<void> setAgoraId(int id) async {
@@ -62,89 +101,63 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
   Future<void> initAgora() async {
     try {
       await [Permission.camera, Permission.microphone].request();
-      // Create RTC Engine
-      // _engine = createAgoraRtcEngine();
-      // await _engine.initialize(
-      //   RtcEngineContext(
-      //     appId: Env().agoraAppId,
-      //     channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-      //   ),
-      // );
-      // Set up event handlers
-      // _engine.registerEventHandler(
-      //   RtcEngineEventHandler(
-      //     onJoinChannelSuccess: (connection, elapsed) {
-      //       log(
-      //         connection.toJson().toString(),
-      //         name: 'AGORA onJoinChannelSuccess connection',
-      //       );
-      //
-      //       setState(() {
-      //         _localUserJoined = true;
-      //         // setAgoraId(connection.localUid ?? 0);
-      //       });
-      //     },
-      //     onUserJoined: (connection, remoteUid, elapsed) {
-      //       log(
-      //         connection.toJson().toString(),
-      //         name: 'AGORA onUserJoined connection',
-      //       );
-      //       log(remoteUid.toString(), name: 'AGORA onUserJoined remoteUid');
-      //       setState(() {
-      //         userJoined++;
-      //       });
-      //     },
-      //     onUserOffline: (connection, remoteUid, reason) {
-      //       log(
-      //         connection.toJson().toString(),
-      //         name: 'AGORA onUserOffline connection',
-      //       );
-      //       log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
-      //       log(reason.toString(), name: 'AGORA onUserOffline reason');
-      //       setState(() {
-      //         userJoined--;
-      //       });
-      //     },
-      //     onError: (err, msg) async {
-      //       log(err.toString(), name: 'AGORA onError err');
-      //       // log(msg, name: 'AGORA onError msg');
-      //       // await context.showError(msg);
-      //       // if (mounted) {
-      //       //   context.pop();
-      //       // }
-      //     },
-      //   ),
-      // );
-      // Set client role
-      // if (widget.isBroadcaster) {
-      // await _engine.setClientRole(
-      //   role: ClientRoleType.clientRoleBroadcaster,
-      //   options: const ClientRoleOptions(
-      //     audienceLatencyLevel:
-      //         AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
-      //   ),
-      // );
-      // } else {
-      //   await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
-      // }
-      // Join channel
-      // await _engine.joinChannel(
-      //   token: widget.token,
-      //   channelId: widget.channelName,
-      //   uid: 0,
-      //   options: const ChannelMediaOptions(
-      //     publishMicrophoneTrack: true,
-      //     publishCameraTrack: true,
-      //     autoSubscribeAudio: true,
-      //     autoSubscribeVideo: true,
-      //     clientRoleType: ClientRoleType.clientRoleBroadcaster,
-      //   ),
-      // );
-      // await _engine.enableAudio();
-      // await _engine.enableVideo();
-      // await _engine.startPreview();
+      _engine = createAgoraRtcEngine();
+      await _engine.initialize(
+        RtcEngineContext(
+          appId: Env().agoraAppId,
+          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+        ),
+      );
+      await _engine.setClientRole(
+        role: ClientRoleType.clientRoleBroadcaster,
+        options: const ClientRoleOptions(
+          audienceLatencyLevel:
+          AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
+        ),
+      );
+      _engine.registerEventHandler(
+        RtcEngineEventHandler(
+          onJoinChannelSuccess: (connection, elapsed) {
+            setState(() {
+              _localUserJoined = true;
+            });
+          },
+          onUserJoined: (connection, remoteUid, elapsed) {
+            setState(() {
+              userJoined++;
+              joinedUserId = '$remoteUid joined';
+              showToast = true;
+            });
+            Future.delayed(const Duration(seconds: 2), () {
+              setState(() => showToast = false);
+            });
+          },
+          onUserOffline: (connection, remoteUid, reason) {
+            setState(() {
+              userJoined--;
+            });
+          },
+          onError: (err, msg) async {
+          },
+        ),
+      );
+      await _engine.joinChannel(
+        token: widget.token,
+        channelId: widget.channelName,
+        uid: 0,
+        options: const ChannelMediaOptions(
+          publishMicrophoneTrack: true,
+          publishCameraTrack: true,
+          autoSubscribeAudio: true,
+          autoSubscribeVideo: true,
+          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+        ),
+      );
+      await _engine.enableAudio();
+      await _engine.enableVideo();
+      await _engine.startPreview();
+      await initRtm();
     } catch (e) {
-      log(e.toString(), name: 'Agora Error');
     }
   }
 
@@ -162,8 +175,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
           if (didPop) {
             return;
           }
-
-          // Show confirmation dialog
           final result = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
@@ -182,26 +193,25 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
             ),
           );
 
-          // If user confirms, pop the screen
           if (result != null && result && context.mounted) {
             context.pop();
           }
         },
         child: Stack(
           children: [
-            // Positioned.fill(
-            //   child: _localUserJoined
-            //       ? AgoraVideoView(
-            //           controller: VideoViewController(
-            //             rtcEngine: _engine,
-            //             canvas: const VideoCanvas(
-            //               renderMode: RenderModeType.renderModeHidden,
-            //               uid: 0,
-            //             ),
-            //           ),
-            //         )
-            //       : const CupertinoActivityIndicator(),
-            // ),
+            Positioned.fill(
+              child: _localUserJoined
+                  ? AgoraVideoView(
+                      controller: VideoViewController(
+                        rtcEngine: _engine,
+                        canvas: const VideoCanvas(
+                          renderMode: RenderModeType.renderModeHidden,
+                          uid: 0,
+                        ),
+                      ),
+                    )
+                  : const CupertinoActivityIndicator(),
+            ),
             Positioned.fill(
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -267,8 +277,8 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xff4B4444)
-                                      .withOpacity(0.5),
+                                  color:
+                                      const Color(0xff4B4444).withOpacity(0.5),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: Row(
@@ -314,11 +324,38 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen> {
                           ),
                         ],
                       ),
+                      if (showToast)
+                        Positioned(
+                          bottom: 100,
+                          left: 20,
+                          right: 20,
+                          child: Center(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16
+                                  , vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.7),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text('User $joinedUserId joined',
+                                  style: const TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
             ),
+            Positioned.fill(
+              top: 400,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _messages.length,
+                itemBuilder: (context, i) =>
+                    ListTile(title: Text(_messages[i])),
+              ),
+            )
           ],
         ),
       ),

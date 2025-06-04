@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:math' hide log;
 
-// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:agora_rtm/agora_rtm.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +12,17 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
+import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -29,26 +35,30 @@ class BuyerLivestreamScreen extends StatefulWidget {
 
   final LiveStream liveStream;
   final String token;
+
   @override
   State<BuyerLivestreamScreen> createState() => _BuyerLivestreamScreenState();
 }
 
 class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
-  // late RtcEngine _engine;
+  late RtcEngine _engine;
   bool _localUserJoined = false;
   int userJoined = 0;
+  late RtmClient rtmClient;
+  final _controller = TextEditingController();
+  final List<String> _messages = [];
 
   @override
   void initState() {
     super.initState();
-    // initAgora();
+    initAgora();
   }
 
   @override
   void dispose() {
-    // _engine
-    //   ..leaveChannel()
-    //   ..release();
+    _engine
+      ..leaveChannel()
+      ..release();
     super.dispose();
   }
 
@@ -57,6 +67,8 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     context.read<ActiveLivestreamsCubit>().getActiveLivestreams();
     super.deactivate();
   }
+
+  List<String> messages = [];
 
   void closeLivestream() {
     showCupertinoDialog<void>(
@@ -68,6 +80,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
           CupertinoDialogAction(
             child: const Text('OK'),
             onPressed: () {
+              if(mounted)
               context.pop(true);
             },
           ),
@@ -80,71 +93,164 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
     });
   }
 
-  // Future<void> initAgora() async {
-  //   try {
-  //     await [Permission.camera, Permission.microphone].request();
-  //     // Create RTC Engine
-  //     _engine = createAgoraRtcEngine();
-  //     await _engine.initialize(
-  //       RtcEngineContext(
-  //         appId: Env().agoraAppId,
-  //         channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-  //       ),
-  //     );
-  //     // Set up event handlers
-  //     _engine.registerEventHandler(
-  //       RtcEngineEventHandler(
-  //         onUserOffline: (connection, remoteUid, reason) {
-  //           log(
-  //             connection.toJson().toString(),
-  //             name: 'AGORA onUserOffline connection',
-  //           );
-  //           log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
-  //           log(reason.toString(), name: 'AGORA onUserOffline reason');
-  //           if (remoteUid.toString() == widget.liveStream.agoraId) {
-  //             closeLivestream();
-  //           }
-  //         },
-  //         onJoinChannelSuccess: (connection, elapsed) {
-  //           log(
-  //             connection.toJson().toString(),
-  //             name: 'AGORA onJoinChannelSuccess connection',
-  //           );
-  //           log(elapsed.toString(), name: 'AGORA onJoinChannelSuccess elapsed');
-  //           setState(() {
-  //             _localUserJoined = true;
-  //           });
-  //         },
-  //         onError: (err, msg) async {
-  //           log(err.toString(), name: 'AGORA onError err');
-  //           log(msg, name: 'AGORA onError msg');
-  //           await context.showError(msg);
-  //           if (mounted) {
-  //             context.pop();
-  //           }
-  //         },
-  //       ),
-  //     );
-  //     await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
-  //     await _engine.joinChannel(
-  //       token: widget.token,
-  //       channelId: widget.liveStream.id,
-  //       uid: 1,
-  //       options: const ChannelMediaOptions(
-  //         publishMicrophoneTrack: false,
-  //         publishCameraTrack: false,
-  //         autoSubscribeAudio: true,
-  //         autoSubscribeVideo: true,
-  //         clientRoleType: ClientRoleType.clientRoleAudience,
-  //       ),
-  //     );
-  //     // await _engine.enableAudio();
-  //     // await _engine.enableVideo();
-  //     await _engine.startPreview();
-  //   } catch (e) {
-  //     log(e.toString(), name: 'Agora Error');
-  //   }
-  // }
+  Future<void> initAgora() async {
+    try {
+      await [Permission.camera, Permission.microphone].request();
+      // Create RTC Engine
+      _engine = createAgoraRtcEngine();
+      await _engine.initialize(
+        RtcEngineContext(
+          appId: Env().agoraAppId,
+          channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
+        ),
+      );
+      // Set up event handlers
+      _engine.registerEventHandler(
+        RtcEngineEventHandler(
+          onUserOffline: (connection, remoteUid, reason) {
+            print("On user offline $remoteUid");
+            log(
+              connection.toJson().toString(),
+              name: 'AGORA onUserOffline connection',
+            );
+            log(remoteUid.toString(), name: 'AGORA onUserOffline remoteUid');
+            log(reason.toString(), name: 'AGORA onUserOffline reason');
+            // if (remoteUid.toString() == widget.liveStream.agoraId) {
+              closeLivestream();
+            // }
+          },
+          onJoinChannelSuccess: (connection, elapsed) {
+            print("On user joined $connection");
+            log(
+              connection.toJson().toString(),
+              name: 'AGORA onJoinChannelSuccess connection',
+            );
+            log(elapsed.toString(), name: 'AGORA onJoinChannelSuccess elapsed');
+            setState(() {
+              _localUserJoined = true;
+            });
+          },
+          onError: (err, msg) async {
+            print("On user joined $msg");
+            log(err.toString(), name: 'AGORA onError err');
+            log(msg, name: 'AGORA onError msg');
+            await context.showError(msg);
+            if (mounted) {
+              context.pop();
+            }
+          },
+        ),
+      );
+      await _engine.setClientRole(role: ClientRoleType.clientRoleAudience);
+      await _engine.joinChannel(
+        token: widget.token,
+        channelId: widget.liveStream.id,
+        uid: 1,
+        options: const ChannelMediaOptions(
+          publishMicrophoneTrack: false,
+          publishCameraTrack: false,
+          autoSubscribeAudio: true,
+          autoSubscribeVideo: true,
+          clientRoleType: ClientRoleType.clientRoleAudience,
+        ),
+      );
+      await _engine.startPreview();
+      await initRtm();
+    } catch (e) {
+      log(e.toString(), name: 'Agora Error');
+    }
+  }
+
+  Future<void> initRtm() async {
+    try {
+      // Create rtm client
+      String userId = locator<SharedPrefs>().userUid;
+      final openLivestream = context.read<OpenLivestreamCubit>();
+      final token = await openLivestream.generateAgoraRTMToken(userId: userId);
+      print('Token from RTM $token');
+      if(token != null) {
+        final (status, client) = await RTM(Env().agoraAppId, userId);
+        if (status.error == true) {
+          print('${status.operation} failed due to ${status
+              .reason}, error code: ${status.errorCode}');
+        } else {
+          rtmClient = client;
+          print('Initialize success!');
+        }
+        rtmClient.addListener(
+          // Add message event handler
+            message: (event) {
+              print('received a message from channel: ${event
+                  .channelName}, channel type : ${event.channelType}');
+              print('message content: ${utf8.decode(
+                  event.message!)}, customer type: ${event.customType}');
+              _messages.add(utf8.decode(event.message!));
+              setState(() {});
+            },
+            // Add linkState event handler
+            linkState: (event) {
+              print('link state changed from ${event.previousState} to ${event
+                  .currentState}');
+              print('reason: ${event.reason}, due to operation ${event
+                  .operation}');
+            });
+        await loginToSignal(token);
+      }
+    } catch (e) {
+    }
+  }
+
+  Future<void> _send() async {
+    try {
+      var (status, response) = await rtmClient.publish(
+          widget.liveStream.id,
+          _controller.text,
+          channelType: RtmChannelType.message,
+          customType: 'PlainText'
+      );
+      if (status.error == true ){
+        print('${status.operation} failed, errorCode: ${status.errorCode}, due to ${status.reason}');
+      } else {
+        _controller.clear();
+        _messages.add(_controller.text);
+        setState(() {});
+        print('${status.operation} success! message number:');
+      }
+    } catch (e) {
+      print('Failed to publish message: $e');
+    }
+  }
+
+  Future<void> loginToSignal(String token) async {
+    try {
+      // Login to Signaling
+      final (status,response) = await rtmClient.login('007eJxSYGA/ULadKb+qf+tDd2UOyyzV4xafM2LNLbfNu3z/S6xXToQCg0GSebKxuWGikZlJqolhqqWlZXJSmnFyUrKZpVmKaYqhjoxdRkMgI8PKsx9ZGRmYGBgZGBlAfAYGQAAAAP//Qc8dBQ==');
+      print("Login token $token");
+      if (status.error == true) {
+        print('${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
+      } else {
+        print('login RTM success!');
+        await subscribeToIncomingMessages();
+      }
+    } catch (e) {
+      print('Failed to login: $e');
+
+    }
+  }
+
+  Future<void> subscribeToIncomingMessages() async {
+    try {
+      // Subscribe to a channel
+      var (status,response) = await rtmClient.subscribe(widget.liveStream.id);
+      if (status.error == true) {
+        print('${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
+      } else {
+        print('subscribe channel: ${widget.liveStream.id} success!');
+      }
+    } catch (e) {
+      print('Failed to subscribe channel: $e');
+    }
+  }
 
   Future<void> showProductModal() async {
     final product = await showModalBottomSheet<Product>(
@@ -174,7 +280,6 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
 
   @override
   Widget build(BuildContext context) {
-    log(widget.liveStream.products.toString());
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Stack(
@@ -251,8 +356,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xff4B4444)
-                                    .withOpacity(0.5),
+                                color: const Color(0xff4B4444).withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Row(
@@ -311,31 +415,47 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                   footer: KeyboardAttachable(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
+                      child: Column(
                         children: [
-                          Flexible(
-                            flex: 5,
-                            child: chatBox(),
+                          Container(width: 20, height: 20, color: Colors.white,),
+                          SizedBox(
+                            height: 400,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: _messages.length,
+                              itemBuilder: (context, i) =>
+                                  ListTile(title: Text(_messages[i])),
+                            ),
                           ),
-                          const SizedBox(width: 16),
-                          Flexible(
-                            child: GestureDetector(
-                              onTap: showProductModal,
-                              behavior: HitTestBehavior.opaque,
-                              child: Container(
-                                width: 56,
-                                height: 56,
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(100),
-                                  border: Border.all(
-                                    color: Colors.white,
+                          Row(
+                            children: [
+                              Flexible(
+                                flex: 5,
+                                child: chatBox(),
+                              ),
+                              const SizedBox(width: 16),
+                              IconButton(icon: Icon(Icons.send), onPressed: _send),
+                              const SizedBox(width: 16),
+                              Flexible(
+                                child: GestureDetector(
+                                  onTap: showProductModal,
+                                  behavior: HitTestBehavior.opaque,
+                                  child: Container(
+                                    width: 56,
+                                    height: 56,
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(100),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    child: AppAssets.icons.storefront.svg(),
                                   ),
                                 ),
-                                child: AppAssets.icons.storefront.svg(),
                               ),
-                            ),
+                            ],
                           ),
                         ],
                       ),
@@ -352,6 +472,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
 
   TextField chatBox() {
     return TextField(
+      controller: _controller,
       onTapOutside: (event) => FocusScope.of(context).unfocus(),
       decoration: const InputDecoration(
         border: OutlineInputBorder(
@@ -375,19 +496,18 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
   }
 
   Widget _renderVideo() {
-    // if (widget.isBroadcaster) {
-    // return _localUserJoined
-    //     ? AgoraVideoView(
-    //         controller: VideoViewController(
-    //           rtcEngine: _engine,
-    //           canvas: VideoCanvas(
-    //             renderMode: RenderModeType.renderModeHidden,
-    //             uid: int.tryParse(widget.liveStream.agoraId) ?? 0,
-    //           ),
-    //         ),
-    //       )
-    //     :
-    return const CupertinoActivityIndicator();
+    return _localUserJoined
+        ? AgoraVideoView(
+            controller: VideoViewController.remote(
+              rtcEngine: _engine,
+              canvas: VideoCanvas(
+                renderMode: RenderModeType.renderModeHidden,
+                uid: 3340305716,
+              ),
+              connection: RtcConnection(channelId: widget.liveStream.id),
+            ),
+          )
+        : const CupertinoActivityIndicator();
   }
 }
 
@@ -448,9 +568,11 @@ class ProductModal extends HookWidget {
                 curve: Curves.easeInOut,
               );
             },
-            groupValue: selectedSegment.value, // Current selected value
+            groupValue: selectedSegment.value,
+            // Current selected value
             borderColor: const Color(0xFF393C43),
-            selectedColor: const Color(0xFF676C75), // Selected segment color
+            selectedColor: const Color(0xFF676C75),
+            // Selected segment color
             unselectedColor:
                 const Color(0xFF393C43), // Unselected segment color
           ),

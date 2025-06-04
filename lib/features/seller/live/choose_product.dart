@@ -12,7 +12,11 @@ import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class ChooseProduct extends StatefulWidget {
-  const ChooseProduct({super.key});
+  const ChooseProduct(
+      {super.key, required this.roomName, this.scheduledDate});
+
+  final String roomName;
+  final String? scheduledDate;
 
   @override
   State<ChooseProduct> createState() => _ChooseProductState();
@@ -50,9 +54,7 @@ class _ChooseProductState extends State<ChooseProduct> {
         } else {
           _pagingController.appendPage(results, pageKey + 1);
         }
-        setState(() {
-
-        });
+        setState(() {});
       },
       error: (err) => _pagingController.error = err,
     );
@@ -112,21 +114,30 @@ class _ChooseProductState extends State<ChooseProduct> {
             ),
           ),
         ),
-        const SizedBox(height: 10,),
+        const SizedBox(
+          height: 10,
+        ),
         Visibility(
-          visible: (_pagingController.itemList?.isNotEmpty??false) && _products.isNotEmpty,
+          visible: (_pagingController.itemList?.isNotEmpty ?? false) &&
+              _products.isNotEmpty,
           child: CustomElevatedButton(
-            showIcon: false,
+              showIcon: false,
               onPressed: () async {
                 await showModalBottomSheet<void>(
                     context: context,
                     builder: (context) {
-                      return SetMinimumPrice(products: _products,);
+                      return SetMinimumPrice(
+                        products: _products,
+                        scheduledDate: widget.scheduledDate,
+                        roomName: widget.roomName,
+                      );
                     });
               },
               text: 'Proceed'),
         ),
-        const SizedBox(height: 20,),
+        const SizedBox(
+          height: 20,
+        ),
       ],
     );
   }

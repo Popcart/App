@@ -83,10 +83,7 @@ class _VerifyPhoneNumberScreenState extends State<VerifyOtpScreen>
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
     if (onboardingCubit.isLoggingIn) {
-      /*
-      Add check for user type before navigating to either seller or buyer view
-       */
-      context.push(AppPath.authorizedUser.seller.analytics.path);
+      context.push(AppPath.authorizedUser.path);
     } else {
       if (onboardingCubit.userType == UserType.buyer) {
         context.pushNamed(AppPath.auth.interestScreen.path);

@@ -5,8 +5,8 @@ import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
-class BuyerProfileScreen extends StatelessWidget {
-  const BuyerProfileScreen({super.key});
+class SellerProfileScreen extends StatelessWidget {
+  const SellerProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class BuyerProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              context.pushNamed(AppPath.authorizedUser.seller.sellerAccount.settings.path);
+              context.pushNamed(AppPath.authorizedUser.seller.account.settings.path);
             },
             icon: AppAssets.icons.gear.themedIcon(context),
           ),
