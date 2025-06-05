@@ -189,37 +189,31 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       print('Failed to publish message: $e');
     }
   }
-
+  int retryCount = 0;
   Future<void> loginToSignal() async {
     try {
       final openLivestream = context.read<OpenLivestreamCubit>();
       final userId = locator<SharedPrefs>().userUid;
       final token = await openLivestream.generateAgoraRTMToken(userId: userId);
-      if(token != null) {
+      if (token != null) {
         final (status, response) = await rtmClient.login(token);
-        if (status.error == true) {} else {
-          await subscribeToIncomingMessages();
+        if (!status.error) {
+          final (subStatus, subResponse) = await rtmClient.subscribe(widget.liveStream.id);
+          if (subStatus.error) {
+            print('${subStatus.operation} failed due to ${subStatus.reason}, error code: ${subStatus.errorCode}');
+          } else {
+            print('subscribe channel: ${widget.liveStream.id} success!');
+          }
         }
       }
     } catch (e) {
-      print("error occurred logging in ............ $e");
+      if (retryCount < 3) {
+        retryCount++;
+        await loginToSignal();
+      }
     }
   }
 
-  Future<void> subscribeToIncomingMessages() async {
-    try {
-      final (status, response) =
-          await rtmClient.subscribe(widget.liveStream.id);
-      if (status.error == true) {
-        print(
-            '${status.operation} failed due to ${status.reason}, error code: ${status.errorCode}');
-      } else {
-        print('subscribe channel: ${widget.liveStream.id} success!');
-      }
-    } catch (e) {
-      print('Failed to subscribe channel: $e');
-    }
-  }
 
   Future<void> showProductModal() async {
     final product = await showModalBottomSheet<Product>(
