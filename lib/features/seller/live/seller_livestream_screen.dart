@@ -132,7 +132,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
         }
       }
     } catch (e) {
-      print("Error logging in: $e");
       if (retryCount < 3) {
         retryCount++;
         await loginToSignal();
