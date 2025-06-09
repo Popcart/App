@@ -34,6 +34,7 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
   @override
   void initState() {
     super.initState();
+    roomNameCtrl.text = "Jerome live room test";
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _showPrepareLiveSheet();
     });
@@ -307,7 +308,7 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
               generatedLiveStream = liveStream;
               openLivestream.generateAgoraToken(
                 channelName: liveStream.id,
-                agoraRole: 0,
+                agoraRole: 1,
                 uid: 0,
               );
             },

@@ -22,6 +22,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     response.when(
       success: (user) {
         locator<SharedPrefs>().userUid = user?.data?.id ?? '';
+        locator<SharedPrefs>().username = user?.data?.username ?? '';
         emit(ProfileState.loaded(user?.data ?? UserModel.empty()));
       },
       error: (error) =>

@@ -12,8 +12,6 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
-import 'package:popcart/core/utils.dart';
-import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
@@ -89,28 +87,34 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
     _engine
       ..leaveChannel()
       ..release();
+    rtmClient
+      ..logout()
+      ..release();
     endLivestream();
     super.dispose();
   }
 
   Future<void> initRtm() async {
-    final userId = locator<SharedPrefs>().userUid;
-    final (status, client) = await RTM(Env().agoraAppId, userId);
-    if (status.error == true) {
-    } else {
-      rtmClient = client;
+    try {
+      final userId = locator<SharedPrefs>().userUid;
+      final (status, client) = await RTM(Env().agoraAppId, userId);
+      if (status.error == true) {
+      } else {
+        rtmClient = client;
+      }
+      rtmClient.addListener(message: (event) {
+        final updated = List<MessageModel>.from(messages.value)
+          ..add(MessageModel(
+              userId: event.publisher ?? "",
+              message: utf8.decode(event.message!)));
+        messages.value = updated;
+        scrollToBottom();
+      }, linkState: (event) {
+      });
+      await loginToSignal();
+    } catch (e) {
+      print(e);
     }
-    rtmClient.addListener(
-        message: (event) {
-          final updated = List<MessageModel>.from(messages.value)
-            ..add(MessageModel(
-                userId: event.publisher ?? "",
-                message: utf8.decode(event.message!)));
-          messages.value = updated;
-          scrollToBottom();
-        },
-        linkState: (event) {});
-    await loginToSignal();
   }
 
   int retryCount = 0;
@@ -123,9 +127,11 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
       if (token != null) {
         final (status, response) = await rtmClient.login(token);
         if (!status.error) {
-          final (subStatus, subResponse) = await rtmClient.subscribe(widget.channelName);
+          final (subStatus, subResponse) =
+              await rtmClient.subscribe(widget.channelName);
           if (subStatus.error) {
-            print('${subStatus.operation} failed due to ${subStatus.reason}, error code: ${subStatus.errorCode}');
+            print(
+                '${subStatus.operation} failed due to ${subStatus.reason}, error code: ${subStatus.errorCode}');
           } else {
             print('subscribe channel: ${widget.channelName} success!');
           }
@@ -138,7 +144,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
       }
     }
   }
-
 
   Future<void> setAgoraId(int id) async {
     await locator<LivestreamsRepo>().setSellerAgoraId(
@@ -163,13 +168,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
         ),
       );
-      await _engine.setClientRole(
-        role: ClientRoleType.clientRoleBroadcaster,
-        options: const ClientRoleOptions(
-          audienceLatencyLevel:
-              AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency,
-        ),
-      );
       _engine.registerEventHandler(
         RtcEngineEventHandler(
           onJoinChannelSuccess: (connection, elapsed) {
@@ -180,10 +178,10 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
           onUserJoined: (connection, remoteUid, elapsed) {
             userJoined.value++;
             setState(() {
-              joinedUserId = '$remoteUid joined';
+              joinedUserId = '$remoteUid joined 👋';
               showToast = true;
             });
-            Future.delayed(const Duration(seconds: 2), () {
+            Future.delayed(const Duration(seconds: 3), () {
               setState(() => showToast = false);
             });
           },
@@ -204,13 +202,22 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
         token: widget.token,
         channelId: widget.channelName,
         uid: 0,
-        options: const ChannelMediaOptions(),
+        options: const ChannelMediaOptions(
+            autoSubscribeVideo: true,
+            autoSubscribeAudio: true,
+            publishCameraTrack: true,
+            publishMicrophoneTrack: true,
+            clientRoleType: ClientRoleType.clientRoleBroadcaster,
+            audienceLatencyLevel:
+                AudienceLatencyLevelType.audienceLatencyLevelUltraLowLatency),
       );
       await _engine.enableAudio();
       await _engine.enableVideo();
       await _engine.startPreview();
       await initRtm();
-    } catch (e) {}
+    } catch (e) {
+      print("Init agora error $e");
+    }
   }
 
   @override
@@ -239,41 +246,28 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                   : const CupertinoActivityIndicator(),
             ),
             Positioned.fill(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black54,
+                        Colors.transparent,
+                        Colors.transparent,
+                        Colors.black87,
+                      ],
+                      stops: [0.0, 0.3, 0.7, 1.0],
+                    ),
+                  ),
+                ),),
+            Positioned.fill(
               top: 50,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppBackButton(
-                      onPressed: () async {
-                        final result = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Are you sure?'),
-                            content: const Text(
-                                'Do you want to end this livestream?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(false),
-                                child: const Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () =>
-                                    Navigator.of(context).pop(true),
-                                child: const Text('Yes'),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        if (result != null && result && context.mounted) {
-                          context.pop();
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
                     Row(
                       children: [
                         const CircleAvatar(
@@ -322,7 +316,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                         ),
                         const Spacer(),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -330,8 +323,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color:
-                                    const Color(0xff4B4444).withOpacity(0.5),
+                                color: const Color(0xff4B4444).withOpacity(0.5),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Row(
@@ -362,8 +354,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                                     ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xffcc0000),
-                                      borderRadius:
-                                          BorderRadius.circular(100),
+                                      borderRadius: BorderRadius.circular(100),
                                     ),
                                     child: const Text(
                                       'Live',
@@ -377,6 +368,48 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                                 ],
                               ),
                             ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                final result = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Are you sure?'),
+                                    content: const Text(
+                                        'Do you want to end this livestream?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(context).pop(true),
+                                        child: const Text('Yes'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+
+                                if (result != null && result && context.mounted) {
+                                  context.pop();
+                                }
+                              },
+                              child: Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border:
+                                          Border.all(color: AppColors.white)),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: AppColors.white,
+                                    size: 15,
+                                  )),
+                            ),
                           ],
                         ),
                       ],
@@ -386,7 +419,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.black87,
+                          color: Colors.white12,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(joinedUserId,
@@ -400,33 +433,40 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
               top: 400,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ValueListenableBuilder<List<MessageModel>>(
-                    valueListenable: messages,
-                    builder: (context, messages, _) {
-                      return ListView.builder(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.4,
+                  ),
+                  child: SingleChildScrollView(
+                    reverse: true,
+                    child: ValueListenableBuilder<List<MessageModel>>(
+                      valueListenable: messages,
+                      builder: (context, messages, _) {
+                        return ListView.builder(
                           shrinkWrap: true,
-                          itemCount: messages.length,
                           controller: scrollController,
+                          itemCount: messages.length,
+                          padding: EdgeInsets.zero,
                           itemBuilder: (context, i) => ListTile(
-                                leading: const Icon(
-                                  Icons.account_circle_rounded,
-                                  color: AppColors.white,
-                                ),
-                                title: Text(messages[i].userId,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    )),
-                                subtitle: Text(messages[i].message,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      overflow: TextOverflow.clip,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white.withOpacity(0.8),
-                                    )),
-                              ));
-                    }),
+                            contentPadding: EdgeInsets.zero,
+                            minVerticalPadding: 0,
+                            visualDensity: VisualDensity.compact,
+                            leading: const Icon(
+                              Icons.account_circle_rounded,
+                              color: AppColors.white,
+                            ),
+                            title: Text(messages[i].message,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                )),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
               ),
             )
           ],

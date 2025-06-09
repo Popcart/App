@@ -301,17 +301,13 @@ class ActiveLiveStream extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final openLivestreamCubit = useMemoized(OpenLivestreamCubit.new);
-    final userId = context.read<ProfileCubit>().state.maybeWhen(
-          orElse: () => '',
-          loaded: (user) => user.id,
-        );
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
         openLivestreamCubit.generateAgoraToken(
           channelName: liveStream.id,
-          agoraRole: 1,
-          uid: 1
+          agoraRole: 2,
+          uid: 0
         );
       },
       child: BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
