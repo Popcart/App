@@ -52,7 +52,7 @@ class _ProductItemState extends State<ProductItem> {
               children: [
                 SizedBox(
                   height: 70,
-                  width: 100,
+                  width: 85,
                   child: PageView.builder(
                     controller: _pageController,
                     itemCount: widget.product.images.length,
@@ -91,23 +91,27 @@ class _ProductItemState extends State<ProductItem> {
             const SizedBox(
               width: 10,
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.product.name, style: TextStyles.textTitle),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  margin: const EdgeInsets.only(right: 4),
-                  decoration: const BoxDecoration(
-                      color: AppColors.containerBlue,
-                      borderRadius: BorderRadius.all(Radius.circular(3))),
-                  child: Text(widget.product.category.name,
-                      style: TextStyles.styleW500S12),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(widget.product.name, style: TextStyles.textTitle),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    margin: const EdgeInsets.only(right: 4),
+                    decoration: const BoxDecoration(
+                        color: AppColors.containerBlue,
+                        borderRadius: BorderRadius.all(Radius.circular(3))),
+                    child: Text(widget.product.category.name,
+                        style: TextStyles.styleW500S12.copyWith(overflow: TextOverflow.clip)),
+                  ),
+                ],
+              ),
             ),
-            const Spacer(),
+            const SizedBox(
+              width: 5,
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -125,7 +129,7 @@ class _ProductItemState extends State<ProductItem> {
               ],
             ),
             const SizedBox(
-              width: 10,
+              width: 5,
             ),
             if (_isDeleting)
               const Padding(
