@@ -12,10 +12,12 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 class MessageModel {
   MessageModel({
@@ -84,6 +86,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    WakelockPlus.disable();
     _engine
       ..leaveChannel()
       ..release();
@@ -92,6 +95,14 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
       ..release();
     endLivestream();
     super.dispose();
+  }
+
+  Future<void> notifyViewers(int count) async{
+    await rtmClient.publish(
+      widget.channelName,
+      count.toString(),
+      customType: kViewerCountUpdate,
+    );
   }
 
   Future<void> initRtm() async {
@@ -103,12 +114,39 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
         rtmClient = client;
       }
       rtmClient.addListener(message: (event) {
-        final updated = List<MessageModel>.from(messages.value)
-          ..add(MessageModel(
-              userId: event.publisher ?? "",
-              message: utf8.decode(event.message!)));
-        messages.value = updated;
-        scrollToBottom();
+        final messageText = utf8.decode(event.message ?? []);
+        final type = event.customType;
+        switch (type) {
+          case kJoinNotification:
+            userJoined.value++;
+            joinedUserId = '$messageText 👋';
+            showToast = true;
+            setState(() {});
+            Future.delayed(const Duration(seconds: 3), () {
+              showToast = false;
+              setState(() {});
+            });
+            notifyViewers(userJoined.value);
+          case kLeaveNotification:
+            userJoined.value--;
+            joinedUserId = messageText;
+            showToast = true;
+            setState(() {});
+            Future.delayed(const Duration(seconds: 3), () {
+              showToast = false;
+              setState(() {});
+            });
+            notifyViewers(userJoined.value);
+          default:
+            messages.value = [
+              ...messages.value,
+              MessageModel(
+                userId: event.publisher ?? '',
+                message: messageText,
+              ),
+            ];
+            scrollToBottom();
+        }
       }, linkState: (event) {
       });
       await loginToSignal();
@@ -175,26 +213,6 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
               _localUserJoined = true;
             });
           },
-          onUserJoined: (connection, remoteUid, elapsed) {
-            userJoined.value++;
-            setState(() {
-              joinedUserId = '$remoteUid joined 👋';
-              showToast = true;
-            });
-            Future.delayed(const Duration(seconds: 3), () {
-              setState(() => showToast = false);
-            });
-          },
-          onUserOffline: (connection, remoteUid, reason) {
-            userJoined.value--;
-            setState(() {
-              joinedUserId = '$remoteUid left';
-              showToast = true;
-            });
-            Future.delayed(const Duration(seconds: 2), () {
-              setState(() => showToast = false);
-            });
-          },
           onError: (err, msg) async {},
         ),
       );
@@ -214,6 +232,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
       await _engine.enableAudio();
       await _engine.enableVideo();
       await _engine.startPreview();
+      await WakelockPlus.enable();
       await initRtm();
     } catch (e) {
       print("Init agora error $e");
@@ -368,32 +387,28 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             GestureDetector(
                               onTap: () async {
-                                final result = await showDialog<bool>(
+                                final result = await showAdaptiveDialog<bool>(
                                   context: context,
-                                  builder: (context) => AlertDialog(
+                                  builder: (context) => AlertDialog.adaptive(
                                     title: const Text('Are you sure?'),
-                                    content: const Text(
-                                        'Do you want to end this livestream?'),
+                                    content: const Text('Do you want to end this livestream?'),
                                     actions: [
                                       TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(false),
+                                        onPressed: () => Navigator.of(context).pop(false),
                                         child: const Text('Cancel'),
                                       ),
                                       TextButton(
-                                        onPressed: () =>
-                                            Navigator.of(context).pop(true),
+                                        onPressed: () => Navigator.of(context).pop(true),
                                         child: const Text('Yes'),
                                       ),
                                     ],
                                   ),
                                 );
-
                                 if (result != null && result && context.mounted) {
                                   context.pop();
                                 }
@@ -416,6 +431,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                     ),
                     if (showToast)
                       Container(
+                        margin: const EdgeInsets.only(top: 10),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 30, vertical: 5),
                         decoration: BoxDecoration(
@@ -431,6 +447,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
             ),
             Positioned.fill(
               top: 400,
+              bottom: 10,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ConstrainedBox(
@@ -457,7 +474,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                             ),
                             title: Text(messages[i].message,
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w600,
                                   color: Colors.white,
                                 )),

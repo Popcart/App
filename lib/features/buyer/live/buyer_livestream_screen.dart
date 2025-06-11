@@ -65,13 +65,20 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
 
   @override
   void dispose() {
+    terminateSession();
+    super.dispose();
+  }
+
+  Future<void> terminateSession() async {
+    final username = locator<SharedPrefs>().username;
+    await rtmClient.publish(widget.liveStream.id, '$username left',
+        customType: kLeaveNotification,);
     _engine
       ..leaveChannel()
       ..release();
     rtmClient
       ..logout()
       ..release();
-    super.dispose();
   }
 
   @override
@@ -138,7 +145,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
         uid: 0,
         options: const ChannelMediaOptions(
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
-          clientRoleType: ClientRoleType.clientRoleBroadcaster,
+          clientRoleType: ClientRoleType.clientRoleAudience,
           autoSubscribeVideo: true,
           autoSubscribeAudio: true,
         ),
@@ -159,12 +166,26 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       }
       rtmClient.addListener(
           message: (event) {
-            final updated = List<MessageModel>.from(messages.value)
-              ..add(MessageModel(
-                  userId: event.publisher ?? '',
-                  message: utf8.decode(event.message!)));
-            messages.value = updated;
-            scrollToBottom();
+            final messageText = utf8.decode(event.message ?? []);
+            final type = event.customType;
+            switch(type){
+              case kViewerCountUpdate:
+                userJoined.value = int.tryParse(messageText) ?? 0;
+              case kJoinNotification:
+              case kLeaveNotification:
+                //Do nothing
+                break;
+              default:
+                final updated = List<MessageModel>.from(messages.value)
+                  ..add(
+                    MessageModel(
+                      userId: event.publisher ?? '',
+                      message: messageText,
+                    ),
+                  );
+                messages.value = updated;
+                scrollToBottom();
+            }
           },
           linkState: (event) {});
       await loginToSignal();
@@ -176,7 +197,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       final username = locator<SharedPrefs>().username;
       final (status, response) = await rtmClient.publish(
           widget.liveStream.id, '$username: ${_controller.text}',
-          customType: 'PlainText');
+          customType: kPlainText);
       if (status.error == true) {
       } else {
         final userId = locator<SharedPrefs>().userUid;
@@ -205,10 +226,12 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
           final (subStatus, subResponse) =
               await rtmClient.subscribe(widget.liveStream.id);
           if (subStatus.error) {
-            print(
-                '${subStatus.operation} failed due to ${subStatus.reason}, error code: ${subStatus.errorCode}');
           } else {
-            print('subscribe channel: ${widget.liveStream.id} success!');
+            //User has successfully connected to the live stream.
+            // Now send a message to register the count
+            final username = locator<SharedPrefs>().username;
+            await rtmClient.publish(widget.liveStream.id, '$username joined',
+                customType: kJoinNotification);
           }
         }
       }
@@ -465,7 +488,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                                       ),
                                       title: Text(messages[i].message,
                                           style: const TextStyle(
-                                            fontSize: 12,
+                                            fontSize: 14,
                                             fontWeight: FontWeight.w600,
                                             color: Colors.white,
                                           )),
@@ -475,30 +498,27 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 10,),
                           Row(
                             children: [
                               Flexible(
-                                flex: 5,
                                 child: chatBox(),
                               ),
                               const SizedBox(width: 16),
-                              Flexible(
-                                child: GestureDetector(
-                                  onTap: showProductModal,
-                                  behavior: HitTestBehavior.opaque,
-                                  child: Container(
-                                    width: 56,
-                                    height: 56,
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.transparent,
-                                      borderRadius: BorderRadius.circular(100),
-                                      border: Border.all(
-                                        color: Colors.white,
-                                      ),
+                              GestureDetector(
+                                onTap: showProductModal,
+                                behavior: HitTestBehavior.opaque,
+                                child: Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 0.5
                                     ),
-                                    child: AppAssets.icons.storefront.svg(),
                                   ),
+                                  child: AppAssets.icons.storefront.svg(),
                                 ),
                               ),
                             ],
@@ -530,22 +550,32 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       },
       textInputAction: TextInputAction.send,
       onTapOutside: (event) => FocusScope.of(context).unfocus(),
-      decoration: const InputDecoration(
+      cursorColor: AppColors.white,
+      decoration: InputDecoration(
         hintText: 'Type a message...',
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(100),
           ),
           borderSide: BorderSide(
             color: Colors.white,
+              width: 0.5
           ),
         ),
-        focusedBorder: OutlineInputBorder(
+        suffixIcon: IconButton(
+          icon: AppAssets.icons.send.svg(),
+          onPressed: (){
+            if (_controller.text.isEmpty) return;
+            _send();
+          },
+        ),
+        focusedBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(100),
           ),
           borderSide: BorderSide(
             color: Colors.white,
+            width: 0.5
           ),
         ),
       ),

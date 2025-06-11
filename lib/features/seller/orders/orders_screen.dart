@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/seller/orders/orders_tab.dart';
-import 'package:popcart/gen/assets.gen.dart';
 
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
@@ -35,12 +34,6 @@ class _OrdersScreenState extends State<OrdersScreen>
       appBar: AppBar(
         title: const Text('Orders'),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: AppAssets.icons.chat.themedIcon(context),
-          ),
-        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Padding(

@@ -209,6 +209,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/selected.svg
   SvgGenImage get selected => const SvgGenImage('assets/icons/selected.svg');
 
+  /// File path: assets/icons/send.svg
+  SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
+
   /// File path: assets/icons/storefront.svg
   SvgGenImage get storefront =>
       const SvgGenImage('assets/icons/storefront.svg');
@@ -281,6 +284,7 @@ class $AssetsIconsGen {
     purchases,
     rewards,
     selected,
+    send,
     storefront,
     totalRevenue,
     totalSales,
