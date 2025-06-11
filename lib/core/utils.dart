@@ -159,3 +159,8 @@ extension NumberExtension on num {
     return NumberFormat.currency(locale: 'en_NG', symbol: '₦').format(this);
   }
 }
+
+const String kJoinNotification = 'JoinNotification';
+const String kLeaveNotification = 'LeaveNotification';
+const String kPlainText = 'PlainText';
+const String kViewerCountUpdate = 'ViewerCountUpdate';

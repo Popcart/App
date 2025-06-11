@@ -4,7 +4,6 @@ import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/seller/inventory/inventory_tab.dart';
-import 'package:popcart/gen/assets.gen.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -38,14 +37,6 @@ class _InventoryScreenState extends State<InventoryScreen>
       appBar: AppBar(
         title: const Text('Inventory'),
         automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-
-            },
-            icon: AppAssets.icons.chat.themedIcon(context),
-          ),
-        ],
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
