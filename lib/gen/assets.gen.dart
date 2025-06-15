@@ -65,6 +65,9 @@ class $AssetsIconsGen {
   SvgGenImage get analyticUnselected =>
       const SvgGenImage('assets/icons/analytic_unselected.svg');
 
+  /// File path: assets/icons/auction.svg
+  SvgGenImage get auction => const SvgGenImage('assets/icons/auction.svg');
+
   /// File path: assets/icons/auctions_selected.svg
   SvgGenImage get auctionsSelected =>
       const SvgGenImage('assets/icons/auctions_selected.svg');
@@ -242,6 +245,7 @@ class $AssetsIconsGen {
     addressBook,
     analyticSelected,
     analyticUnselected,
+    auction,
     auctionsSelected,
     auctionsUnselected,
     avgWatch,

@@ -11,6 +11,7 @@ import 'package:popcart/app/theme_cubit.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
 import 'package:popcart/features/buyer/account/buyer_setings_screen.dart';
+import 'package:popcart/features/buyer/explore/explore_screen.dart';
 import 'package:popcart/features/buyer/live/buyer_live_screen_nav.dart';
 import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -140,40 +141,40 @@ List<StatefulShellBranch> getBranches(UserType userType) {
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: AppPath.authorizedUser.buyer.auctions.goRoute,
-            builder: (context, state) => const SizedBox(),
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        routes: [
-          GoRoute(
-            path: AppPath.authorizedUser.buyer.stores.goRoute,
-            builder: (context, state) => const SizedBox(),
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        routes: [
-          GoRoute(
-              path: AppPath.authorizedUser.buyer.buyerLive.goRoute,
-              builder: (context, state) => const BuyerLiveScreen(),
-              routes: [
-                GoRoute(
-                  path: AppPath.authorizedUser.buyer.buyerLive.goLive.goRoute,
-                  name: AppPath.authorizedUser.buyer.buyerLive.goLive.path,
-                  pageBuilder: (context, state) => CustomTransitionPage(
-                    child: BuyerLivestreamScreen(
-                      liveStream: state.extra! as LiveStream,
-                      token: state.uri.queryParameters['token'] ?? '',
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
+            path: AppPath.authorizedUser.buyer.buyerLive.goRoute,
+            builder: (context, state) => const BuyerLiveScreen(),
+            routes: [
+              GoRoute(
+                path: AppPath.authorizedUser.buyer.buyerLive.goLive.goRoute,
+                name: AppPath.authorizedUser.buyer.buyerLive.goLive.path,
+                pageBuilder: (context, state) => CustomTransitionPage(
+                  child: BuyerLivestreamScreen(
+                    liveStream: state.extra! as LiveStream,
+                    token: state.uri.queryParameters['token'] ?? '',
                   ),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
                 ),
-              ]),
+              ),
+            ],
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: AppPath.authorizedUser.buyer.explore.goRoute,
+            name: AppPath.authorizedUser.buyer.explore.path,
+            pageBuilder: (context, state) => CustomTransitionPage(
+              child: const ExploreScreen(),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            ),
+          ),
         ],
       ),
       StatefulShellBranch(
@@ -438,7 +439,7 @@ class MainShell extends StatelessWidget {
     final shellRouter = GoRouter(
       initialLocation: userType == UserType.seller
           ? AppPath.authorizedUser.seller.analytics.path
-          : AppPath.authorizedUser.buyer.auctions.path,
+          : AppPath.authorizedUser.buyer.explore.path,
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navShell) =>
@@ -517,22 +518,16 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
                 items: [
                   BottomNavigationBarItem(
                     activeIcon:
-                        AppAssets.icons.orderSelected.themedIcon(context),
-                    icon: AppAssets.icons.orderUnselected.themedIcon(context),
-                    label: 'Auctions',
+                        AppAssets.icons.liveSelected.themedIcon(context),
+                    icon: AppAssets.icons.liveUnselected.themedIcon(context),
+                    label: 'Live',
                   ),
                   BottomNavigationBarItem(
                     activeIcon:
                         AppAssets.icons.auctionsSelected.themedIcon(context),
                     icon:
                         AppAssets.icons.auctionsUnselected.themedIcon(context),
-                    label: 'Stores',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                        AppAssets.icons.liveSelected.themedIcon(context),
-                    icon: AppAssets.icons.liveUnselected.themedIcon(context),
-                    label: 'Live',
+                    label: 'Explore',
                   ),
                   BottomNavigationBarItem(
                     activeIcon:
@@ -586,79 +581,3 @@ class ScaffoldWithNavigationBar extends StatelessWidget {
     );
   }
 }
-
-// class AccountWebview extends StatefulWidget {
-//   const AccountWebview({
-//     super.key,
-//   });
-//
-//   @override
-//   State<AccountWebview> createState() => _AccountWebviewState();
-// }
-//
-// class _AccountWebviewState extends State<AccountWebview> {
-//   late final WebViewController controller;
-//   bool loading = true;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     final url = Env().sellerDashboardUrl.addQueryParameters({
-//       'state': 'app',
-//       'accessToken': locator<SharedPrefs>().accessToken,
-//     });
-//     log(url, name: 'AccountWebview');
-//     controller = WebViewController()
-//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//       ..setBackgroundColor(const Color(0xff111214))
-//       ..setNavigationDelegate(
-//         NavigationDelegate(
-//           onPageStarted: (url) {
-//             setState(() {
-//               loading = true;
-//             });
-//           },
-//           onPageFinished: (url) {
-//             setState(() {
-//               loading = false;
-//             });
-//           },
-//         ),
-//       )
-//       ..loadRequest(
-//         Uri.parse(
-//           Env().sellerDashboardUrl.addQueryParameters({
-//             'state': 'app',
-//             'accessToken': locator<SharedPrefs>().accessToken,
-//           }),
-//         ),
-//       )
-//       ..enableZoom(false);
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: BlocBuilder<ProfileCubit, ProfileState>(
-//           builder: (context, state) {
-//             return state.maybeWhen(
-//               orElse: CupertinoActivityIndicator.new,
-//               loaded: (user) => const BuyerProfileScreen(),
-//               // loaded: (user) => switch (user.userType) {
-//                 // UserType.seller => loading
-//                 //     ? const Center(
-//                 //         child: CupertinoActivityIndicator(color: Colors.white),
-//                 //       )
-//                 //     : WebViewWidget(
-//                 //         controller: controller,
-//                 //       ),
-//                 // UserType.buyer => const BuyerProfileScreen(),
-//               // },
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }

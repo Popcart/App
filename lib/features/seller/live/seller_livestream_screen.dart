@@ -72,13 +72,16 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.detached) {
+      WakelockPlus.disable();
       _engine
         ..leaveChannel()
         ..release();
       endLivestream();
     } else if (state == AppLifecycleState.paused) {
+      WakelockPlus.disable();
       _engine.disableVideo();
     } else if (state == AppLifecycleState.resumed) {
+      WakelockPlus.enable();
       _engine.enableVideo();
     }
   }
@@ -193,6 +196,14 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
   Future<void> endLivestream() async {
     await locator<LivestreamsRepo>().endLivestreamSession(
       livestreamId: widget.channelName,
+      isEnding: true,
+    );
+  }
+
+  Future<void> startLivestream() async {
+    await locator<LivestreamsRepo>().endLivestreamSession(
+      livestreamId: widget.channelName,
+      isEnding: false,
     );
   }
 

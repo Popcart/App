@@ -67,8 +67,7 @@ class SellerAccountPath extends Path<SellerAccountPath> {
 class BuyerPath extends Path<BuyerPath> {
   BuyerPath() : super('/buyer');
 
-  Path get auctions => Path('/auction');
-  Path get stores => Path('/stores');
+  ExplorePath get explore => ExplorePath();
   BuyerLiveStreamPath get buyerLive => BuyerLiveStreamPath();
   BuyerAccountPath get buyerAccount => BuyerAccountPath();
 }
@@ -83,5 +82,9 @@ class BuyerLiveStreamPath extends Path<BuyerLiveStreamPath> {
   BuyerLiveStreamPath() : super('/buyer-live');
 
   Path get goLive => Path('/buyer-go-live');
+}
+
+class ExplorePath extends Path<ExplorePath> {
+  ExplorePath() : super('/explore');
 }
 

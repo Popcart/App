@@ -18,6 +18,7 @@ import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
+import 'package:popcart/features/components/floating_reaction.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -39,7 +40,8 @@ class BuyerLivestreamScreen extends StatefulWidget {
   State<BuyerLivestreamScreen> createState() => _BuyerLivestreamScreenState();
 }
 
-class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
+class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
+    TickerProviderStateMixin{
   late RtcEngine _engine;
   int? _remoteUid;
   bool? videoDisabled;
@@ -56,6 +58,27 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
       }
     });
   }
+
+  List<FloatingReaction> floatingReactions = [];
+
+  void showReaction(String emoji) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final reaction = FloatingReaction(
+      emoji: emoji,
+      vsync: this,
+      screenWidth: screenWidth,
+    );
+
+    setState(() => floatingReactions.add(reaction));
+
+    reaction.controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        reaction.dispose();
+        setState(() => floatingReactions.remove(reaction));
+      }
+    });
+  }
+
 
   @override
   void initState() {
@@ -535,7 +558,8 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> {
             child: Visibility(
                 visible: videoDisabled != null && videoDisabled == true,
                 child: const Text('Video is paused')),
-          )
+          ),
+          ...floatingReactions.map((reaction) => reaction.buildWidget()),
         ],
       ),
     );

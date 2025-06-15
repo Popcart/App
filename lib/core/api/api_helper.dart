@@ -229,6 +229,7 @@ class ApiHandler {
         _dio.options.headers.remove('Authorization');
       } else {
         final token = locator.get<SharedPrefs>().accessToken;
+        print("User token: $token");
         if (token != null) {
           _dio.options.headers['Authorization'] = 'Bearer $token';
         }

@@ -8,26 +8,35 @@ sealed class LivestreamsRepo {
     required bool scheduled,
     String? startTime,
   });
+
   Future<ApiResponse<String>> generateAgoraToken({
     required String channelName,
     required int agoraRole,
     required int uid,
   });
+
   Future<ApiResponse<String>> generateAgoraRTMToken({
     required String userId,
   });
+
   Future<ListApiResponse<LiveStream>> getActiveLivestreams();
+
+  Future<ListApiResponse<LiveStream>> getScheduledLivestreams();
+
   Future<ApiResponse<void>> setSellerAgoraId({
     required String agoraId,
     required String livestreamId,
   });
+
   Future<ApiResponse<void>> endLivestreamSession({
     required String livestreamId,
+    required bool isEnding
   });
 }
 
 class LivestreamsRepoImpl extends LivestreamsRepo {
   LivestreamsRepoImpl(this._apiHandler);
+
   final ApiHandler _apiHandler;
 
   @override
@@ -92,6 +101,15 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
   }
 
   @override
+  Future<ListApiResponse<LiveStream>> getScheduledLivestreams() {
+    return _apiHandler.requestList<LiveStream>(
+      path: 'scheduled',
+      method: MethodType.get,
+      responseMapper: LiveStream.fromJson,
+    );
+  }
+
+  @override
   Future<ApiResponse<void>> setSellerAgoraId({
     required String agoraId,
     required String livestreamId,
@@ -109,9 +127,10 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
   @override
   Future<ApiResponse<void>> endLivestreamSession({
     required String livestreamId,
+    required bool isEnding,
   }) {
     return _apiHandler.request<void>(
-      path: '$livestreamId/end',
+      path: isEnding ? '$livestreamId/end' : '$livestreamId/start',
       method: MethodType.put,
     );
   }

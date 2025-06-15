@@ -304,12 +304,17 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
         listener: (context, state) {
           state.whenOrNull(
             success: (liveStream) {
-              generatedLiveStream = liveStream;
-              openLivestream.generateAgoraToken(
-                channelName: liveStream.id,
-                agoraRole: 1,
-                uid: 0,
-              );
+              if(_scheduleOption == ScheduleOption.instant) {
+                generatedLiveStream = liveStream;
+                openLivestream.generateAgoraToken(
+                  channelName: liveStream.id,
+                  agoraRole: 1,
+                  uid: 0,
+                );
+              }else{
+                context.showSuccess('Live stream scheduled successfully');
+                Navigator.pop(context);
+              }
             },
             error: (message) {
               context.showError(message);
