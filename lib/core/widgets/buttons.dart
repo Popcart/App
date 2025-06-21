@@ -9,13 +9,14 @@ class CustomElevatedButton extends ElevatedButton {
     bool loading = false,
     bool enabled = true,
     bool showIcon = true,
+    bool usePrimaryColor = true,
     IconData? icon,
     super.key,
   }) : super(
           onPressed: enabled ? onPressed : null,
           child: loading
-              ? const CircularProgressIndicator(
-                  color: AppColors.white,
+              ? CircularProgressIndicator(
+                  color: usePrimaryColor ? AppColors.white : AppColors.orange,
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -32,8 +33,12 @@ class CustomElevatedButton extends ElevatedButton {
                         text,
                         style: TextStyle(
                           color: enabled
-                              ? AppColors.white
-                              : AppColors.white.withOpacity(.5),
+                              ? usePrimaryColor
+                                  ? AppColors.white
+                                  : AppColors.orange
+                              : usePrimaryColor
+                                  ? AppColors.white.withOpacity(.5)
+                                  : AppColors.orange.withOpacity(.5),
                         ),
                       ),
                       if (icon == null) ...[
@@ -51,8 +56,12 @@ class CustomElevatedButton extends ElevatedButton {
                         text,
                         style: TextStyle(
                           color: enabled
-                              ? AppColors.white
-                              : AppColors.white.withOpacity(.5),
+                              ? usePrimaryColor
+                                  ? AppColors.white
+                                  : AppColors.orange
+                              : usePrimaryColor
+                                  ? AppColors.white.withOpacity(.5)
+                                  : AppColors.orange.withOpacity(.5),
                         ),
                       ),
                     ]
@@ -60,8 +69,8 @@ class CustomElevatedButton extends ElevatedButton {
                 ),
           style: ButtonStyle(
             textStyle: WidgetStateProperty.all<TextStyle>(
-              const TextStyle(
-                color: AppColors.white,
+              TextStyle(
+                color: usePrimaryColor ? AppColors.white : AppColors.orange,
                 fontWeight: FontWeight.w700,
                 fontSize: 16,
               ),
@@ -73,7 +82,13 @@ class CustomElevatedButton extends ElevatedButton {
               Size(double.infinity, 56),
             ),
             backgroundColor: WidgetStateProperty.all<Color>(
-              enabled ? AppColors.orange : AppColors.orange.withOpacity(.5),
+              enabled
+                  ? usePrimaryColor
+                      ? AppColors.orange
+                      : AppColors.white
+                  : usePrimaryColor
+                      ? AppColors.orange.withOpacity(.5)
+                      : AppColors.white.withOpacity(.5),
             ),
           ),
         );
@@ -81,28 +96,19 @@ class CustomElevatedButton extends ElevatedButton {
 
 class AppBackButton extends StatelessWidget {
   const AppBackButton({super.key, this.onPressed});
+
   final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        if(onPressed != null) {
-          onPressed!();
-        }else {
-          Navigator.pop(context);
-        }
-      },
-      child: Container(
-        width: 48,
-        height: 48,
-        decoration: BoxDecoration(
-          color: AppColors.darkGrey,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(Icons.arrow_back_ios, color: AppColors.white),
-      ),
-    );
+    return IconButton(
+        onPressed: () {
+          if (onPressed != null) {
+            onPressed!();
+          } else {
+            Navigator.pop(context);
+          }
+        },
+        icon: const Icon(Icons.arrow_back_ios_new));
   }
 }

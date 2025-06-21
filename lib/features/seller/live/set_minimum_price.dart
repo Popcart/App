@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/router_paths.dart';
@@ -38,30 +37,27 @@ class _SetMinimumPriceState extends State<SetMinimumPrice> {
     return BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
       listener: (context, state) {
         state.whenOrNull(
-          success: (liveStream) {
+          success: (liveStream) async {
             generatedLiveStream = liveStream;
-            openLivestream.generateAgoraToken(
+            final token = await openLivestream.generateAgoraToken(
               channelName: liveStream.id,
-              agoraRole: 0,
+              agoraRole: 1,
               uid: 0,
             );
+            if(token != null){
+              context.pushReplacementNamed(
+                  AppPath.authorizedUser.seller.live.goLive.path,
+                  extra: true,
+                  queryParameters: {
+                    'token': token,
+                    'channelName': generatedLiveStream?.id,
+                  },
+                );
+            }else{
+              context.showError('Unable to generate token');
+            }
           },
           error: (message) {
-            context.showError(message);
-          },
-          generateTokenSuccess: (token) {
-            context..pop()
-            ..pop()
-            ..pushReplacementNamed(
-              AppPath.authorizedUser.seller.live.goLive.path,
-              extra: true,
-              queryParameters: {
-                'token': token,
-                'channelName': generatedLiveStream?.id,
-              },
-            );
-          },
-          generateTokenError: (message) {
             context.showError(message);
           },
         );

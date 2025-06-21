@@ -41,6 +41,9 @@ class PopCart extends StatelessWidget {
         BlocProvider(
           create: (context) => ActiveLivestreamsCubit()..getActiveLivestreams(),
         ),
+        BlocProvider(
+          create: (context) => ScheduledLivestreamsCubit()..getScheduledLivestreams(),
+        ),
       ],
       child: ToastificationWrapper(
         child: ScreenUtilInit(

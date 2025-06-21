@@ -1,6 +1,7 @@
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/api/pagination.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 
 sealed class SellersRepo {
   Future<ApiResponse<PaginationResponse<Product>>> getProducts({
@@ -8,8 +9,14 @@ sealed class SellersRepo {
     required int page,
     required int limit,
   });
-  Future<ApiResponse<Product>> getProduct({
+
+  Future<ApiResponse<Product>> getProductDetails({
     required String productId,
+  });
+
+  Future<ApiResponse<PaginationResponse<UserModel>>> getSellers({
+    required int page,
+    required int limit,
   });
 }
 
@@ -42,11 +49,31 @@ class SellersRepoImpl implements SellersRepo {
   }
 
   @override
-  Future<ApiResponse<Product>> getProduct({required String productId}) {
+  Future<ApiResponse<Product>> getProductDetails({required String productId}) {
     return _apiHelper.request<Product>(
       path: 'products/$productId',
       method: MethodType.get,
       responseMapper: Product.fromJson,
+    );
+  }
+
+  @override
+  Future<ApiResponse<PaginationResponse<UserModel>>> getSellers(
+      {required int page, required int limit}) async {
+    return _apiHelper.request<PaginationResponse<UserModel>>(
+      path: '',
+      method: MethodType.get,
+      queryParameters: {
+        'page': page,
+        'limit': limit,
+      },
+      responseMapper: (v) {
+        return PaginationResponse<UserModel>.fromJson(
+          v,
+          (i) => UserModel.fromJson(i! as Map<String, dynamic>),
+          'sellers',
+        );
+      },
     );
   }
 }

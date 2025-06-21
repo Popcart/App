@@ -29,3 +29,25 @@ class ActiveLivestreamsCubit extends Cubit<ActiveLivestreamsState> {
     );
   }
 }
+
+class ScheduledLivestreamsCubit extends Cubit<ScheduledLivestreamsState> {
+  ScheduledLivestreamsCubit()
+      : _livestreamsRepo = locator<LivestreamsRepo>(),
+        super(const ScheduledLivestreamsState.initial());
+
+  final LivestreamsRepo _livestreamsRepo;
+
+  Future<void> getScheduledLivestreams() async {
+    emit(const ScheduledLivestreamsState.loading());
+    final response = await _livestreamsRepo.getScheduledLivestreams();
+    response.when(
+      success: (data) {
+        emit(ScheduledLivestreamsState.success(data?.data ?? []));
+      },
+      error: (error) {
+        emit(ScheduledLivestreamsState.error(error.message ?? 'An error occurred'));
+      },
+    );
+  }
+}
+

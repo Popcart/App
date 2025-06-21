@@ -8,6 +8,7 @@ import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
+import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/choose_product.dart';
@@ -303,28 +304,38 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
       body: BlocListener<OpenLivestreamCubit, OpenLivestreamState>(
         listener: (context, state) {
           state.whenOrNull(
-            success: (liveStream) {
-              generatedLiveStream = liveStream;
-              openLivestream.generateAgoraToken(
-                channelName: liveStream.id,
-                agoraRole: 1,
-                uid: 0,
-              );
+            success: (liveStream) async {
+              if(_scheduleOption == ScheduleOption.instant) {
+                generatedLiveStream = liveStream;
+                final token = await openLivestream.generateAgoraToken(
+                  channelName: liveStream.id,
+                  agoraRole: 1,
+                  uid: 0,
+                );
+
+                if (token == null) {
+                  if (context.mounted) {
+                    await context.showError('Failed to generate token');
+                  }
+                  return;
+                }
+
+                if (!context.mounted) return;
+
+                context.pushReplacementNamed(
+                  AppPath.authorizedUser.seller.live.goLive.path,
+                  extra: true,
+                  queryParameters: {
+                    'token': token,
+                    'channelName': generatedLiveStream?.id,
+                  },
+                );
+              }else{
+                await context.showSuccess('Live stream scheduled successfully');
+                Navigator.pop(context);
+              }
             },
             error: (message) {
-              context.showError(message);
-            },
-            generateTokenSuccess: (token) {
-              context.pushReplacementNamed(
-                AppPath.authorizedUser.seller.live.goLive.path,
-                extra: true,
-                queryParameters: {
-                  'token': token,
-                  'channelName': generatedLiveStream?.id,
-                },
-              );
-            },
-            generateTokenError: (message) {
               context.showError(message);
             },
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:intl/intl.dart';
@@ -164,3 +165,46 @@ const String kJoinNotification = 'JoinNotification';
 const String kLeaveNotification = 'LeaveNotification';
 const String kPlainText = 'PlainText';
 const String kViewerCountUpdate = 'ViewerCountUpdate';
+
+String timeAgo(String dateStr) {
+  final date = DateTime.parse(dateStr).toLocal();
+  final now = DateTime.now();
+  final diff = now.difference(date);
+
+  if (diff.isNegative) {
+    // Future
+    if (diff.inMinutes.abs() < 60) return 'In ${diff.inMinutes.abs()} min';
+    if (diff.inHours.abs() < 24) return 'In ${diff.inHours.abs()} hr';
+    if (diff.inDays.abs() < 7) return 'In ${diff.inDays.abs()} day${diff.inDays.abs() > 1 ? 's' : ''}';
+  } else {
+    // Past
+    if (diff.inMinutes < 60) return '${diff.inMinutes} min ago';
+    if (diff.inHours < 24) return '${diff.inHours} hr ago';
+    if (diff.inDays < 7) return '${diff.inDays} day${diff.inDays > 1 ? 's' : ''} ago';
+  }
+
+  return '${date.day}/${date.month}/${date.year}';
+
+}
+
+Widget userThumbnail(String username) {
+  final firstLetter = username.trim().isNotEmpty ? username.trim()[0].toUpperCase() : '?';
+  final color = Colors.primaries[username.hashCode % Colors.primaries.length];
+
+  return Container(
+    width: double.infinity,
+    height: double.infinity,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(20)
+    ),
+    child: Center(
+      child: Text(
+        firstLetter,
+        style: const TextStyle(color: Colors.white12, fontWeight: FontWeight.bold,
+        fontSize: 100),
+      ),
+    ),
+  );
+}
+

@@ -8,8 +8,4 @@ class OpenLivestreamState with _$OpenLivestreamState {
     required Stream stream,
   }) = _Success;
   const factory OpenLivestreamState.error(String message) = _Error;
-  const factory OpenLivestreamState.generateTokenSuccess(String token) =
-      _GenerateTokenSuccess;
-  const factory OpenLivestreamState.generateTokenError(String message) =
-      _GenerateTokenError;
 }

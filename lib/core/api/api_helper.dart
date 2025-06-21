@@ -135,7 +135,7 @@ class ApiHandler {
           responseHeader: true,
           logPrint: (value) {
             if (kDebugMode) {
-              log(value.toString(), name: 'Dio');
+              // log(value.toString(), name: 'Dio');
             }
           },
         ),
@@ -179,7 +179,7 @@ class ApiHandler {
               responseHeader: true,
               logPrint: (value) {
                 if (kDebugMode) {
-                  log(value.toString(), name: 'Dio');
+                  // log(value.toString(), name: 'Dio');
                 }
               },
             ),
@@ -208,7 +208,7 @@ class ApiHandler {
               responseHeader: true,
               logPrint: (value) {
                 if (kDebugMode) {
-                  log(value.toString(), name: 'Dio');
+                  // log(value.toString(), name: 'Dio');
                 }
               },
             ),
@@ -284,11 +284,11 @@ class ApiHandler {
       final finalResponse = ApiResponse<T>.success(
         data: successResponse,
       );
-      log(finalResponse.toString(), name: 'DioResponse');
+      // log(finalResponse.toString(), name: 'DioResponse');
       return finalResponse;
     } on dio.DioException catch (e, stackTrace) {
-      log('Error: $e', name: 'DioError');
-      log('StackTrace: $stackTrace', name: 'DioError');
+      // log('Error: $e', name: 'DioError');
+      // log('StackTrace: $stackTrace', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(
           message: (e.response?.data != null && e.response?.data is Map)
@@ -300,8 +300,8 @@ class ApiHandler {
 
       return error;
     } catch (e, stackTrace) {
-      log('Error: $e', name: 'DioError');
-      log('Error stackTrace: $stackTrace', name: 'DioError');
+      // log('Error: $e', name: 'DioError');
+      // log('Error stackTrace: $stackTrace', name: 'DioError');
       // log('StackTrace: $s', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(message: 'Unknown error occurred: $e')..code = 500,
@@ -381,7 +381,7 @@ class ApiHandler {
       final finalResponse = ListApiResponse<T>.success(
         data: successResponse,
       );
-      log(finalResponse.toString(), name: 'DioResponse');
+      // log(finalResponse.toString(), name: 'DioResponse');
       return finalResponse;
     } on dio.DioException catch (e) {
       final error = ListApiResponse<T>.error(

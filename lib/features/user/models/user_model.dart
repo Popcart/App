@@ -26,7 +26,7 @@ class UserModel {
     required this.createdAt,
     required this.updatedAt,
     required this.v,
-    required this.businessProfile,
+    // required this.businessProfile,
   });
 
   factory UserModel.withId(String id) => UserModel(
@@ -43,7 +43,7 @@ class UserModel {
         createdAt: '',
         updatedAt: '',
         v: 0,
-        businessProfile: BusinessProfile.empty(),
+        // businessProfile: BusinessProfile.empty(),
       );
 
   factory UserModel.empty() => UserModel(
@@ -60,7 +60,7 @@ class UserModel {
         createdAt: '',
         updatedAt: '',
         v: 0,
-        businessProfile: BusinessProfile.empty(),
+        // businessProfile: BusinessProfile.empty(),
       );
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -92,12 +92,12 @@ class UserModel {
   final String updatedAt;
   @JsonKey(name: '__v', defaultValue: 0)
   final int v;
-  @JsonKey(name: 'businessProfile', defaultValue: BusinessProfile.empty)
-  final BusinessProfile businessProfile;
+  // @JsonKey(name: 'businessProfile', defaultValue: BusinessProfile.empty)
+  // final BusinessProfile businessProfile;
 
   @override
   String toString() {
-    return '''UserModel(id: $id, firstName: $firstName, lastName: $lastName, username: $username, phone: $phone, email: $email, userType: $userType, active: $active, phoneVerified: $phoneVerified, emailVerified: $emailVerified, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, businessProfile: $businessProfile)''';
+    return '''UserModel(id: $id, firstName: $firstName, lastName: $lastName, username: $username, phone: $phone, email: $email, userType: $userType, active: $active, phoneVerified: $phoneVerified, emailVerified: $emailVerified, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, )''';
   }
 }
 
