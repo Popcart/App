@@ -41,7 +41,7 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
     );
   }
 
-  Future<void> generateAgoraToken({
+  Future<String?> generateAgoraToken({
    required String channelName,
    required int agoraRole,
    required int uid,
@@ -51,17 +51,9 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
       agoraRole: agoraRole,
       uid: uid,
     );
-    response.when(
-      success: (data) {
-        emit(OpenLivestreamState.generateTokenSuccess(data?.data ?? ''));
-      },
-      error: (error) {
-        emit(
-          OpenLivestreamState.generateTokenError(
-            error.message ?? 'An error occurred',
-          ),
-        );
-      },
+    return response.when(
+      success: (data) => data?.data,
+      error: (error) => null,
     );
   }
 

@@ -101,6 +101,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/checkicon.svg
   SvgGenImage get checkicon => const SvgGenImage('assets/icons/checkicon.svg');
 
+  /// File path: assets/icons/condition.svg
+  SvgGenImage get condition => const SvgGenImage('assets/icons/condition.svg');
+
   /// File path: assets/icons/delete.svg
   SvgGenImage get delete => const SvgGenImage('assets/icons/delete.svg');
 
@@ -128,6 +131,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/expanded.svg
   SvgGenImage get expanded => const SvgGenImage('assets/icons/expanded.svg');
 
+  /// File path: assets/icons/filter_selected.svg
+  SvgGenImage get filterSelected =>
+      const SvgGenImage('assets/icons/filter_selected.svg');
+
   /// File path: assets/icons/find_friends.svg
   SvgGenImage get findFriends =>
       const SvgGenImage('assets/icons/find_friends.svg');
@@ -135,8 +142,22 @@ class $AssetsIconsGen {
   /// File path: assets/icons/gear.svg
   SvgGenImage get gear => const SvgGenImage('assets/icons/gear.svg');
 
+  /// File path: assets/icons/home_camera.svg
+  SvgGenImage get homeCamera =>
+      const SvgGenImage('assets/icons/home_camera.svg');
+
+  /// File path: assets/icons/home_menu.svg
+  SvgGenImage get homeMenu => const SvgGenImage('assets/icons/home_menu.svg');
+
+  /// File path: assets/icons/home_search.svg
+  SvgGenImage get homeSearch =>
+      const SvgGenImage('assets/icons/home_search.svg');
+
   /// File path: assets/icons/info.svg
   SvgGenImage get info => const SvgGenImage('assets/icons/info.svg');
+
+  /// File path: assets/icons/info_white.svg
+  SvgGenImage get infoWhite => const SvgGenImage('assets/icons/info_white.svg');
 
   /// File path: assets/icons/interests.svg
   SvgGenImage get interests => const SvgGenImage('assets/icons/interests.svg');
@@ -195,6 +216,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/phone.svg
   SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
 
+  /// File path: assets/icons/policy.svg
+  SvgGenImage get policy => const SvgGenImage('assets/icons/policy.svg');
+
   /// File path: assets/icons/profile_selected.svg
   SvgGenImage get profileSelected =>
       const SvgGenImage('assets/icons/profile_selected.svg');
@@ -206,6 +230,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/purchases.svg
   SvgGenImage get purchases => const SvgGenImage('assets/icons/purchases.svg');
 
+  /// File path: assets/icons/radar.svg
+  SvgGenImage get radar => const SvgGenImage('assets/icons/radar.svg');
+
   /// File path: assets/icons/rewards.svg
   SvgGenImage get rewards => const SvgGenImage('assets/icons/rewards.svg');
 
@@ -214,6 +241,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/send.svg
   SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
+
+  /// File path: assets/icons/star.svg
+  SvgGenImage get star => const SvgGenImage('assets/icons/star.svg');
 
   /// File path: assets/icons/storefront.svg
   SvgGenImage get storefront =>
@@ -256,6 +286,7 @@ class $AssetsIconsGen {
     cancel,
     chat,
     checkicon,
+    condition,
     delete,
     deleteAccount,
     deleteProduct,
@@ -264,9 +295,14 @@ class $AssetsIconsGen {
     errorIcon,
     expand,
     expanded,
+    filterSelected,
     findFriends,
     gear,
+    homeCamera,
+    homeMenu,
+    homeSearch,
     info,
+    infoWhite,
     interests,
     inventorySelected,
     inventoryUnselected,
@@ -283,12 +319,15 @@ class $AssetsIconsGen {
     paymentMethods,
     personalInformation,
     phone,
+    policy,
     profileSelected,
     profileUnselected,
     purchases,
+    radar,
     rewards,
     selected,
     send,
+    star,
     storefront,
     totalRevenue,
     totalSales,
@@ -325,6 +364,9 @@ class $AssetsImagesGen {
   AssetGenImage get dottedLines =>
       const AssetGenImage('assets/images/dotted_lines.png');
 
+  /// File path: assets/images/girl.png
+  AssetGenImage get girl => const AssetGenImage('assets/images/girl.png');
+
   /// File path: assets/images/seller.png
   AssetGenImage get seller => const AssetGenImage('assets/images/seller.png');
 
@@ -341,6 +383,7 @@ class $AssetsImagesGen {
     box,
     buyer,
     dottedLines,
+    girl,
     seller,
     splashImage,
   ];

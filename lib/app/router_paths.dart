@@ -26,6 +26,7 @@ class AuthorizedUserPath extends Path<AuthorizedUserPath> {
 
   SellerPath get seller => SellerPath();
   BuyerPath get buyer => BuyerPath();
+  Path get productPage => Path('/product-page');
 }
 
 class SellerPath extends Path<SellerPath> {
@@ -67,24 +68,26 @@ class SellerAccountPath extends Path<SellerAccountPath> {
 class BuyerPath extends Path<BuyerPath> {
   BuyerPath() : super('/buyer');
 
-  ExplorePath get explore => ExplorePath();
-  BuyerLiveStreamPath get buyerLive => BuyerLiveStreamPath();
-  BuyerAccountPath get buyerAccount => BuyerAccountPath();
+  ExplorePath get exploreTab => ExplorePath();
+  BuyerLiveStreamPath get liveTab => BuyerLiveStreamPath();
+  BuyerAccountPath get accountTab => BuyerAccountPath();
 }
 
 class BuyerAccountPath extends Path<BuyerAccountPath> {
-  BuyerAccountPath() : super('/buyer-account');
+  BuyerAccountPath() : super('/account-tab');
 
   Path get settings => Path('/buyer-settings');
 }
 
 class BuyerLiveStreamPath extends Path<BuyerLiveStreamPath> {
-  BuyerLiveStreamPath() : super('/buyer-live');
+  BuyerLiveStreamPath() : super('/live-tab');
 
-  Path get goLive => Path('/buyer-go-live');
+  // Path get goLive => Path('/buyer-go-live');
 }
 
 class ExplorePath extends Path<ExplorePath> {
-  ExplorePath() : super('/explore');
+  ExplorePath() : super('/explore-tab');
+
+  Path get search => Path('/search');
 }
 

@@ -12,6 +12,7 @@ import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
 import 'package:popcart/features/buyer/account/buyer_setings_screen.dart';
 import 'package:popcart/features/buyer/explore/explore_screen.dart';
+import 'package:popcart/features/buyer/explore/search_screen.dart';
 import 'package:popcart/features/buyer/live/buyer_live_screen_nav.dart';
 import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -22,6 +23,7 @@ import 'package:popcart/features/onboarding/screens/select_user_type_screen.dart
 import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
+import 'package:popcart/features/product/product_screen.dart';
 import 'package:popcart/features/seller/account/seller_profile_screen.dart';
 import 'package:popcart/features/seller/account/seller_setings_screen.dart';
 import 'package:popcart/features/seller/analytics/analytics_screen.dart';
@@ -132,6 +134,18 @@ final router = GoRouter(
         ),
       ],
     ),
+    GoRoute(
+      path: AppPath.authorizedUser.productPage.goRoute,
+      name: AppPath.authorizedUser.productPage.path,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: ProductScreen(
+          productId: state.extra! as String,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
   ],
 );
 
@@ -141,52 +155,68 @@ List<StatefulShellBranch> getBranches(UserType userType) {
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: AppPath.authorizedUser.buyer.buyerLive.goRoute,
-            builder: (context, state) => const BuyerLiveScreen(),
-            routes: [
-              GoRoute(
-                path: AppPath.authorizedUser.buyer.buyerLive.goLive.goRoute,
-                name: AppPath.authorizedUser.buyer.buyerLive.goLive.path,
-                pageBuilder: (context, state) => CustomTransitionPage(
-                  child: BuyerLivestreamScreen(
-                    liveStream: state.extra! as LiveStream,
-                    token: state.uri.queryParameters['token'] ?? '',
+              path: AppPath.authorizedUser.buyer.liveTab.goRoute,
+              builder: (context, state) => const BuyerLiveScreenNav(),
+          ),
+        ],
+      ),
+      StatefulShellBranch(
+        routes: [
+          GoRoute(
+              path: AppPath.authorizedUser.buyer.exploreTab.goRoute,
+              name: AppPath.authorizedUser.buyer.exploreTab.path,
+              pageBuilder: (context, state) => CustomTransitionPage(
+                    child: const ExploreScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
                   ),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
+              routes: [
+                GoRoute(
+                  path: AppPath.authorizedUser.buyer.exploreTab.search.goRoute,
+                  name: AppPath.authorizedUser.buyer.exploreTab.search.path,
+                  pageBuilder: (context, state) => CustomTransitionPage(
+                    child: const SearchScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+                GoRoute(
+                  path: AppPath.authorizedUser.productPage.path,
+                  builder: (context, state) => const ExploreScreen(),
+                  routes: [
+                    GoRoute(
+                      path: AppPath.authorizedUser.productPage.goRoute,
+                      name: AppPath.authorizedUser.productPage.path,
+                      pageBuilder: (context, state) => CustomTransitionPage(
+                        child: ProductScreen(
+                          productId: state.extra! as String,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                              opacity: animation, child: child);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
         ],
       ),
       StatefulShellBranch(
         routes: [
           GoRoute(
-            path: AppPath.authorizedUser.buyer.explore.goRoute,
-            name: AppPath.authorizedUser.buyer.explore.path,
-            pageBuilder: (context, state) => CustomTransitionPage(
-              child: const ExploreScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-            ),
-          ),
-        ],
-      ),
-      StatefulShellBranch(
-        routes: [
-          GoRoute(
-              path: AppPath.authorizedUser.buyer.buyerAccount.goRoute,
+              path: AppPath.authorizedUser.buyer.accountTab.goRoute,
               builder: (context, state) => const BuyerProfileScreen(),
               routes: [
                 GoRoute(
                   path: AppPath
-                      .authorizedUser.buyer.buyerAccount.settings.goRoute,
-                  name: AppPath.authorizedUser.buyer.buyerAccount.settings.path,
+                      .authorizedUser.buyer.accountTab.settings.goRoute,
+                  name: AppPath.authorizedUser.buyer.accountTab.settings.path,
                   pageBuilder: (context, state) => CustomTransitionPage(
                     child: const BuyerSetingsScreen(),
                     transitionsBuilder:
@@ -439,7 +469,7 @@ class MainShell extends StatelessWidget {
     final shellRouter = GoRouter(
       initialLocation: userType == UserType.seller
           ? AppPath.authorizedUser.seller.analytics.path
-          : AppPath.authorizedUser.buyer.explore.path,
+          : AppPath.authorizedUser.buyer.exploreTab.path,
       routes: [
         StatefulShellRoute.indexedStack(
           builder: (context, state, navShell) =>

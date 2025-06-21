@@ -131,7 +131,7 @@ class LiveStream {
         user: UserModel.empty(),
         title: '',
         products: [],
-        startTime: null,
+        startTime: DateTime.now(),
         scheduled: false,
         active: true,
         createdAt: DateTime.now(),
@@ -151,7 +151,7 @@ class LiveStream {
   @JsonKey(name: 'products', defaultValue: [])
   final List<String> products;
   @JsonKey(name: 'startTime', defaultValue: null)
-  final String? startTime;
+  final DateTime? startTime;
   @JsonKey(name: 'scheduled', defaultValue: false)
   final bool scheduled;
   @JsonKey(name: 'active', defaultValue: true)

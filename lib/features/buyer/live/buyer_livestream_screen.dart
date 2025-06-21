@@ -210,7 +210,8 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
                 scrollToBottom();
             }
           },
-          linkState: (event) {});
+          linkState: (event) {
+          });
       await loginToSignal();
     } catch (e) {}
   }
@@ -559,7 +560,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
                 visible: videoDisabled != null && videoDisabled == true,
                 child: const Text('Video is paused')),
           ),
-          ...floatingReactions.map((reaction) => reaction.buildWidget()),
+          // ...floatingReactions.map((reaction) => reaction.buildWidget()),
         ],
       ),
     );
@@ -820,7 +821,7 @@ class SingleProductWidget extends HookWidget {
   Widget build(BuildContext context) {
     final product = useState<Product>(Product.empty());
     final fetchProduct = useCallback(() async {
-      final response = await locator<SellersRepo>().getProduct(productId: id);
+      final response = await locator<SellersRepo>().getProductDetails(productId: id);
       response.when(
         success: (data) {
           product.value = data?.data ?? Product.empty();

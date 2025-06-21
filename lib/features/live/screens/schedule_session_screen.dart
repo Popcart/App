@@ -96,19 +96,6 @@ class ScheduleSessionScreen extends HookWidget {
             error: (message) {
               context.showError(message);
             },
-            generateTokenSuccess: (token) {
-              // context.pushReplacementNamed(
-              //   AppPath.authorizedUser.live.sellerLivestream.path,
-              //   extra: true,
-              //   queryParameters: {
-              //     'token': token,
-              //     'channelName': generatedLiveStream.value?.id,
-              //   },
-              // );
-            },
-            generateTokenError: (message) {
-              context.showError(message);
-            },
           );
         },
         child: SafeArea(
