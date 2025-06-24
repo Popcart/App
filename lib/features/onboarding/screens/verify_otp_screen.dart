@@ -10,6 +10,7 @@ import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:timer_count_down/timer_count_down.dart';
 
 class VerifyOtpScreen extends StatefulHookWidget {
@@ -83,12 +84,25 @@ class _VerifyPhoneNumberScreenState extends State<VerifyOtpScreen>
   void _onProceed() {
     final onboardingCubit = context.read<OnboardingCubit>();
     if (onboardingCubit.isLoggingIn) {
-      context.push(AppPath.authorizedUser.path);
+      if (onboardingCubit.userType == UserType.buyer) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          buyerHome,
+              (route) => false,
+        );
+      } else {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          sellerHome,
+              (route) => false,
+        );
+      }
+      return;
     } else {
       if (onboardingCubit.userType == UserType.buyer) {
-        context.pushNamed(AppPath.auth.interestScreen.path);
+        Navigator.pushNamed(context, interestScreen);
       } else {
-        context.pushNamed(AppPath.auth.businessDetails.path);
+        Navigator.pushNamed(context, businessDetails);
       }
       return;
     }

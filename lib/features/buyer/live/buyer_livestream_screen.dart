@@ -40,8 +40,8 @@ class BuyerLivestreamScreen extends StatefulWidget {
   State<BuyerLivestreamScreen> createState() => _BuyerLivestreamScreenState();
 }
 
-class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
-    TickerProviderStateMixin{
+class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen>
+    with TickerProviderStateMixin {
   late RtcEngine _engine;
   int? _remoteUid;
   bool? videoDisabled;
@@ -79,7 +79,6 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
     });
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -94,8 +93,11 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
 
   Future<void> terminateSession() async {
     final username = locator<SharedPrefs>().username;
-    await rtmClient.publish(widget.liveStream.id, '$username left',
-        customType: kLeaveNotification,);
+    await rtmClient.publish(
+      widget.liveStream.id,
+      '$username left',
+      customType: kLeaveNotification,
+    );
     _engine
       ..leaveChannel()
       ..release();
@@ -191,7 +193,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
           message: (event) {
             final messageText = utf8.decode(event.message ?? []);
             final type = event.customType;
-            switch(type){
+            switch (type) {
               case kViewerCountUpdate:
                 userJoined.value = int.tryParse(messageText) ?? 0;
               case kJoinNotification:
@@ -210,8 +212,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
                 scrollToBottom();
             }
           },
-          linkState: (event) {
-          });
+          linkState: (event) {});
       await loginToSignal();
     } catch (e) {}
   }
@@ -306,7 +307,9 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
         ),
       );
     } else {
-      return const CupertinoActivityIndicator();
+      return widget.liveStream.thumbnail != null
+          ? Image.network(widget.liveStream.thumbnail!, fit: BoxFit.contain,)
+          : const CircularProgressIndicator();
     }
   }
 
@@ -522,7 +525,9 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
                               ),
                             ),
                           ),
-                          const SizedBox(height: 10,),
+                          const SizedBox(
+                            height: 10,
+                          ),
                           Row(
                             children: [
                               Flexible(
@@ -538,9 +543,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
                                     color: Colors.transparent,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white,
-                                      width: 0.5
-                                    ),
+                                        color: Colors.white, width: 0.5),
                                   ),
                                   child: AppAssets.icons.storefront.svg(),
                                 ),
@@ -582,14 +585,11 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
           borderRadius: BorderRadius.all(
             Radius.circular(100),
           ),
-          borderSide: BorderSide(
-            color: Colors.white,
-              width: 0.5
-          ),
+          borderSide: BorderSide(color: Colors.white, width: 0.5),
         ),
         suffixIcon: IconButton(
           icon: AppAssets.icons.send.svg(),
-          onPressed: (){
+          onPressed: () {
             if (_controller.text.isEmpty) return;
             _send();
           },
@@ -598,10 +598,7 @@ class _BuyerLivestreamScreenState extends State<BuyerLivestreamScreen> with
           borderRadius: BorderRadius.all(
             Radius.circular(100),
           ),
-          borderSide: BorderSide(
-            color: Colors.white,
-            width: 0.5
-          ),
+          borderSide: BorderSide(color: Colors.white, width: 0.5),
         ),
       ),
     );
@@ -821,7 +818,8 @@ class SingleProductWidget extends HookWidget {
   Widget build(BuildContext context) {
     final product = useState<Product>(Product.empty());
     final fetchProduct = useCallback(() async {
-      final response = await locator<SellersRepo>().getProductDetails(productId: id);
+      final response =
+          await locator<SellersRepo>().getProductDetails(productId: id);
       response.when(
         success: (data) {
           product.value = data?.data ?? Product.empty();

@@ -4,6 +4,7 @@ import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class BuyerProfileScreen extends StatelessWidget {
   const BuyerProfileScreen({super.key});
@@ -16,7 +17,7 @@ class BuyerProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              context.pushNamed(AppPath.authorizedUser.buyer.accountTab.settings.path);
+              Navigator.pushNamed(context, settingsScreen);
             },
             icon: AppAssets.icons.gear.themedIcon(context),
           ),

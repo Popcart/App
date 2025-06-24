@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/dropdown_widget.dart';
 import 'package:popcart/core/utils.dart';
@@ -18,7 +16,9 @@ import 'package:popcart/features/seller/cubits/product/product_cubit.dart';
 import 'package:popcart/features/seller/inventory/add_product_variant.dart';
 import 'package:popcart/features/seller/inventory/product_uploaded.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
+import 'package:popcart/features/seller/seller_home.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 import 'package:reorderables/reorderables.dart';
 
@@ -95,25 +95,27 @@ class _AddProductScreenState extends State<AddProductScreen> {
             context.showError(message);
           },
           saveProduct: () async {
-              await showModalBottomSheet<void>(
-                context: context,
-                builder: (_) => Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16),
-                      topRight: Radius.circular(16),
-                    ),
-                  ),
-                  child: const ProductUploaded(
-                    title: 'Product Added Successfully!',
-                    description:
-                        'Your new item is now live in your inventory. Ready to manage, edit, or start selling!',
+            await showModalBottomSheet<void>(
+              context: context,
+              builder: (_) => Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   ),
                 ),
-              );
-            await context.push(AppPath.authorizedUser.seller.inventory.path);
+                child: const ProductUploaded(
+                  title: 'Product Added Successfully!',
+                  description:
+                      'Your new item is now live in your inventory. Ready to manage, edit, or start selling!',
+                ),
+              ),
+            );
+            sellerCurrentIndex.value = 2;
+            Navigator.of(context)
+                .popUntil((route) => route.settings.name == sellerHome);
           },
           saveProductFailure: (message) {
             context.showError(message);

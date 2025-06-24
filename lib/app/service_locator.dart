@@ -5,6 +5,7 @@ import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
 import 'package:popcart/core/repository/order_repo.dart';
+import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/env/env.dart';
@@ -12,7 +13,7 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory, seller, livestreams, orders }
+enum ApiService { auth, user, inventory, seller, livestreams, orders, products }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -45,6 +46,11 @@ Future<void> setupLocator({
       () =>
           ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/orders/'),
       instanceName: ApiService.orders.name,
+    )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/products/'),
+      instanceName: ApiService.products.name,
     )
 
 
@@ -89,16 +95,14 @@ Future<void> setupLocator({
           instanceName: ApiService.orders.name,
         ),
       ),
-    );
-
-  // ..registerLazySingleton<BiometricsHelper>(BiometricsHelper.new)
-  // ..registerLazySingleton<AuthService>(
-  //   () => AuthImplementation(
-  //     apiHandler: locator.get<ApiHandler>(
-  //       instanceName: ApiService.auth.name,
-  //     ),
-  //   ),
-  // )
+    )
+  ..registerLazySingleton<ProductsRepo>(
+    () => ProductsRepoImpl(
+      locator.get<ApiHandler>(
+        instanceName: ApiService.products.name,
+      ),
+    ),
+  );
   //  ..registerLazySingleton<PeerToPeerRepository>(
   //   () => PeerToPeerRepositoryImpl(
   //     locator.get<ApiHandler>(

@@ -9,6 +9,7 @@ import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -196,9 +197,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     title: 'Top Products',
                     showSeeMore: topProducts.isNotEmpty,
                     onSeeMore: () {
-                      context.pushNamed(
-                        AppPath.authorizedUser.seller.analytics.topProduct.path,
-                      );
+                      Navigator.pushNamed(context, topProductScreen);
                     },
                     children: [
                       ...topProducts
@@ -213,10 +212,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                     title: 'Inventory Alerts',
                     showSeeMore: inventoryProducts.isNotEmpty,
                     onSeeMore: () {
-                      context.pushNamed(
-                        AppPath.authorizedUser.seller.analytics.inventoryProduct
-                            .path,
-                      );
+                      Navigator.pushNamed(context, inventoryScreen);
                     },
                     children: [
                       ...inventoryProducts

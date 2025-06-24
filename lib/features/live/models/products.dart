@@ -27,16 +27,18 @@ class Product {
 
   factory Product.empty() => Product(
         id: '',
-        name: '',
+        name: 'Adidas Sneakers',
         seller: UserModel.empty(),
         category: ProductCategory.init(),
-        price: 0,
-        description: '',
+        price: 200000,
+        description: 'Great buy for young flashy looks',
         brand: '',
-        stockUnit: 0,
-        images: [],
+        stockUnit: 10,
+        images: [
+          'http://res.cloudinary.com/dvga8tsyy/image/upload/v1750691047/image/i29zcopg0dwguk8wmh1t.jpg'
+        ],
         productVariants: [],
-        available: false,
+        available: true,
         published: false,
         createdAt: '',
         updatedAt: '',
@@ -112,33 +114,36 @@ class SellerConverter implements JsonConverter<UserModel, dynamic> {
 
 @JsonSerializable(createToJson: false)
 class LiveStream {
-  LiveStream({
-    required this.id,
-    required this.user,
-    required this.title,
-    required this.products,
-    required this.startTime,
-    required this.scheduled,
-    required this.active,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
-    required this.agoraId,
-  });
+  LiveStream(
+      {required this.id,
+      required this.user,
+      required this.title,
+      required this.products,
+      required this.startTime,
+      required this.scheduled,
+      required this.active,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.v,
+      required this.agoraId,
+        this.thumbnail,
+      this.isVideo = false,
+      this.videoLink});
 
   factory LiveStream.empty() => LiveStream(
-        id: '',
-        user: UserModel.empty(),
-        title: '',
-        products: [],
-        startTime: DateTime.now(),
-        scheduled: false,
-        active: true,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        agoraId: '',
-        v: 0,
-      );
+      id: '',
+      user: UserModel.empty(),
+      title: '',
+      products: [],
+      startTime: DateTime.now(),
+      scheduled: false,
+      active: true,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      agoraId: '',
+      v: 0,
+      isVideo: true,
+      videoLink: '',);
 
   factory LiveStream.fromJson(Map<String, dynamic> json) =>
       _$LiveStreamFromJson(json);
@@ -164,69 +169,49 @@ class LiveStream {
   final int v;
   @JsonKey(name: 'agoraId', defaultValue: '')
   final String agoraId;
+  @JsonKey(name: 'isVideo', defaultValue: false)
+  final bool isVideo;
+  @JsonKey(name: 'videoLink', defaultValue: '')
+  final String? videoLink;
+  @JsonKey(name: 'thumbnail', defaultValue: null)
+  final String? thumbnail;
 
   @override
   String toString() {
     return '''LiveStream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
   }
-}
 
-@JsonSerializable(createToJson: false)
-class Stream {
-  Stream({
-    required this.id,
-    required this.user,
-    required this.title,
-    required this.products,
-    required this.startTime,
-    required this.scheduled,
-    required this.active,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.v,
-    required this.agoraId,
-  });
-
-  factory Stream.empty() => Stream(
-        id: '',
-        user: '',
-        title: '',
-        products: [],
-        startTime: null,
-        scheduled: false,
-        active: true,
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        agoraId: '',
-        v: 0,
-      );
-
-  factory Stream.fromJson(Map<String, dynamic> json) => _$StreamFromJson(json);
-  @JsonKey(name: '_id', defaultValue: '')
-  final String id;
-  @JsonKey(name: 'user', defaultValue: '')
-  final String user;
-  @JsonKey(name: 'title', defaultValue: '')
-  final String title;
-  @JsonKey(name: 'products', defaultValue: [])
-  final List<String> products;
-  @JsonKey(name: 'startTime', defaultValue: null)
-  final String? startTime;
-  @JsonKey(name: 'scheduled', defaultValue: false)
-  final bool scheduled;
-  @JsonKey(name: 'active', defaultValue: true)
-  final bool active;
-  @JsonKey(name: 'createdAt', defaultValue: DateTime.now)
-  final DateTime createdAt;
-  @JsonKey(name: 'updatedAt', defaultValue: DateTime.now)
-  final DateTime updatedAt;
-  @JsonKey(name: '__v', defaultValue: 0)
-  final int v;
-  @JsonKey(name: 'agoraId', defaultValue: '')
-  final String agoraId;
-
-  @override
-  String toString() {
-    return '''Stream(id: $id, user: $user, title: $title, products: $products, startTime: $startTime, scheduled: $scheduled, active: $active, createdAt: $createdAt, updatedAt: $updatedAt, v: $v, agoraId: $agoraId)''';
+  LiveStream copyWith({
+    String? id,
+    UserModel? user,
+    String? title,
+    List<Product>? products,
+    DateTime? startTime,
+    bool? scheduled,
+    bool? active,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? agoraId,
+    int? v,
+    bool? isVideo,
+    String? videoLink,
+    String? thumbnail,
+  }) {
+    return LiveStream(
+      id: id ?? this.id,
+      user: user ?? this.user,
+      title: title ?? this.title,
+      products: [],
+      startTime: startTime ?? this.startTime,
+      scheduled: scheduled ?? this.scheduled,
+      active: active ?? this.active,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      agoraId: agoraId ?? this.agoraId,
+      v: v ?? this.v,
+      isVideo: isVideo ?? this.isVideo,
+      videoLink: videoLink ?? this.videoLink,
+      thumbnail: thumbnail ?? this.thumbnail,
+    );
   }
 }

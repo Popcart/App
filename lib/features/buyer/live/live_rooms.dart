@@ -23,7 +23,7 @@ class _LiveRoomsState extends State<LiveRooms> {
     final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
     return Scaffold(
       body: profileCubit.state.maybeWhen(
-        orElse: CupertinoActivityIndicator.new,
+        orElse: () => const Center(child: CircularProgressIndicator()),
         loaded: (user) => RefreshIndicator.adaptive(
           onRefresh: () async {
             unawaited(activeLivestreamsCubit.getActiveLivestreams());

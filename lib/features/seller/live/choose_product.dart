@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/colors.dart';
@@ -13,9 +14,10 @@ import 'package:popcart/utils/text_styles.dart';
 
 class ChooseProduct extends StatefulWidget {
   const ChooseProduct(
-      {super.key, required this.roomName, this.scheduledDate});
+      {super.key, required this.roomName, required this.thumbnail, this.scheduledDate});
 
   final String roomName;
+  final XFile thumbnail;
   final String? scheduledDate;
 
   @override
@@ -69,7 +71,7 @@ class _ChooseProductState extends State<ChooseProduct> {
           children: [
             IconButton(
               onPressed: () {
-                context.pop();
+                Navigator.pop(context);
               },
               icon: const Icon(
                 Icons.arrow_back_ios_new,
@@ -129,7 +131,7 @@ class _ChooseProductState extends State<ChooseProduct> {
                       return SetMinimumPrice(
                         products: _products,
                         scheduledDate: widget.scheduledDate,
-                        roomName: widget.roomName,
+                        roomName: widget.roomName, thumbnail: widget.thumbnail,
                       );
                     });
               },

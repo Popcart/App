@@ -12,6 +12,7 @@ class SharedPrefs {
   String? get accessToken => _sharedPrefs.getString('accessToken');
   String? get refreshToken => _sharedPrefs.getString('refreshToken');
   bool get loggedIn => _sharedPrefs.getBool('loggedIn') ?? false;
+  bool get isBuyer => _sharedPrefs.getBool('isBuyer') ?? false;
   String get userUid => _sharedPrefs.getString('uid') ?? '';
   String get username => _sharedPrefs.getString('username') ?? '';
 
@@ -37,6 +38,10 @@ class SharedPrefs {
 
   set username(String value) {
     _sharedPrefs.setString('username', value);
+  }
+
+  set isBuyer(bool value) {
+    _sharedPrefs.setBool('isBuyer', value);
   }
 
 }

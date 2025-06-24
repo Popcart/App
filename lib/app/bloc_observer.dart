@@ -24,7 +24,7 @@ class AppBlocObserver extends BlocObserver {
     BlocBase<dynamic> bloc,
   ) {
     super.onCreate(bloc);
-    // log('${bloc.runtimeType} Created', name: 'onCreate<${bloc.runtimeType}>');
+    log('${bloc.runtimeType} Created', name: 'onCreate<${bloc.runtimeType}>');
   }
 
   @override
@@ -33,7 +33,7 @@ class AppBlocObserver extends BlocObserver {
     Object? event,
   ) {
     super.onEvent(bloc, event);
-    // log('${bloc.runtimeType}, $event', name: 'onEvent<${bloc.runtimeType}>');
+    log('${bloc.runtimeType}, $event', name: 'onEvent<${bloc.runtimeType}>');
   }
 
   @override
@@ -57,13 +57,13 @@ class AppBlocObserver extends BlocObserver {
     Transition<dynamic, dynamic> transition,
   ) {
     super.onTransition(bloc, transition);
-    // log(
-    //   sprintf('%s => %s', <String>[
-    //     transition.currentState.toString(),
-    //     transition.nextState.toString(),
-    //   ]),
-    //   name: 'onTransition<${bloc.runtimeType}>',
-    // );
+    log(
+      sprintf('%s => %s', <String>[
+        transition.currentState.toString(),
+        transition.nextState.toString(),
+      ]),
+      name: 'onTransition<${bloc.runtimeType}>',
+    );
   }
 
   @override
@@ -73,10 +73,10 @@ class AppBlocObserver extends BlocObserver {
     StackTrace stackTrace,
   ) {
     super.onError(bloc, error, stackTrace);
-    // log(
-    //   '${bloc.runtimeType}, $error, $stackTrace',
-    //   name: 'onError<${bloc.runtimeType}>',
-    // );
+    log(
+      '${bloc.runtimeType}, $error, $stackTrace',
+      name: 'onError<${bloc.runtimeType}>',
+    );
   }
 }
 
@@ -157,7 +157,7 @@ Future<void> bootstrap(
       );
     };
     if (kDebugMode) {
-      // Bloc.observer = AppBlocObserver();
+      Bloc.observer = AppBlocObserver();
     }
     await notificationPlugin.initialize(initializationSettings);
     await FirebaseCrashlytics.instance

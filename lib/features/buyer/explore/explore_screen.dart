@@ -5,12 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/colors.dart';
-import 'package:popcart/core/repository/inventory_repo.dart';
+import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/features/buyer/explore/watch_screen.dart';
@@ -25,6 +24,7 @@ import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_c
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class ExploreScreen extends StatefulHookWidget {
   const ExploreScreen({super.key});
@@ -52,8 +52,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
   Future<void> fetchTopProducts() async {
     try {
       final results = await Future.wait([
-        locator<InventoryRepo>().getTopProducts(page: 1, limit: 20),
-        locator<InventoryRepo>().getAllProducts(page: 1, limit: 20),
+        locator<ProductsRepo>().getProducts(page: 1, limit: 20),
+        locator<ProductsRepo>().getProducts(page: 1, limit: 20),
         locator<SellersRepo>().getSellers(page: 1, limit: 20),
       ]);
 
@@ -92,25 +92,61 @@ class _ExploreScreenState extends State<ExploreScreen> {
           // Handle other cases if necessary
         },
       );
-      setState(() {});
+      if (mounted) setState(() {});
     } catch (e, stackTrace) {
       print(stackTrace);
     }
   }
 
-  File? _capturedImage;
-
-  Future<void> _openCamera() async {
+  Future<void> _openImagePicker(BuildContext context) async {
     final picker = ImagePicker();
-    final image = await picker.pickImage(source: ImageSource.camera);
 
-    if (image != null) {
-      _capturedImage = File(image.path);
-      await _useImage();
-    }
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (_) => Container(
+        height: MediaQuery.of(context).size.height * 0.2,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: AppAssets.icons.homeCamera.svg(),
+              title: const Text('Take Photo'),
+              onTap: () async {
+                Navigator.pop(context);
+                final image =
+                    await picker.pickImage(source: ImageSource.camera);
+                if (image != null) {
+                  await _useImage(XFile(image.path));
+                }
+              },
+            ),
+            ListTile(
+              leading: AppAssets.icons.addIcon.svg(),
+              title: const Text('Choose from Gallery'),
+              onTap: () async {
+                Navigator.pop(context);
+                final image =
+                    await picker.pickImage(source: ImageSource.gallery);
+                if (image != null) {
+                  await _useImage(XFile(image.path));
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-  Future<void> _useImage() async {
+  Future<void> _useImage(XFile image) async {
     await showModalBottomSheet<void>(
       context: context,
       builder: (_) => Container(
@@ -122,141 +158,147 @@ class _ExploreScreenState extends State<ExploreScreen> {
             topRight: Radius.circular(16),
           ),
         ),
-        child: const ProductSearch(),
+        child: ProductSearch(file: image,),
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
     final scheduledLiveStreams = context.watch<ScheduledLivestreamsCubit>();
     final interestListCubit = context.watch<InterestCubit>();
-    return CupertinoPageScaffold(
-        backgroundColor: Colors.transparent,
-        navigationBar: CupertinoNavigationBar(
-            enableBackgroundFilterBlur: false,
-            backgroundColor: Colors.transparent,
-            leading: ValueListenableBuilder<int>(
-              valueListenable: selectedTab,
-              builder: (context, value, _) {
-                return CustomSlidingSegmentedControl<int>(
-                  initialValue: value,
-                  innerPadding: const EdgeInsets.all(4),
-                  children: {
-                    1: Text(
-                      'Explore',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: value == 1
-                            ? AppColors.black
-                            : AppColors.tabSelectedContainerColor,
-                      ),
-                    ),
-                    2: Text(
-                      'Watch',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: value == 2
-                            ? AppColors.black
-                            : AppColors.tabSelectedContainerColor,
-                      ),
-                    ),
-                  },
-                  decoration: BoxDecoration(
-                    color: AppColors.tabContainerColor,
-                    borderRadius: BorderRadius.circular(100),
+    return ValueListenableBuilder<int>(
+        valueListenable: selectedTab,
+        builder: (context, value, _) {
+          return CupertinoPageScaffold(
+              backgroundColor: Colors.transparent,
+              navigationBar: CupertinoNavigationBar(
+                  enableBackgroundFilterBlur: value == 1,
+                  backgroundColor: Colors.transparent,
+                  leading: ValueListenableBuilder<int>(
+                    valueListenable: selectedTab,
+                    builder: (context, value, _) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          splashColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          hoverColor: Colors.transparent,
+                        ),
+                        child: CustomSlidingSegmentedControl<int>(
+                          initialValue: value,
+                          innerPadding: const EdgeInsets.all(4),
+                          children: {
+                            1: Text(
+                              'Explore',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: value == 1
+                                    ? AppColors.black
+                                    : AppColors.tabSelectedContainerColor,
+                              ),
+                            ),
+                            2: Text(
+                              'Watch',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: value == 2
+                                    ? AppColors.black
+                                    : AppColors.tabSelectedContainerColor,
+                              ),
+                            ),
+                          },
+                          decoration: BoxDecoration(
+                            color: AppColors.tabContainerColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          thumbDecoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInToLinear,
+                          onValueChanged: (v) async {
+                            await Future<void>.delayed(
+                                const Duration(milliseconds: 300));
+                            selectedTab.value = v;
+                          },
+                        ),
+                      );
+                    },
                   ),
-                  thumbDecoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInToLinear,
-                  onValueChanged: (v) async {
-                    await Future<void>.delayed(
-                        const Duration(milliseconds: 300));
-                    selectedTab.value = v;
-                  },
-                );
-              },
-            ),
-            trailing: ValueListenableBuilder<int>(
-              valueListenable: selectedTab,
-              builder: (context, value, _) {
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Visibility(
-                      visible: value == 1,
-                      child: GestureDetector(
-                          onTap: _openCamera,
-                          child: AppAssets.icons.homeCamera.svg()),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    ValueListenableBuilder<List<ProductCategory>>(
-                        valueListenable: selectedInterests,
-                        builder: (context, selected, _) {
-                          return GestureDetector(
-                              onTap: () async {
-                                final selected = await showModalBottomSheet<
-                                    List<ProductCategory>>(
-                                  context: context,
-                                  builder: (_) => Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.5,
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .scaffoldBackgroundColor,
-                                      borderRadius: const BorderRadius.only(
-                                        topLeft: Radius.circular(16),
-                                        topRight: Radius.circular(16),
-                                      ),
-                                    ),
-                                    child: const InterestFilter(),
-                                  ),
-                                );
-
-                                if (selected != null) {
-                                  selectedInterests.value = selected;
-                                }
+                  trailing: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (value == 1)
+                          GestureDetector(
+                              onTap: () {
+                                _openImagePicker(context);
                               },
-                              child: selected.isEmpty
-                                  ? AppAssets.icons.homeMenu.svg()
-                                  : AppAssets.icons.filterSelected.svg());
-                        }),
-                    const SizedBox(
-                      width: 10,
+                              child: AppAssets.icons.homeCamera.svg()),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        ValueListenableBuilder<List<ProductCategory>>(
+                            valueListenable: selectedInterests,
+                            builder: (context, selected, _) {
+                              return GestureDetector(
+                                  onTap: () async {
+                                    final selected = await showModalBottomSheet<
+                                        List<ProductCategory>>(
+                                      context: context,
+                                      builder: (_) => Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.5,
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .scaffoldBackgroundColor,
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: const InterestFilter(),
+                                      ),
+                                    );
+
+                                    if (selected != null) {
+                                      selectedInterests.value = selected;
+                                    }
+                                  },
+                                  child: selected.isEmpty
+                                      ? AppAssets.icons.homeMenu.svg()
+                                      : AppAssets.icons.filterSelected.svg());
+                            }),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(Get.context!, searchScreen);
+                            },
+                            child: AppAssets.icons.homeSearch.svg()),
+                      ],
                     ),
-                    GestureDetector(
-                        onTap: () {
-                          context.pushNamed(
-                            AppPath.authorizedUser.buyer.exploreTab.search.path,
-                          );
-                        },
-                        child: AppAssets.icons.homeSearch.svg()),
-                  ],
-                );
-              },
-            )),
-        child: ValueListenableBuilder<int>(
-            valueListenable: selectedTab,
-            builder: (context, value, _) {
-              return value == 1
+                  )),
+              child: value == 1
                   ? SafeArea(
+                      top: false,
                       child: SingleChildScrollView(
                         child: Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ValueListenableBuilder<
-                                  List<ProductCategory>>(
+                              const SizedBox(
+                                height: 100,
+                              ),
+                              ValueListenableBuilder<List<ProductCategory>>(
                                 valueListenable: selectedInterests,
                                 builder: (context, selected, _) {
                                   return Visibility(
@@ -269,7 +311,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                         itemCount:
                                             interestListCubit.state.maybeWhen(
                                           orElse: () => 0,
-                                          loaded: (interests) => interests.length,
+                                          loaded: (interests) =>
+                                              interests.length,
                                         ),
                                         itemBuilder: (context, index) {
                                           final interest =
@@ -320,7 +363,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                     MediaQuery.of(context).size.height * 0.4,
                                 width: double.infinity,
                                 child: Container(
-                                  padding: const EdgeInsets.all(24),
                                   decoration: BoxDecoration(
                                     color: const Color(0xff24262B),
                                     borderRadius: BorderRadius.circular(8),
@@ -331,30 +373,58 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                       fit: BoxFit.cover,
                                     ),
                                   ),
-                                  child: const Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Spacer(),
-                                      Text(
-                                        'JOGGERS',
-                                        style: TextStyle(
-                                          fontSize: 28,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w700,
+                                  child: Stack(children: [
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      left: 0,
+                                      child: Container(
+                                        height: 200,
+                                        decoration: const BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.transparent,
+                                              Colors.black,
+                                            ],
+                                            stops: [0.0, 1.0],
+                                          ),
+                                          borderRadius: BorderRadius.only(
+                                            bottomLeft: Radius.circular(8),
+                                            bottomRight: Radius.circular(8),
+                                          )
                                         ),
                                       ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w400,
-                                        ),
+                                    ),
+                                    const Padding(
+                                      padding: EdgeInsets.all(24),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Spacer(),
+                                          Text(
+                                            'JOGGERS',
+                                            style: TextStyle(
+                                              fontSize: 28,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ]),
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -529,7 +599,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                     maxCrossAxisExtent: 200,
                                     mainAxisSpacing: 16,
                                     crossAxisSpacing: 16,
-                                    childAspectRatio: 0.75,
+                                    childAspectRatio: 1,
                                   ),
                                   itemCount: inventoryProducts.length,
                                   itemBuilder: (_, index) => HandPickedProduct(
@@ -542,8 +612,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                       ),
                     )
-                  : const WatchScreen();
-            }));
+                  : const WatchScreen());
+        });
   }
 }
 
@@ -558,30 +628,35 @@ class LiveStreamExplore extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () async {
-        final token = await openLivestreamCubit.generateAgoraToken(
-          channelName: liveStream.id,
-          agoraRole: 2,
-          uid: 0,
-        );
+        try {
+          final token = await openLivestreamCubit.generateAgoraToken(
+            channelName: liveStream.id,
+            agoraRole: 2,
+            uid: 0,
+          );
 
-        if (token == null) {
-          if (context.mounted) {
-            await context.showError('Failed to generate token');
+          if (token == null) {
+            if (context.mounted) {
+              await context.showError('Failed to generate token');
+            }
+            return;
           }
-          return;
-        }
 
-        if (!context.mounted) return;
+          if (!context.mounted) return;
 
-        await Navigator.push<BuyerLivestreamScreen>(
-          context,
-          MaterialPageRoute<BuyerLivestreamScreen>(
-            builder: (_) => BuyerLivestreamScreen(
-              liveStream: liveStream,
-              token: token,
+          await Navigator.push<BuyerLivestreamScreen>(
+            context,
+            MaterialPageRoute<BuyerLivestreamScreen>(
+              builder: (_) =>
+                  BuyerLivestreamScreen(
+                    liveStream: liveStream,
+                    token: token,
+                  ),
             ),
-          ),
-        );
+          );
+        }catch(e){
+          await context.showError('Cannot join live at the moment');
+        }
       },
       child: Container(
           width: 270,
@@ -589,13 +664,23 @@ class LiveStreamExplore extends StatelessWidget {
           margin: const EdgeInsets.only(right: 20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
+            image: liveStream.thumbnail != null
+                ? DecorationImage(
+              image: NetworkImage(liveStream.thumbnail!),
+              fit: BoxFit.cover,
+            )
+                : null,
           ),
           child: Stack(
             children: [
-              userThumbnail(liveStream.user.username),
+              if (liveStream.thumbnail == null)
+                userThumbnail(liveStream.user.username)
+              else
+                const SizedBox.shrink(),
               Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
@@ -721,10 +806,10 @@ class _StoresCardState extends State<StoresCard> {
       ),
       child: Column(
         children: [
-          NetworkImageWithLoader(widget.userModel.username),
+          NetworkImageWithLoader(''),
           const SizedBox(height: 8),
           Text(
-            widget.userModel.username,
+            widget.userModel.businessProfile.businessName,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               fontSize: 14,
@@ -768,9 +853,10 @@ class _HandPickedProductState extends State<HandPickedProduct> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.pushNamed(
-          AppPath.authorizedUser.productPage.path,
-          extra: widget.product.id,
+        Navigator.pushNamed(
+          context,
+          productScreen,
+          arguments: widget.product.id,
         );
       },
       child: Container(
@@ -831,9 +917,10 @@ class _TopProductsState extends State<TopProducts> {
       width: 100,
       child: GestureDetector(
         onTap: () {
-          context.pushNamed(
-            AppPath.authorizedUser.productPage.path,
-            extra: widget.product.id,
+          Navigator.pushNamed(
+            context,
+            productScreen,
+            arguments: widget.product.id,
           );
         },
         child: Column(
@@ -847,13 +934,17 @@ class _TopProductsState extends State<TopProducts> {
               ),
             const SizedBox(height: 8),
             Flexible(
-              child: Text(
-                widget.product.name,
-                overflow: TextOverflow.clip,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Text(
+                  widget.product.name,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),

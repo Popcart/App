@@ -5,14 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/app.module.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class BusinessDetailsScreen extends StatefulWidget {
   const BusinessDetailsScreen({super.key});
@@ -208,9 +207,17 @@ class _BusinessDetailsScreenState extends State<BusinessDetailsScreen>
       listener: (context, state) {
         state.whenOrNull(
           onboardingFailure: (message) => context.showError(message),
-          onboardingSuccess: () => context.go(AppPath.authorizedUser.seller.analytics.path),
+          onboardingSuccess: () =>  Navigator.pushNamedAndRemoveUntil(
+            context,
+            sellerHome,
+                (route) => false,
+          ),
           submitRegisteredBusinessInformationSuccess: () {
-            context.go(AppPath.authorizedUser.seller.analytics.path);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              sellerHome,
+                  (route) => false,
+            );
           },
         );
       },

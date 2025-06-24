@@ -5,6 +5,7 @@ import 'package:popcart/app/app.module.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/app/theme_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class BuyerSetingsScreen extends StatelessWidget {
   const BuyerSetingsScreen({super.key});
@@ -101,32 +102,32 @@ class BuyerSetingsScreen extends StatelessWidget {
                     color: const Color(0xfffdbc3c),
                   ),
                   ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    visualDensity:
-                        const VisualDensity(horizontal: -4, vertical: -4),
-                    leading: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xfffdbc3c),
-                        borderRadius: BorderRadius.circular(8),
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity:
+                          const VisualDensity(horizontal: -4, vertical: -4),
+                      leading: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xfffdbc3c),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: AppAssets.icons.deleteAccount.svg(),
                       ),
-                      child: AppAssets.icons.deleteAccount.svg(),
-                    ),
-                    title: Text(
-                      'Switch app theme',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                      title: Text(
+                        'Switch app theme',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    trailing: Switch(
-                      value: context.watch<ThemeCubit>().state == ThemeMode.dark,
-                      onChanged: (val) {
-                        context.read<ThemeCubit>().toggleTheme(val);
-                      },
-                    )
-                  ),
+                      trailing: Switch(
+                        value:
+                            context.watch<ThemeCubit>().state == ThemeMode.dark,
+                        onChanged: (val) {
+                          context.read<ThemeCubit>().toggleTheme(val);
+                        },
+                      )),
                 ],
               ),
             ),
@@ -144,7 +145,8 @@ class BuyerSetingsScreen extends StatelessWidget {
                     title: 'Log out',
                     onTap: () {
                       locator<SharedPrefs>().loggedIn = false;
-                      context.pushReplacement(AppPath.auth.path);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          onboardingScreenRoute, (route) => false);
                     },
                     color: const Color(0xffcc0000),
                     textColor: const Color(0xffcc0000),

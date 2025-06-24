@@ -14,6 +14,7 @@ import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.d
 import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -126,7 +127,7 @@ class _SignUpScreenState extends State<SignUpScreen>
             state.whenOrNull(
               onboardingFailure: (msg) => context.showError(msg),
               onboardingSuccess: () {
-                context.pushNamed(AppPath.auth.otp.path);
+                Navigator.pushNamed(context, otpScreen);
               },
               verifyEmailSuccess: () => setState(() {
                 isEmailAvailable = true;
@@ -355,7 +356,7 @@ class _SignUpScreenState extends State<SignUpScreen>
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                context.pushReplacement(AppPath.auth.path);
+                                Navigator.pushNamed(context, loginScreenRoute);
                               },
                           )
                         ],

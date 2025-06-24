@@ -18,6 +18,7 @@ class _SearchScreenState extends State<SearchScreen> {
     focusNode.requestFocus();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

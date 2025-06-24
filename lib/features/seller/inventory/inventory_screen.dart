@@ -4,6 +4,7 @@ import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/seller/inventory/inventory_tab.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -42,9 +43,7 @@ class _InventoryScreenState extends State<InventoryScreen>
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: CustomElevatedButton(
           onPressed: () {
-            context.pushNamed(
-              AppPath.authorizedUser.seller.inventory.addProduct.path,
-            );
+            Navigator.pushNamed(context, addProductScreen);
           },
           text: 'Add Product',
           icon: Icons.add,

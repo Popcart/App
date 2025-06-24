@@ -149,8 +149,10 @@ class OnboardingCubit extends Cubit<OnboardingState> {
           ..refreshToken = data?.data?.refreshToken ?? '';
         if (data?.data?.mode == 'buyer') {
           userType = UserType.buyer;
+          locator<SharedPrefs>().isBuyer = true;
         } else {
           userType = UserType.seller;
+          locator<SharedPrefs>().isBuyer = false;
         }
         locator.setApiHandlerToken(data?.data?.token ?? '');
         emit(const OnboardingState.verifyOtpSuccess());

@@ -16,14 +16,14 @@ class WatchScreen extends StatefulWidget {
 }
 
 class _WatchScreenState extends State<WatchScreen> {
-  int currentIndex = 0;
+  final ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   @override
   Widget build(BuildContext context) {
     final profileCubit = context.watch<ProfileCubit>();
     final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
     return profileCubit.state.maybeWhen(
-      orElse: CupertinoActivityIndicator.new,
+      orElse: () => const Center(child: CircularProgressIndicator()),
       loaded: (user) => RefreshIndicator.adaptive(
         onRefresh: () async {
           unawaited(activeLivestreamsCubit.getActiveLivestreams());
@@ -31,20 +31,23 @@ class _WatchScreenState extends State<WatchScreen> {
         child: PageView.builder(
           scrollDirection: Axis.vertical,
           itemCount: activeLivestreamsCubit.state.maybeWhen(
-            orElse: () => 4,
+            orElse: () => 0,
             success: (liveStreams) => liveStreams.length,
           ),
           onPageChanged: (index) {
-            setState(() {
-              currentIndex = index;
-            });
+            currentIndex.value = index;
           },
           itemBuilder: (context, index) {
-            return LiveWidget(
-              liveStream: activeLivestreamsCubit.state.maybeWhen(
-                orElse: LiveStream.empty,
-                success: (liveStreams) => liveStreams[index],
-              ), isActive: index == currentIndex,
+            return ValueListenableBuilder<int>(
+              valueListenable: currentIndex,
+              builder: (_, position, __) {
+                return LiveWidget(
+                  liveStream: activeLivestreamsCubit.state.maybeWhen(
+                    orElse: LiveStream.empty,
+                    success: (liveStreams) => liveStreams[index],
+                  ), isActive: position == index,
+                );
+              },
             );
           },
         ),

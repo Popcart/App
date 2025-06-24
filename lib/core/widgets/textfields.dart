@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:pinput/pinput.dart';
 import 'package:popcart/app/router.dart';
 import 'package:popcart/core/colors.dart';
@@ -25,7 +27,7 @@ class CustomTextFormField extends TextFormField {
     super.onChanged,
     Widget? prefixIcon
   }) : super(
-          onTapOutside: (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus(),
+          onTapOutside: (_) => FocusScope.of(Get.context!).unfocus(),
           style: const TextStyle(
             color: AppColors.white,
             fontWeight: FontWeight.w700,
@@ -71,7 +73,7 @@ class CustomPinField extends Pinput {
   }) : super(
           length: 5,
           onTapOutside: kDebugMode
-              ? (_) => FocusScope.of(rootNavigatorKey.currentContext!).unfocus()
+              ? (_) => FocusScope.of(Get.context!).unfocus()
               : null,
           closeKeyboardWhenCompleted: false,
           defaultPinTheme: PinTheme(
