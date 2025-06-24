@@ -1,12 +1,13 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/features/live/models/products.dart';
 
 sealed class LivestreamsRepo {
-  Future<ApiResponse<Stream>> createLivestreamSession({
+  Future<ApiResponse<LiveStream>> createLivestreamSession({
     required String name,
     required List<String> products,
     required bool scheduled,
-    String? startTime,
+    required XFile thumbnail, String? startTime,
   });
 
   Future<ApiResponse<String>> generateAgoraToken({
@@ -40,13 +41,13 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
   final ApiHandler _apiHandler;
 
   @override
-  Future<ApiResponse<Stream>> createLivestreamSession({
+  Future<ApiResponse<LiveStream>> createLivestreamSession({
     required String name,
     required List<String> products,
     required bool scheduled,
-    String? startTime,
+    required XFile thumbnail, String? startTime,
   }) async {
-    return _apiHandler.request<Stream>(
+    return _apiHandler.request<LiveStream>(
       path: '',
       method: MethodType.post,
       payload: {
@@ -55,7 +56,9 @@ class LivestreamsRepoImpl extends LivestreamsRepo {
         'scheduled': scheduled,
         if (startTime != null) 'startTime': startTime,
       },
-      responseMapper: Stream.fromJson,
+      singleFile: thumbnail,
+      imagesKey: 'thumbnail',
+      responseMapper: LiveStream.fromJson,
     );
   }
 

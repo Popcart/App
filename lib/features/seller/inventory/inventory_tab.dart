@@ -16,7 +16,7 @@ class ProductTabView extends StatefulWidget {
   State<ProductTabView> createState() => _ProductTabViewState();
 }
 
-class _ProductTabViewState extends State<ProductTabView> {
+class _ProductTabViewState extends State<ProductTabView>  {
   final PagingController<int, Product> _pagingController =
       PagingController(firstPageKey: 1);
 

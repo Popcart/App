@@ -216,8 +216,14 @@ class $AssetsIconsGen {
   /// File path: assets/icons/phone.svg
   SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
 
+  /// File path: assets/icons/play.svg
+  SvgGenImage get play => const SvgGenImage('assets/icons/play.svg');
+
   /// File path: assets/icons/policy.svg
   SvgGenImage get policy => const SvgGenImage('assets/icons/policy.svg');
+
+  /// File path: assets/icons/profile.svg
+  SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
 
   /// File path: assets/icons/profile_selected.svg
   SvgGenImage get profileSelected =>
@@ -319,7 +325,9 @@ class $AssetsIconsGen {
     paymentMethods,
     personalInformation,
     phone,
+    play,
     policy,
+    profile,
     profileSelected,
     profileUnselected,
     purchases,

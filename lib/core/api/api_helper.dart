@@ -135,7 +135,7 @@ class ApiHandler {
           responseHeader: true,
           logPrint: (value) {
             if (kDebugMode) {
-              // log(value.toString(), name: 'Dio');
+              log(value.toString(), name: 'Dio');
             }
           },
         ),
@@ -162,6 +162,7 @@ class ApiHandler {
     bool authenticate = true,
     Map<String, File>? files,
     List<XFile>? filesList,
+    XFile? singleFile,
     String? imagesKey,
   }) async {
     final modifiedPayload = <String, dynamic>{}..addAll(payload ?? {});
@@ -222,6 +223,32 @@ class ApiHandler {
         uploadedImageUrls.add(imageUrl);
       }
       modifiedPayload[imagesKey??'images'] = uploadedImageUrls;
+    }
+    if (singleFile != null) {
+        final compressedFile = await FileCompressor.compressFile(File(singleFile.path));
+        final data = dio.FormData.fromMap({
+          'files': await dio.MultipartFile.fromFile(compressedFile.path),
+        });
+        final uploadInstance = dio.Dio()
+          ..interceptors.add(
+            PrettyDioLogger(
+              requestBody: true,
+              requestHeader: true,
+              responseHeader: true,
+              logPrint: (value) {
+                if (kDebugMode) {
+                  log(value.toString(), name: 'Dio');
+                }
+              },
+            ),
+          );
+        // ignore: inference_failure_on_function_invocation
+        final response = await uploadInstance.post(
+          '${Env().authServiceBaseUrl}/upload',
+          data: data,
+        );
+        final imageUrl = response.data['data'][0];
+      modifiedPayload[imagesKey??'images'] = imageUrl;
     }
 
     try {
@@ -287,8 +314,8 @@ class ApiHandler {
       // log(finalResponse.toString(), name: 'DioResponse');
       return finalResponse;
     } on dio.DioException catch (e, stackTrace) {
-      // log('Error: $e', name: 'DioError');
-      // log('StackTrace: $stackTrace', name: 'DioError');
+      log('Error: $e', name: 'DioError');
+      log('StackTrace: $stackTrace', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(
           message: (e.response?.data != null && e.response?.data is Map)
@@ -300,9 +327,9 @@ class ApiHandler {
 
       return error;
     } catch (e, stackTrace) {
-      // log('Error: $e', name: 'DioError');
-      // log('Error stackTrace: $stackTrace', name: 'DioError');
-      // log('StackTrace: $s', name: 'DioError');
+      log('Error: $e', name: 'DioError');
+      log('Error stackTrace: $stackTrace', name: 'DioError');
+      log('StackTrace: $stackTrace', name: 'DioError');
       final error = ApiResponse<T>.error(
         ApiError(message: 'Unknown error occurred: $e')..code = 500,
       );

@@ -5,6 +5,7 @@ import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoSplashScreen extends StatefulWidget {
@@ -112,7 +113,7 @@ class _VideoSplashScreenState extends State<VideoSplashScreen>
                     width: MediaQuery.of(context).size.width * 0.9,
                     child: ElevatedButton(
                       onPressed: () {
-                        context.push(AppPath.auth.path);
+                        Navigator.pushNamed(context, loginScreenRoute);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xffEDEAE9),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
@@ -55,10 +53,35 @@ class LiveStreamCard extends StatelessWidget {
               height: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
+                image: liveStream.thumbnail != null
+                    ? DecorationImage(
+                        image: NetworkImage(liveStream.thumbnail!),
+                        fit: BoxFit.cover,
+                      )
+                    : null,
               ),
               child: Stack(
                 children: [
-                  userThumbnail(liveStream.user.username),
+                  if (liveStream.thumbnail == null)
+                    userThumbnail(liveStream.user.username)
+                  else
+                    const SizedBox.shrink(),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black54,
+                          Colors.transparent,
+                          Colors.transparent,
+                          Colors.black87,
+                        ],
+                        stops: [0.0, 0.3, 0.7, 1.0],
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(

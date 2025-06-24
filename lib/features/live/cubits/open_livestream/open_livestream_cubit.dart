@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
@@ -18,7 +19,7 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
     required String name,
     required List<String> products,
     required bool scheduled,
-    String? startTime,
+    required XFile thumbnail, String? startTime,
   }) async {
     emit(const OpenLivestreamState.loading());
     final response = await _livestreamsRepo.createLivestreamSession(
@@ -26,12 +27,13 @@ class OpenLivestreamCubit extends Cubit<OpenLivestreamState> {
       products: products,
       scheduled: scheduled,
       startTime: startTime,
+      thumbnail: thumbnail
     );
     response.when(
       success: (data) {
         emit(
           OpenLivestreamState.success(
-            stream: data?.data ?? Stream.empty(),
+            liveStream: data?.data ?? LiveStream.empty(),
           ),
         );
       },

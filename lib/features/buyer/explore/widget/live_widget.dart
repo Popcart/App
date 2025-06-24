@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
@@ -17,6 +18,8 @@ import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cub
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class LiveWidget extends StatefulWidget {
   const LiveWidget(
@@ -31,15 +34,18 @@ class LiveWidget extends StatefulWidget {
 
 class _LiveWidgetState extends State<LiveWidget>
     with AutomaticKeepAliveClientMixin {
+  late VideoPlayerController _videoPlayerController;
   int? _remoteUid;
+  late ValueNotifier<bool> isPlaying;
+  bool showPlayButton = false;
   late RtcEngine _engine;
-  bool? videoDisabled;
-  final ValueNotifier<int> userJoined = ValueNotifier(0);
+  late ValueNotifier<int> userJoined;
   late RtmClient rtmClient;
-  final _controller = TextEditingController();
-  final ValueNotifier<List<MessageModel>> messages = ValueNotifier([]);
-  final ScrollController scrollController = ScrollController();
+  late final TextEditingController _controller;
+  late final ValueNotifier<List<MessageModel>> messages;
+  late final ScrollController scrollController;
   bool joinedLive = false;
+  late ValueNotifier<Uint8List?> thumbnailNotifier;
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -52,7 +58,35 @@ class _LiveWidgetState extends State<LiveWidget>
   @override
   void initState() {
     super.initState();
-    generateToken();
+    userJoined = ValueNotifier(0);
+    isPlaying = ValueNotifier(false);
+    showPlayButton = false;
+    _controller = TextEditingController();
+    scrollController = ScrollController();
+    messages = ValueNotifier([]);
+    thumbnailNotifier = ValueNotifier(null);
+    configureVideo();
+  }
+
+  void configureVideo() {
+    if (!widget.liveStream.isVideo) {
+      generateToken();
+    } else {
+      generateThumbnail(widget.liveStream.videoLink!).then((thumb) {
+        thumbnailNotifier.value = thumb;
+      });
+      _videoPlayerController = VideoPlayerController.networkUrl(
+        Uri.parse(widget.liveStream.videoLink!),
+      )
+        ..addListener(_videoListener)
+        ..initialize().then((_) {
+          if (mounted && widget.isActive) {
+            _videoPlayerController.play();
+            showPlayButton = true;
+            setState(() {});
+          }
+        });
+    }
   }
 
   Future<void> generateToken() async {
@@ -70,8 +104,16 @@ class _LiveWidgetState extends State<LiveWidget>
 
   @override
   void dispose() {
-    leaveChannel();
     super.dispose();
+    if (!widget.liveStream.isVideo) {
+      leaveChannel();
+    } else {
+      if (_videoPlayerController.value.isInitialized) {
+        _videoPlayerController
+          ..removeListener(_videoListener)
+          ..dispose();
+      }
+    }
   }
 
   Future<void> leaveChannel() async {
@@ -105,7 +147,27 @@ class _LiveWidgetState extends State<LiveWidget>
         ),
       );
     } else {
-      return const CupertinoActivityIndicator();
+      return const Center(child: CircularProgressIndicator());
+    }
+  }
+
+  void _videoListener() {
+    final position = _videoPlayerController.value.position;
+    final duration = _videoPlayerController.value.duration;
+
+    if (_videoPlayerController.value.isInitialized &&
+        !_videoPlayerController.value.isPlaying &&
+        position >= duration) {
+      showPlayButton = false;
+      setState(() {});
+      _videoPlayerController
+        ..seekTo(Duration.zero)
+        ..play();
+    }
+    if (_videoPlayerController.value.isPlaying) {
+      isPlaying.value = true;
+    } else {
+      isPlaying.value = false;
     }
   }
 
@@ -121,15 +183,14 @@ class _LiveWidgetState extends State<LiveWidget>
         RtcEngineEventHandler(
           onUserMuteVideo: (connection, remoteUid, muted) {
             if (remoteUid == _remoteUid) {
-              setState(() {
-                videoDisabled = muted;
-              });
+              isPlaying.value = muted;
             }
           },
           onUserOffline: (connection, remoteUid, reason) {},
           onJoinChannelSuccess: (connection, elapsed) {},
           onUserJoined: (connection, remoteUid, elapsed) {
             setState(() {
+              showPlayButton = true;
               _remoteUid = remoteUid;
             });
           },
@@ -272,12 +333,20 @@ class _LiveWidgetState extends State<LiveWidget>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GestureDetector(
         onTap: () async {
           // await initRtm();
+          if (widget.liveStream.isVideo) {
+            if (_videoPlayerController.value.isPlaying) {
+              await _videoPlayerController.pause();
+            } else {
+              await _videoPlayerController.play();
+            }
+          } else {}
         },
         child: Stack(
           children: [
@@ -286,7 +355,43 @@ class _LiveWidgetState extends State<LiveWidget>
               left: 0,
               right: 0,
               bottom: 0,
-              child: _renderVideo(),
+              child: !widget.liveStream.isVideo
+                  ? _renderVideo()
+                  : ValueListenableBuilder<Uint8List?>(
+                      valueListenable: thumbnailNotifier,
+                      builder: (_, thumbnail, __) {
+                        return Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            if (_videoPlayerController.value.isInitialized)
+                              AspectRatio(
+                                aspectRatio:
+                                    _videoPlayerController.value.aspectRatio,
+                                child: VideoPlayer(_videoPlayerController),
+                              ),
+                            if (thumbnail != null)
+                              AnimatedOpacity(
+                                opacity: (_videoPlayerController
+                                            .value.isInitialized &&
+                                        _videoPlayerController.value.isPlaying)
+                                    ? 0
+                                    : 1,
+                                duration: const Duration(milliseconds: 300),
+                                child: ImageFiltered(
+                                  imageFilter:
+                                      ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                                  child: Image.memory(
+                                    thumbnail,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                    height: double.infinity,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
             ),
             Positioned.fill(
                 child: Container(
@@ -304,65 +409,69 @@ class _LiveWidgetState extends State<LiveWidget>
                 ),
               ),
             )),
-            Positioned.fill(
-              bottom: 100,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Spacer(),
-                    IntrinsicWidth(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xffcc0000),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Row(
-                          children: [
-                            AppAssets.icons.radar.svg(),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            const Text(
-                              'Live',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+            if (widget.liveStream.isVideo == false &&
+                widget.liveStream.videoLink == null)
+              Positioned.fill(
+                bottom: 100,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Spacer(),
+                      IntrinsicWidth(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xffcc0000),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Row(
+                            children: [
+                              AppAssets.icons.radar.svg(),
+                              const SizedBox(
+                                width: 5,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 12,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          widget.liveStream.user.username,
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
+                              const Text(
+                                'Live',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 12,
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.liveStream.user.username,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              )
+            else
+              const SizedBox(),
             Visibility(
               visible: joinedLive,
               child: Positioned.fill(
@@ -449,11 +558,54 @@ class _LiveWidgetState extends State<LiveWidget>
                 ),
               ),
             ),
-            Center(
-              child: Visibility(
-                  visible: videoDisabled != null && videoDisabled == true,
-                  child: const Text('Video is paused')),
-            ),
+            Positioned(
+                child: ValueListenableBuilder<bool>(
+              valueListenable: isPlaying,
+              builder: (_, playing, __) {
+                return Center(
+                  child: Visibility(
+                    visible: !isPlaying.value && showPlayButton && widget.liveStream.isVideo,
+                    child: SizedBox(
+                        width: 40, height: 40,
+                        child: AppAssets.icons.play.svg()),
+                  ),
+                );
+              },
+            )),
+            if (widget.liveStream.isVideo)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: ValueListenableBuilder<VideoPlayerValue>(
+                  valueListenable: _videoPlayerController,
+                  builder: (context, value, _) {
+                    if (!value.isInitialized) return const SizedBox();
+                    return SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackHeight: 0.1,
+                        thumbShape:
+                            const RoundSliderThumbShape(enabledThumbRadius: 2),
+                        overlayShape:
+                            const RoundSliderOverlayShape(overlayRadius: 0),
+                        overlayColor: Colors.transparent,
+                      ),
+                      child: Slider(
+                        max: value.duration.inMilliseconds.toDouble(),
+                        value: value.position.inMilliseconds
+                            .clamp(0, value.duration.inMilliseconds)
+                            .toDouble(),
+                        onChanged: (newValue) {
+                          _videoPlayerController
+                              .seekTo(Duration(milliseconds: newValue.toInt()));
+                        },
+                        activeColor: AppColors.white,
+                        inactiveColor: AppColors.grey,
+                      ),
+                    );
+                  },
+                ),
+              )
           ],
         ),
       ),
@@ -496,16 +648,33 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => !widget.liveStream.isVideo;
 
   @override
   void didUpdateWidget(covariant LiveWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.isActive && !oldWidget.isActive) {
-      generateToken();
+      configureVideo();
     } else if (!widget.isActive && oldWidget.isActive) {
-      leaveChannel();
+      if (widget.liveStream.isVideo) {
+        if (_videoPlayerController.value.isInitialized) {
+          _videoPlayerController
+            ..removeListener(_videoListener)
+            ..dispose();
+        }
+      } else {
+        leaveChannel();
+      }
     }
+  }
+
+  Future<Uint8List?> generateThumbnail(String videoUrl) async {
+    final uint8list = await VideoThumbnail.thumbnailData(
+      video: videoUrl,
+      maxWidth: 128,
+      quality: 75,
+    );
+    return uint8list;
   }
 }

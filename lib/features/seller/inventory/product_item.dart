@@ -7,6 +7,7 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/cubits/product/product_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class ProductItem extends StatefulWidget {
@@ -151,10 +152,8 @@ class _ProductItemState extends State<ProductItem> {
                   if (value == 'delete') {
                     await _deleteProduct();
                   } else if (value == 'edit') {
-                    await context.pushNamed(
-                      AppPath.authorizedUser.seller.inventory.editProduct.path,
-                      extra: widget.product,
-                    );
+                    await Navigator.pushNamed(context, editProductScreen,
+                        arguments: widget.product);
                   }
                 },
                 itemBuilder: (context) => [

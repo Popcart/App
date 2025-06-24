@@ -2,14 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
-import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -94,8 +92,9 @@ class _LoginScreenState extends State<LoginScreen>
     return BlocListener<OnboardingCubit, OnboardingState>(
       listener: (context, state) {
         state.whenOrNull(
-          sendOtpSuccess: () => context.pushNamed(
-            AppPath.auth.otp.path,
+          sendOtpSuccess: () => Navigator.pushNamed(
+            context,
+            otpScreen,
           ),
           sendOtpFailure: (message) => context.showError(message),
         );
@@ -176,9 +175,7 @@ class _LoginScreenState extends State<LoginScreen>
                               text: "Sign up",
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  context.pushNamed(
-                                    AppPath.auth.accountType.path,
-                                  );
+                                  Navigator.pushNamed(context, selectAccountTypeScreen);
                                 },
                               style: const TextStyle(
                                   fontSize: 12,

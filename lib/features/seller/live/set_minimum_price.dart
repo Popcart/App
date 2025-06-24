@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class SetMinimumPrice extends StatefulWidget {
@@ -17,10 +17,12 @@ class SetMinimumPrice extends StatefulWidget {
       {super.key,
       required this.products,
       required this.scheduledDate,
+      required this.thumbnail,
       required this.roomName});
 
   final List<Product> products;
   final String roomName;
+  final XFile thumbnail;
   final String? scheduledDate;
 
   @override
@@ -29,7 +31,7 @@ class SetMinimumPrice extends StatefulWidget {
 
 class _SetMinimumPriceState extends State<SetMinimumPrice> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Stream? generatedLiveStream;
+  LiveStream? generatedLiveStream;
 
   @override
   Widget build(BuildContext context) {
@@ -38,23 +40,22 @@ class _SetMinimumPriceState extends State<SetMinimumPrice> {
       listener: (context, state) {
         state.whenOrNull(
           success: (liveStream) async {
-            generatedLiveStream = liveStream;
-            final token = await openLivestream.generateAgoraToken(
-              channelName: liveStream.id,
-              agoraRole: 1,
-              uid: 0,
-            );
-            if(token != null){
-              context.pushReplacementNamed(
-                  AppPath.authorizedUser.seller.live.goLive.path,
-                  extra: true,
-                  queryParameters: {
-                    'token': token,
-                    'channelName': generatedLiveStream?.id,
-                  },
-                );
-            }else{
-              context.showError('Unable to generate token');
+            if(widget.scheduledDate == null) {
+              generatedLiveStream = liveStream;
+              final token = await openLivestream.generateAgoraToken(
+                channelName: liveStream.id,
+                agoraRole: 1,
+                uid: 0,
+              );
+              if (token != null) {
+                await Navigator.pushNamed(
+                    context, sellerLiveStream, arguments: {
+                  'token': token,
+                  'channelName': generatedLiveStream?.id,
+                });
+              } else {
+                context.showError('Unable to generate token');
+              }
             }
           },
           error: (message) {
@@ -71,7 +72,7 @@ class _SetMinimumPriceState extends State<SetMinimumPrice> {
               children: [
                 IconButton(
                   onPressed: () {
-                    context.pop();
+                    Navigator.pop(context);
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios_new,
@@ -136,11 +137,11 @@ class _SetMinimumPriceState extends State<SetMinimumPrice> {
                         name: widget.roomName,
                         products: widget.products.map((e) => e.id).toList(),
                         scheduled: widget.scheduledDate != null,
-                        startTime: widget.scheduledDate,
+                        startTime: widget.scheduledDate, thumbnail: widget.thumbnail,
                       );
                     }
                   },
-                  text: 'Go live'),
+                  text: widget.scheduledDate == null ? 'Go live' : 'Schedule live'),
             ),
             const SizedBox(
               height: 20,

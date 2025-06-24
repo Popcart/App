@@ -1,17 +1,19 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/textfields.dart';
-import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/choose_product.dart';
+import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class SellerLiveNav extends StatefulWidget {
@@ -30,7 +32,7 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
   ScheduleOption _scheduleOption = ScheduleOption.instant;
   final TextEditingController roomNameCtrl = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  Stream? generatedLiveStream;
+  LiveStream? generatedLiveStream;
 
   @override
   void initState() {
@@ -66,12 +68,23 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
   }
 
   void _showPrepareLiveSheet() {
+    XFile? imageFile;
+    final _picker = ImagePicker();
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setStateModal) {
+            Future<void> pickImages() async {
+              final picked = await _picker.pickImage(source: ImageSource.gallery);
+              if (picked != null) {
+                setStateModal(() {
+                  imageFile = picked;
+                });
+              }
+            }
             return Padding(
               padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -233,6 +246,55 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                           height: 20,
                         ),
                       },
+                      const Text(
+                        'Live thumbnail',
+                        style: TextStyles.textTitle,
+                      ),
+                      const SizedBox(height: 10),
+                      GestureDetector(
+                        onTap: pickImages,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                              AssetImage(AppAssets.images.dottedLines.path),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                          child: imageFile == null ? Column(
+                            children: [
+                              AppAssets.images.addImage.image(),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                'Select an image to use as your live stream thumbnail',
+                                textAlign: TextAlign.center,
+                                style: TextStyles.titleHeading,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              const Text(
+                                'PNG or JPG (Max: 800px by 1200px)',
+                                textAlign: TextAlign.center,
+                                style: TextStyles.caption,
+                              ),
+                            ],
+                          ) : ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(imageFile!.path),
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.fitHeight,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       CustomElevatedButton(
                         text: _streamingType == StreamingType.auction
                             ? 'Next'
@@ -248,7 +310,8 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                             false,
                         showIcon: false,
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
+                          if (_formKey.currentState!.validate() &&
+                              imageFile != null) {
                             if (_streamingType == StreamingType.auction) {
                               await showModalBottomSheet<void>(
                                 context: context,
@@ -260,7 +323,7 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                                         ? _selectedDate
                                             .toUtc()
                                             .toIso8601String()
-                                        : null,
+                                        : null, thumbnail: imageFile!,
                                   );
                                 },
                               );
@@ -270,6 +333,7 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                               await openLivestream.createLivestreamSession(
                                 name: roomNameCtrl.text,
                                 products: [],
+                                thumbnail: imageFile!,
                                 scheduled:
                                     _scheduleOption == ScheduleOption.scheduled,
                                 startTime: _scheduleOption ==
@@ -321,16 +385,12 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                 }
 
                 if (!context.mounted) return;
-
-                context.pushReplacementNamed(
-                  AppPath.authorizedUser.seller.live.goLive.path,
-                  extra: true,
-                  queryParameters: {
-                    'token': token,
-                    'channelName': generatedLiveStream?.id,
-                  },
-                );
+                await Navigator.pushNamed(context, sellerLiveStream, arguments: {
+                  'token': token,
+                  'channelName': generatedLiveStream?.id,
+                });
               }else{
+                print("Live schedule created");
                 await context.showSuccess('Live stream scheduled successfully');
                 Navigator.pop(context);
               }

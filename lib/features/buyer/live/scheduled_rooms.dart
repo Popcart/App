@@ -24,7 +24,7 @@ class _ScheduledRoomsState extends State<ScheduledRooms> {
     final scheduledLivestreamsCubit = context.watch<ScheduledLivestreamsCubit>();
     return Scaffold(
       body: profileCubit.state.maybeWhen(
-        orElse: CupertinoActivityIndicator.new,
+        orElse: () => const Center(child: CircularProgressIndicator()),
         loaded: (user) => RefreshIndicator.adaptive(
           onRefresh: () async {
             unawaited(scheduledLivestreamsCubit.getScheduledLivestreams());

@@ -17,6 +17,7 @@ import 'package:popcart/features/seller/inventory/add_product_variant.dart';
 import 'package:popcart/features/seller/inventory/product_uploaded.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class EditProductScreen extends StatefulWidget {
@@ -100,7 +101,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 ),
               ),
             );
-            await context.push(AppPath.authorizedUser.seller.inventory.path);
+            Navigator.pop(context);
           },
           saveProductFailure: (message) {
             context.showError(message);

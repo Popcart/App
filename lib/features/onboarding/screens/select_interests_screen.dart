@@ -8,6 +8,7 @@ import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class SelectInterestsScreen extends StatefulWidget {
   const SelectInterestsScreen({super.key});
@@ -43,7 +44,11 @@ class _SelectInterestsScreenState extends State<SelectInterestsScreen> {
             context.showError(message);
           },
           saveInterestSuccess: () {
-            context.go(AppPath.authorizedUser.buyer.path);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              buyerHome,
+                  (route) => false,
+            );
           },
         );
       },
@@ -121,7 +126,11 @@ class _SelectInterestsScreenState extends State<SelectInterestsScreen> {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        context.go(AppPath.authorizedUser.buyer.path);
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          buyerHome,
+                              (route) => false,
+                        );
                       },
                       child: const Text(
                         'Skip',

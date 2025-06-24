@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
@@ -17,7 +16,7 @@ class ScheduleSessionScreen extends HookWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final openLivestream = context.watch<OpenLivestreamCubit>();
-    final generatedLiveStream = useState<Stream?>(null);
+    final generatedLiveStream = useState<LiveStream?>(null);
     final livestreamTitleController = useTextEditingController();
     final startTimeController = useTextEditingController();
     final isScheduled = useState(false);

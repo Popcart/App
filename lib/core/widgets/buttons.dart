@@ -101,14 +101,14 @@ class AppBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: () {
+    return GestureDetector(
+        onTap: () {
           if (onPressed != null) {
             onPressed!();
           } else {
             Navigator.pop(context);
           }
         },
-        icon: const Icon(Icons.arrow_back_ios_new));
+        child: const Icon(Icons.arrow_back_ios_new));
   }
 }
