@@ -25,7 +25,9 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
-    focusNode.requestFocus();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      focusNode.requestFocus();
+    });
     super.initState();
   }
 
@@ -38,179 +40,175 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: TextField(
+          focusNode: focusNode,
+          controller: searchController,
+          onSubmitted: (value) async {
+            if (value.isNotEmpty) {
+              setState(() {
+                products.clear();
+                stores.clear();
+                isSearching = true;
+              });
+              final result = await locator<ProductsRepo>()
+                  .searchProduct(
+                  page: 1, limit: 20, productName: value);
+              result.maybeWhen(
+                success: (data) {
+                  products.addAll(data?.data?.products ?? []);
+                  stores.addAll(data?.data?.sellers ?? []);
+                  if (mounted) {
+                    setState(() {
+                      isSearching = false;
+                    });
+                  }
+                },
+                orElse: () {
+                  setState(() {
+                    isSearching = false;
+                  });
+                },
+              );
+            }
+          },
+          decoration: InputDecoration(
+            hintText: 'Search popcart',
+            hintStyle: const TextStyle(
+                color: Color(0xffD7D8D9), fontSize: 16),
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(12),
+              child: AppAssets.icons.search.svg(),
+            ),
+            fillColor: const Color(0xff24262B),
+            filled: true,
+            border: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        centerTitle: false,
+        leading: const AppBackButton(),
+      ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(
-              children: [
-                const AppBackButton(),
-                const SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: TextField(
-                    focusNode: focusNode,
-                    controller: searchController,
-                    onSubmitted: (value) async {
-                      if (value.isNotEmpty) {
-                        setState(() {
-                          products.clear();
-                          stores.clear();
-                          isSearching = true;
-                        });
-                        final result = await locator<ProductsRepo>()
-                            .searchProduct(
-                                page: 1, limit: 20, productName: value);
-                        result.maybeWhen(
-                          success: (data) {
-                            products.addAll(data?.data?.products ?? []);
-                            stores.addAll(data?.data?.sellers ?? []);
-                            if (mounted) {
-                              setState(() {
-                                isSearching = false;
-                              });
-                            }
-                          },
-                          orElse: () {
-                            setState(() {
-                              isSearching = false;
-                            });
-                          },
-                        );
-                      }
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Search popcart',
-                      hintStyle: const TextStyle(
-                          color: Color(0xffD7D8D9), fontSize: 16),
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: AppAssets.icons.search.svg(),
-                      ),
-                      fillColor: const Color(0xff24262B),
-                      filled: true,
-                      border: const OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        borderSide: BorderSide.none,
-                      ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (products.isEmpty && stores.isEmpty && !isSearching)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height -
+                      kToolbarHeight -
+                      MediaQuery.of(context).padding.top,
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Looking for something?',
+                          style: TextStyle(
+                            color: AppColors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          'Try searching for products or sellers',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-            if (products.isEmpty && stores.isEmpty && !isSearching)
-              const Expanded(
-                  child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Looking for something?',
-                      style: TextStyle(
+              if (isSearching)
+                SizedBox(
+                  height: MediaQuery.of(context).size.height -
+                      kToolbarHeight -
+                      MediaQuery.of(context).padding.top,
+                  child: const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 50),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 20),
+              if (products.isNotEmpty) ...[
+                const Text(
+                  'Products',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 10),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return ListTile(
+                      leading: SizedBox(
+                        width: 42,
+                        height: 42,
+                        child: NetworkImageWithLoader(
+                          product.images[0],
+                          radius: 12,
+                        ),
+                      ),
+                      title: Text(product.name),
+                      trailing: const Icon(
+                        Icons.keyboard_arrow_right_rounded,
                         color: AppColors.white,
-                        fontSize: 16,
                       ),
-                    ),
-                    Text(
-                      'Try searching for products or sellers',
-                      style: TextStyle(
-                        color: AppColors.grey,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+                      onTap: () {
+                        Navigator.pushNamed(context, productScreen,
+                            arguments: product.id);
+                      },
+                    );
+                  },
                 ),
-              )),
-            if (isSearching)
-              const Expanded(
-                  child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [CircularProgressIndicator()],
+              ],
+              const SizedBox(height: 20),
+              if (stores.isNotEmpty) ...[
+                const Text(
+                  'Stores',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                 ),
-              )),
-            const SizedBox(height: 20),
-            if (products.isNotEmpty) ...{
-              const Text(
-                'Products',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: products.isEmpty
-                    ? const Center(child: Text('No results found'))
-                    : ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: products.length,
-                        itemBuilder: (context, index) {
-                          final product = products[index];
-                          return ListTile(
-                            leading: SizedBox(
-                                width: 42,
-                                height: 42,
-                                child: NetworkImageWithLoader(
-                                  product.images[0],
-                                  radius: 12,
-                                )),
-                            title: Text(product.name),
-                            trailing: const Icon(
-                              Icons.keyboard_arrow_right_rounded,
-                              color: AppColors.white,
-                            ),
-                            onTap: () {
-                              Navigator.pushNamed(context, productScreen,
-                                  arguments: product.id);
-                            },
-                          );
-                        },
+                const SizedBox(height: 10),
+                ListView.builder(
+                  itemCount: stores.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final store = stores[index];
+                    return ListTile(
+                      leading: SizedBox(
+                        width: 42,
+                        height: 42,
+                        child: NetworkImageWithLoader(
+                          store.username,
+                          radius: 100,
+                        ),
                       ),
-              ),
-            },
-            const SizedBox(height: 20),
-            if (stores.isNotEmpty) ...{
-              const Text(
-                'Stores',
-                textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 10),
-              Flexible(
-                child: stores.isEmpty
-                    ? const Center(child: Text('No results found'))
-                    : ListView.builder(
-                        itemCount: stores.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final store = stores[index];
-                          return ListTile(
-                            leading: SizedBox(
-                                width: 42,
-                                height: 42,
-                                child: NetworkImageWithLoader(
-                                  store.username,
-                                  radius: 100,
-                                )),
-                            title: Text(
-                              store.businessProfile.businessName,
-                              textAlign: TextAlign.start,
-                            ),
-                            trailing: const Icon(
-                              Icons.keyboard_arrow_right_rounded,
-                              color: AppColors.white,
-                            ),
-                            onTap: () {
-
-                            },
-                          );
-                        },
+                      title: Text(
+                        store.businessProfile.businessName,
+                        textAlign: TextAlign.start,
                       ),
-              ),
-            }
-          ]),
+                      trailing: const Icon(
+                        Icons.keyboard_arrow_right_rounded,
+                        color: AppColors.white,
+                      ),
+                      onTap: () {},
+                    );
+                  },
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
