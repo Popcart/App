@@ -159,10 +159,10 @@ class _LiveWidgetState extends State<LiveWidget>
         !_videoPlayerController.value.isPlaying &&
         position >= duration) {
       showPlayButton = false;
-      setState(() {});
       _videoPlayerController
         ..seekTo(Duration.zero)
         ..play();
+      setState(() {});
     }
     if (_videoPlayerController.value.isPlaying) {
       isPlaying.value = true;

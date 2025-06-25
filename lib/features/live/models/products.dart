@@ -5,7 +5,7 @@ import 'package:popcart/features/user/models/user_model.dart';
 
 part 'products.g.dart';
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 class Product {
   Product({
     required this.id,
@@ -27,16 +27,14 @@ class Product {
 
   factory Product.empty() => Product(
         id: '',
-        name: 'Adidas Sneakers',
+        name: '',
         seller: UserModel.empty(),
         category: ProductCategory.init(),
-        price: 200000,
-        description: 'Great buy for young flashy looks',
+        price: 0.0,
+        description: '',
         brand: '',
         stockUnit: 10,
-        images: [
-          'http://res.cloudinary.com/dvga8tsyy/image/upload/v1750691047/image/i29zcopg0dwguk8wmh1t.jpg'
-        ],
+        images: [],
         productVariants: [],
         available: true,
         published: false,
@@ -47,6 +45,8 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) =>
       _$ProductFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductToJson(this);
 
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
@@ -149,8 +149,14 @@ class LiveStream {
       _$LiveStreamFromJson(json);
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
-  @JsonKey(name: 'user', defaultValue: UserModel.empty)
+
+  // @JsonKey(name: 'user', defaultValue: UserModel.empty)
+  // final UserModel user;
+
+  @JsonKey(name: 'user')
+  @SellerConverter()
   final UserModel user;
+
   @JsonKey(name: 'title', defaultValue: '')
   final String title;
   @JsonKey(name: 'products', defaultValue: [])

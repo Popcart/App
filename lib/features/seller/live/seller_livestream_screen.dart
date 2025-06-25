@@ -421,7 +421,7 @@ class _SellerLivestreamScreenState extends State<SellerLivestreamScreen>
                                   ),
                                 );
                                 if (result != null && result && context.mounted) {
-                                  context.pop();
+                                  Navigator.pop(context);
                                 }
                               },
                               child: Container(

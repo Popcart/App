@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -9,6 +10,7 @@ import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
+import 'package:popcart/features/components/network_image.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -57,17 +59,11 @@ class ProductScreen extends HookWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: ExtendedImage.network(
-                    product.value.images.isEmpty
-                        ? Random.secure().toString()
-                        : product.value.images.first,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
+                SizedBox(
                     height: 270,
-                  ),
-                ),
+                    child: product.value.images.isNotEmpty ? NetworkImageWithLoader(
+                      product.value.images.first,
+                    ) : const Center(child: CupertinoActivityIndicator())),
                 const SizedBox(height: 8),
                 Text(
                   product.value.brand,
@@ -225,8 +221,7 @@ class ProductScreen extends HookWidget {
                         height: 32,
                         fit: BoxFit.cover,
                       )),
-                      visualDensity:
-                          const VisualDensity(horizontal: 0, vertical: -4),
+                      visualDensity: const VisualDensity(vertical: -4),
                       title: Text(product.value.seller.username),
                       subtitle: Row(
                         children: [
@@ -266,7 +261,7 @@ class ProductScreen extends HookWidget {
                         // handle orders tap
                       },
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Row(

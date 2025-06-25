@@ -6,6 +6,7 @@ import 'package:popcart/app/theme.dart';
 import 'package:popcart/app/theme_cubit.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
+import 'package:popcart/features/live/cubits/watch/watch_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/cubits/onboarding/onboarding_cubit.dart';
 import 'package:popcart/features/seller/cubits/product/product_cubit.dart';
@@ -42,6 +43,9 @@ class PopCart extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ActiveLivestreamsCubit()..getActiveLivestreams(),
+        ),
+        BlocProvider(
+          create: (context) => WatchCubit()..getActiveLivestreams(),
         ),
         BlocProvider(
           create: (context) => ScheduledLivestreamsCubit()..getScheduledLivestreams(),

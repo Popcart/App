@@ -1,12 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popcart/features/buyer/explore/widget/live_widget.dart';
-import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
+import 'package:popcart/features/live/cubits/watch/watch_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 
 class WatchScreen extends StatefulWidget {
   const WatchScreen({super.key});
@@ -19,18 +17,21 @@ class _WatchScreenState extends State<WatchScreen> {
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
 
   @override
+  void initState() {
+    super.initState();
+    context.read<WatchCubit>().getActiveLivestreams();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final profileCubit = context.watch<ProfileCubit>();
-    final activeLivestreamsCubit = context.watch<ActiveLivestreamsCubit>();
-    return profileCubit.state.maybeWhen(
-      orElse: () => const Center(child: CircularProgressIndicator()),
-      loaded: (user) => RefreshIndicator.adaptive(
+    final watchCubit = context.watch<WatchCubit>();
+    return RefreshIndicator.adaptive(
         onRefresh: () async {
-          unawaited(activeLivestreamsCubit.getActiveLivestreams());
+          unawaited(watchCubit.getActiveLivestreams());
         },
         child: PageView.builder(
           scrollDirection: Axis.vertical,
-          itemCount: activeLivestreamsCubit.state.maybeWhen(
+          itemCount: watchCubit.state.maybeWhen(
             orElse: () => 0,
             success: (liveStreams) => liveStreams.length,
           ),
@@ -42,7 +43,7 @@ class _WatchScreenState extends State<WatchScreen> {
               valueListenable: currentIndex,
               builder: (_, position, __) {
                 return LiveWidget(
-                  liveStream: activeLivestreamsCubit.state.maybeWhen(
+                  liveStream: watchCubit.state.maybeWhen(
                     orElse: LiveStream.empty,
                     success: (liveStreams) => liveStreams[index],
                   ), isActive: position == index,
@@ -51,7 +52,6 @@ class _WatchScreenState extends State<WatchScreen> {
             );
           },
         ),
-      ),
     );
   }
 }

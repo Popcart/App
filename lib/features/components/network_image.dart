@@ -31,7 +31,7 @@ class NetworkImageWithLoader extends StatelessWidget {
             ),
           ),
         ),
-        placeholder: (context, url) => const CupertinoActivityIndicator(),
+        placeholder: (context, url) => const Center(child: CupertinoActivityIndicator()),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );
