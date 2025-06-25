@@ -760,7 +760,7 @@ class _AllSellerProductsState extends State<AllSellerProducts> {
       builderDelegate: PagedChildBuilderDelegate<Product>(
         itemBuilder: (context, item, index) => GestureDetector(
           onTap: () {
-            context.pop(item);
+            Navigator.pop(context, item);
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -836,7 +836,7 @@ class SingleProductWidget extends HookWidget {
     );
     return GestureDetector(
       onTap: () {
-        context.pop(product.value);
+        Navigator.pop(context, product.value);
       },
       child: Skeletonizer(
         enabled: product.value == Product.empty(),

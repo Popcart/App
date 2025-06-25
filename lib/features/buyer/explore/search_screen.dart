@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/widgets/buttons.dart';
+import 'package:popcart/features/components/network_image.dart';
+import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
+import 'package:popcart/route/route_constants.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -12,6 +19,9 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
   FocusNode focusNode = FocusNode();
+  List<Product> products = [];
+  List<UserModel> stores = [];
+  bool isSearching = false;
 
   @override
   void initState() {
@@ -20,24 +30,61 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(
               children: [
                 const AppBackButton(),
-                const SizedBox(width: 20,),
+                const SizedBox(
+                  width: 20,
+                ),
                 Expanded(
                   child: TextField(
                     focusNode: focusNode,
                     controller: searchController,
+                    onSubmitted: (value) async {
+                      if (value.isNotEmpty) {
+                        setState(() {
+                          products.clear();
+                          stores.clear();
+                          isSearching = true;
+                        });
+                        final result = await locator<ProductsRepo>()
+                            .searchProduct(
+                                page: 1, limit: 20, productName: value);
+                        result.maybeWhen(
+                          success: (data) {
+                            products.addAll(data?.data?.products ?? []);
+                            stores.addAll(data?.data?.sellers ?? []);
+                            if (mounted) {
+                              setState(() {
+                                isSearching = false;
+                              });
+                            }
+                          },
+                          orElse: () {
+                            setState(() {
+                              isSearching = false;
+                            });
+                          },
+                        );
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search popcart',
-                      hintStyle:
-                          const TextStyle(color: Color(0xffD7D8D9), fontSize: 16),
+                      hintStyle: const TextStyle(
+                          color: Color(0xffD7D8D9), fontSize: 16),
                       prefixIcon: Padding(
                         padding: const EdgeInsets.all(12),
                         child: AppAssets.icons.search.svg(),
@@ -53,6 +100,116 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ],
             ),
+            if (products.isEmpty && stores.isEmpty && !isSearching)
+              const Expanded(
+                  child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Looking for something?',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 16,
+                      ),
+                    ),
+                    Text(
+                      'Try searching for products or sellers',
+                      style: TextStyle(
+                        color: AppColors.grey,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+            if (isSearching)
+              const Expanded(
+                  child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [CircularProgressIndicator()],
+                ),
+              )),
+            const SizedBox(height: 20),
+            if (products.isNotEmpty) ...{
+              const Text(
+                'Products',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: products.isEmpty
+                    ? const Center(child: Text('No results found'))
+                    : ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: products.length,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          return ListTile(
+                            leading: SizedBox(
+                                width: 42,
+                                height: 42,
+                                child: NetworkImageWithLoader(
+                                  product.images[0],
+                                  radius: 12,
+                                )),
+                            title: Text(product.name),
+                            trailing: const Icon(
+                              Icons.keyboard_arrow_right_rounded,
+                              color: AppColors.white,
+                            ),
+                            onTap: () {
+                              Navigator.pushNamed(context, productScreen,
+                                  arguments: product.id);
+                            },
+                          );
+                        },
+                      ),
+              ),
+            },
+            const SizedBox(height: 20),
+            if (stores.isNotEmpty) ...{
+              const Text(
+                'Stores',
+                textAlign: TextAlign.start,
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              Flexible(
+                child: stores.isEmpty
+                    ? const Center(child: Text('No results found'))
+                    : ListView.builder(
+                        itemCount: stores.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final store = stores[index];
+                          return ListTile(
+                            leading: SizedBox(
+                                width: 42,
+                                height: 42,
+                                child: NetworkImageWithLoader(
+                                  store.username,
+                                  radius: 100,
+                                )),
+                            title: Text(
+                              store.businessProfile.businessName,
+                              textAlign: TextAlign.start,
+                            ),
+                            trailing: const Icon(
+                              Icons.keyboard_arrow_right_rounded,
+                              color: AppColors.white,
+                            ),
+                            onTap: () {
+
+                            },
+                          );
+                        },
+                      ),
+              ),
+            }
           ]),
         ),
       ),

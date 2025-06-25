@@ -101,33 +101,33 @@ class BuyerSetingsScreen extends StatelessWidget {
                     onTap: () {},
                     color: const Color(0xfffdbc3c),
                   ),
-                  ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      visualDensity:
-                          const VisualDensity(horizontal: -4, vertical: -4),
-                      leading: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xfffdbc3c),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: AppAssets.icons.deleteAccount.svg(),
-                      ),
-                      title: Text(
-                        'Switch app theme',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      trailing: Switch(
-                        value:
-                            context.watch<ThemeCubit>().state == ThemeMode.dark,
-                        onChanged: (val) {
-                          context.read<ThemeCubit>().toggleTheme(val);
-                        },
-                      )),
+                  // ListTile(
+                  //     contentPadding: EdgeInsets.zero,
+                  //     visualDensity:
+                  //         const VisualDensity(horizontal: -4, vertical: -4),
+                  //     leading: Container(
+                  //       padding: const EdgeInsets.all(12),
+                  //       decoration: BoxDecoration(
+                  //         color: const Color(0xfffdbc3c),
+                  //         borderRadius: BorderRadius.circular(8),
+                  //       ),
+                  //       child: AppAssets.icons.deleteAccount.svg(),
+                  //     ),
+                  //     title: Text(
+                  //       'Switch app theme',
+                  //       style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontSize: 16,
+                  //         fontWeight: FontWeight.w600,
+                  //       ),
+                  //     ),
+                  //     trailing: Switch(
+                  //       value:
+                  //           context.watch<ThemeCubit>().state == ThemeMode.dark,
+                  //       onChanged: (val) {
+                  //         context.read<ThemeCubit>().toggleTheme(val);
+                  //       },
+                  //     )),
                 ],
               ),
             ),

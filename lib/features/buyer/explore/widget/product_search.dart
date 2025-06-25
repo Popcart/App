@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:popcart/features/components/network_image.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/live/models/similar_product.dart';
 import 'package:popcart/route/route_constants.dart';
@@ -83,10 +84,10 @@ class _InterestFilterState extends State<ProductSearch> {
                   child: GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 1,
-                        crossAxisSpacing: 16,
-                      ),
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 0,
+                              crossAxisSpacing: 16,
+                              mainAxisExtent: 150),
                       itemCount: snapshot.data!.length,
                       itemBuilder: (_, index) =>
                           productItem(snapshot.data![index])),
@@ -107,12 +108,14 @@ class _InterestFilterState extends State<ProductSearch> {
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Image.network(product.imageUrl,
-                width: double.infinity, height: 100, fit: BoxFit.fitWidth),
-          ),
+          SizedBox(
+              height: 100,
+              child: NetworkImageWithLoader(
+                product.imageUrl,
+                radius: 5,
+              )),
           const SizedBox(height: 8),
           Flexible(
             child: Padding(

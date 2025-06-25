@@ -10,7 +10,7 @@ enum UserType {
   seller,
 }
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 class UserModel {
   UserModel({
     required this.id,
@@ -66,6 +66,9 @@ class UserModel {
   factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
+
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
+
   @JsonKey(name: '_id', defaultValue: '')
   final String id;
   @JsonKey(name: 'firstName', defaultValue: '')
@@ -101,7 +104,7 @@ class UserModel {
   }
 }
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 class BusinessProfile {
   BusinessProfile({
     required this.id,
@@ -151,7 +154,7 @@ class BusinessProfile {
   }
 }
 
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 class Identification {
   Identification({
     required this.type,

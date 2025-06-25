@@ -67,7 +67,7 @@ class _SelectProductsScreenState extends State<SelectProductsScreen> {
               child: CustomElevatedButton(
                 text: 'Select ${productIds.value.length} Products'
                     .replaceAll('1 Products', '1 Product'), onPressed: () {
-                context.pop(productIds.value);
+                Navigator.pop(context, productIds.value);
               },
               ),
             ),

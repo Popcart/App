@@ -1,9 +1,16 @@
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/api/pagination.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/live/models/search_model.dart';
 
 sealed class ProductsRepo {
   Future<ApiResponse<PaginationResponse<Product>>> getProducts({
+    required int page,
+    required int limit,
+  });
+
+  Future<ApiResponse<SearchData>> searchProduct({
+    required String productName,
     required int page,
     required int limit,
   });
@@ -49,4 +56,20 @@ class ProductsRepoImpl implements ProductsRepo {
     );
   }
 
+  @override
+  Future<ApiResponse<SearchData>> searchProduct(
+      {required String productName, required int page, required int limit}) async {
+    return _apiHelper.request<SearchData>(
+      path: 'search',
+      method: MethodType.get,
+      queryParameters: {
+        'search': productName,
+        'page': page,
+        'limit': limit,
+      },
+      responseMapper: (v) {
+        return SearchData.fromJson(v);
+      },
+    );
+  }
 }

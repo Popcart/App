@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -158,7 +156,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
             topRight: Radius.circular(16),
           ),
         ),
-        child: ProductSearch(file: image,),
+        child: ProductSearch(
+          file: image,
+        ),
       ),
     );
   }
@@ -176,6 +176,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               navigationBar: CupertinoNavigationBar(
                   enableBackgroundFilterBlur: value == 1,
                   backgroundColor: Colors.transparent,
+                  border: null,
                   leading: ValueListenableBuilder<int>(
                     valueListenable: selectedTab,
                     builder: (context, value, _) {
@@ -230,7 +231,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     },
                   ),
                   trailing: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                    constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width * 0.6),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -287,231 +289,278 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                   )),
               child: value == 1
-                  ? SafeArea(
-                      top: false,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(
-                                height: 100,
-                              ),
-                              ValueListenableBuilder<List<ProductCategory>>(
-                                valueListenable: selectedInterests,
-                                builder: (context, selected, _) {
-                                  return Visibility(
-                                    visible: selected.isNotEmpty,
-                                    child: SizedBox(
-                                      height: 40,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        physics: const ClampingScrollPhysics(),
-                                        itemCount:
-                                            interestListCubit.state.maybeWhen(
-                                          orElse: () => 0,
-                                          loaded: (interests) =>
-                                              interests.length,
-                                        ),
-                                        itemBuilder: (context, index) {
-                                          final interest =
+                  ? RefreshIndicator.adaptive(
+                displacement: 120,
+                      onRefresh: () async {
+                        await context
+                            .read<ActiveLivestreamsCubit>()
+                            .getActiveLivestreams();
+                        await context
+                            .read<ScheduledLivestreamsCubit>()
+                            .getScheduledLivestreams();
+                        await fetchTopProducts();
+                      },
+                      child: SafeArea(
+                        top: false,
+                        child: SingleChildScrollView(
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(
+                                  height: 100,
+                                ),
+                                ValueListenableBuilder<List<ProductCategory>>(
+                                  valueListenable: selectedInterests,
+                                  builder: (context, selected, _) {
+                                    return Visibility(
+                                      visible: selected.isNotEmpty,
+                                      child: SizedBox(
+                                        height: 40,
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          physics:
+                                              const ClampingScrollPhysics(),
+                                          itemCount:
                                               interestListCubit.state.maybeWhen(
-                                            orElse: ProductCategory.init,
+                                            orElse: () => 0,
                                             loaded: (interests) =>
-                                                interests[index],
-                                          );
-
-                                          final isSelected =
-                                              selected.contains(interest);
-
-                                          return Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 8),
-                                            child: Chip(
-                                              label: Text(
-                                                interest.name,
-                                                style: TextStyle(
-                                                  color: isSelected
-                                                      ? Colors.white
-                                                      : const Color(0xff676C75),
-                                                  fontWeight: isSelected
-                                                      ? FontWeight.w500
-                                                      : FontWeight.normal,
-                                                ),
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(80),
-                                              ),
-                                              backgroundColor: isSelected
-                                                  ? const Color(0xff676C75)
-                                                  : const Color(0xff111214),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.4,
-                                width: double.infinity,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xff24262B),
-                                    borderRadius: BorderRadius.circular(8),
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                        AppAssets.images.girl.path,
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  child: Stack(children: [
-                                    Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      left: 0,
-                                      child: Container(
-                                        height: 200,
-                                        decoration: const BoxDecoration(
-                                          gradient: LinearGradient(
-                                            begin: Alignment.topCenter,
-                                            end: Alignment.bottomCenter,
-                                            colors: [
-                                              Colors.transparent,
-                                              Colors.black,
-                                            ],
-                                            stops: [0.0, 1.0],
+                                                interests.length,
                                           ),
-                                          borderRadius: BorderRadius.only(
-                                            bottomLeft: Radius.circular(8),
-                                            bottomRight: Radius.circular(8),
-                                          )
+                                          itemBuilder: (context, index) {
+                                            final interest = interestListCubit
+                                                .state
+                                                .maybeWhen(
+                                              orElse: ProductCategory.init,
+                                              loaded: (interests) =>
+                                                  interests[index],
+                                            );
+
+                                            final isSelected =
+                                                selected.contains(interest);
+
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 8),
+                                              child: Chip(
+                                                label: Text(
+                                                  interest.name,
+                                                  style: TextStyle(
+                                                    color: isSelected
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xff676C75),
+                                                    fontWeight: isSelected
+                                                        ? FontWeight.w500
+                                                        : FontWeight.normal,
+                                                  ),
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(80),
+                                                ),
+                                                backgroundColor: isSelected
+                                                    ? const Color(0xff676C75)
+                                                    : const Color(0xff111214),
+                                              ),
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ),
-                                    const Padding(
-                                      padding: EdgeInsets.all(24),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Spacer(),
-                                          Text(
-                                            'JOGGERS',
-                                            style: TextStyle(
-                                              fontSize: 28,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          Text(
-                                            '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ]),
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              if (activeLivestreamsCubit.state.maybeWhen(
-                                      orElse: () => 0,
-                                      success: (liveStreams) =>
-                                          liveStreams.length) >
-                                  0) ...{
-                                const Text(
-                                  'Live now',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(height: 14),
-                                SizedBox(
-                                  height: 300,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    shrinkWrap: true,
-                                    itemCount:
-                                        activeLivestreamsCubit.state.maybeWhen(
-                                      orElse: () => 4,
-                                      success: (liveStreams) =>
-                                          liveStreams.length,
-                                    ),
-                                    itemBuilder: (context, index) {
-                                      return LiveStreamExplore(
-                                          liveStream: activeLivestreamsCubit
-                                              .state
-                                              .maybeWhen(
-                                        orElse: LiveStream.empty,
-                                        success: (liveStreams) =>
-                                            liveStreams[index],
-                                      ));
-                                    },
-                                  ),
-                                ),
-                              },
-                              const SizedBox(height: 24),
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Stores',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    'See all',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 14),
-                              SizedBox(
-                                height: 120,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemCount: sellers.length,
-                                  itemBuilder: (context, index) {
-                                    return StoresCard(
-                                      userModel: sellers[index],
                                     );
                                   },
                                 ),
-                              ),
-                              const SizedBox(height: 24),
-                              if (scheduledLiveStreams.state.maybeWhen(
-                                      orElse: () => 0,
-                                      success: (liveStreams) =>
-                                          liveStreams.length) >
-                                  0) ...{
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  width: double.infinity,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xff24262B),
+                                      borderRadius: BorderRadius.circular(8),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                          AppAssets.images.girl.path,
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    child: Stack(children: [
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        left: 0,
+                                        child: Container(
+                                          height: 200,
+                                          decoration: const BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [
+                                                  Colors.transparent,
+                                                  Colors.black,
+                                                ],
+                                                stops: [0.0, 1.0],
+                                              ),
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft: Radius.circular(8),
+                                                bottomRight: Radius.circular(8),
+                                              )),
+                                        ),
+                                      ),
+                                      const Padding(
+                                        padding: EdgeInsets.all(24),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Spacer(),
+                                            Text(
+                                              'JOGGERS',
+                                              style: TextStyle(
+                                                fontSize: 28,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              '''Discover trending vintage styles from iconic brands like Levi's, Carhartt, Diesel & more.''',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ]),
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                if (activeLivestreamsCubit.state.maybeWhen(
+                                        orElse: () => 0,
+                                        success: (liveStreams) =>
+                                            liveStreams.length) >
+                                    0) ...{
+                                  const Text(
+                                    'Live now',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  SizedBox(
+                                    height: 300,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount: activeLivestreamsCubit.state
+                                          .maybeWhen(
+                                        orElse: () => 4,
+                                        success: (liveStreams) =>
+                                            liveStreams.length,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return LiveStreamExplore(
+                                            liveStream: activeLivestreamsCubit
+                                                .state
+                                                .maybeWhen(
+                                          orElse: LiveStream.empty,
+                                          success: (liveStreams) =>
+                                              liveStreams[index],
+                                        ));
+                                      },
+                                    ),
+                                  ),
+                                },
+                                const SizedBox(height: 24),
+                                const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Stores',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'See all',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  height: 120,
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    shrinkWrap: true,
+                                    itemCount: sellers.length,
+                                    itemBuilder: (context, index) {
+                                      return StoresCard(
+                                        userModel: sellers[index],
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                if (scheduledLiveStreams.state.maybeWhen(
+                                        orElse: () => 0,
+                                        success: (liveStreams) =>
+                                            liveStreams.length) >
+                                    0) ...{
+                                  const Text(
+                                    'Upcoming Live',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  SizedBox(
+                                    height: 300,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      shrinkWrap: true,
+                                      itemCount:
+                                          scheduledLiveStreams.state.maybeWhen(
+                                        orElse: () => 4,
+                                        success: (liveStreams) =>
+                                            liveStreams.length,
+                                      ),
+                                      itemBuilder: (context, index) {
+                                        return LiveStreamExplore(
+                                            liveStream: scheduledLiveStreams
+                                                .state
+                                                .maybeWhen(
+                                          orElse: LiveStream.empty,
+                                          success: (liveStreams) =>
+                                              liveStreams[index],
+                                        ));
+                                      },
+                                    ),
+                                  ),
+                                },
+                                const SizedBox(height: 24),
                                 const Text(
-                                  'Upcoming Live',
+                                  'Top Products',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.white,
@@ -520,94 +569,63 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                 ),
                                 const SizedBox(height: 14),
                                 SizedBox(
-                                  height: 300,
+                                  height: 100,
                                   child: ListView.builder(
                                     scrollDirection: Axis.horizontal,
                                     shrinkWrap: true,
-                                    itemCount:
-                                        scheduledLiveStreams.state.maybeWhen(
-                                      orElse: () => 4,
-                                      success: (liveStreams) =>
-                                          liveStreams.length,
-                                    ),
+                                    itemCount: topProducts.length,
                                     itemBuilder: (context, index) {
-                                      return LiveStreamExplore(
-                                          liveStream: scheduledLiveStreams.state
-                                              .maybeWhen(
-                                        orElse: LiveStream.empty,
-                                        success: (liveStreams) =>
-                                            liveStreams[index],
-                                      ));
+                                      final item = topProducts[index];
+                                      return TopProducts(product: item);
                                     },
                                   ),
                                 ),
-                              },
-                              const SizedBox(height: 24),
-                              const Text(
-                                'Top Products',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                                const SizedBox(height: 24),
+                                const Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Products handpicked for you',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'See all',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 14),
-                              SizedBox(
-                                height: 100,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  shrinkWrap: true,
-                                  itemCount: topProducts.length,
-                                  itemBuilder: (context, index) {
-                                    final item = topProducts[index];
-                                    return TopProducts(product: item);
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 24),
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Products handpicked for you',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
+                                const SizedBox(height: 14),
+                                SizedBox(
+                                  height: 250,
+                                  child: GridView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    physics: const BouncingScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 200,
+                                      mainAxisSpacing: 16,
+                                      crossAxisSpacing: 16,
+                                      childAspectRatio: 1,
+                                    ),
+                                    itemCount: inventoryProducts.length,
+                                    itemBuilder: (_, index) =>
+                                        HandPickedProduct(
+                                      product: inventoryProducts[index],
                                     ),
                                   ),
-                                  Text(
-                                    'See all',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 14),
-                              SizedBox(
-                                height: 250,
-                                child: GridView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  physics: const BouncingScrollPhysics(),
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    mainAxisSpacing: 16,
-                                    crossAxisSpacing: 16,
-                                    childAspectRatio: 1,
-                                  ),
-                                  itemCount: inventoryProducts.length,
-                                  itemBuilder: (_, index) => HandPickedProduct(
-                                    product: inventoryProducts[index],
-                                  ),
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -647,14 +665,13 @@ class LiveStreamExplore extends StatelessWidget {
           await Navigator.push<BuyerLivestreamScreen>(
             context,
             MaterialPageRoute<BuyerLivestreamScreen>(
-              builder: (_) =>
-                  BuyerLivestreamScreen(
-                    liveStream: liveStream,
-                    token: token,
-                  ),
+              builder: (_) => BuyerLivestreamScreen(
+                liveStream: liveStream,
+                token: token,
+              ),
             ),
           );
-        }catch(e){
+        } catch (e) {
           await context.showError('Cannot join live at the moment');
         }
       },
@@ -666,9 +683,9 @@ class LiveStreamExplore extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             image: liveStream.thumbnail != null
                 ? DecorationImage(
-              image: NetworkImage(liveStream.thumbnail!),
-              fit: BoxFit.cover,
-            )
+                    image: NetworkImage(liveStream.thumbnail!),
+                    fit: BoxFit.cover,
+                  )
                 : null,
           ),
           child: Stack(
