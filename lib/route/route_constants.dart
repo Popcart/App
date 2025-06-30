@@ -29,3 +29,7 @@ const String inventoryScreen = 'inventory_screen';
 const String addProductScreen = 'add_product_screen';
 const String editProductScreen = 'edit_product_screen';
 const String sellerLiveStream = 'seller_live_stream';
+
+const String selectVideo = 'select_video';
+const String createPopPlay = 'create_pop_play';
+const String popPlayScreen = 'pop_play_screen';

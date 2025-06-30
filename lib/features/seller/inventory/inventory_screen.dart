@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/seller/inventory/inventory_tab.dart';

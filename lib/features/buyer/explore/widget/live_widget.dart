@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:agora_rtm/agora_rtm.dart';
+import 'package:cached_video_player_plus/cached_video_player_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_attachable/keyboard_attachable.dart';
@@ -18,8 +19,6 @@ import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cub
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
 import 'package:popcart/gen/assets.gen.dart';
-import 'package:video_player/video_player.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class LiveWidget extends StatefulWidget {
   const LiveWidget(
@@ -33,8 +32,8 @@ class LiveWidget extends StatefulWidget {
 }
 
 class _LiveWidgetState extends State<LiveWidget>
-    with AutomaticKeepAliveClientMixin {
-  late VideoPlayerController _videoPlayerController;
+    with AutomaticKeepAliveClientMixin{
+  late CachedVideoPlayerPlusController _videoPlayerController;
   int? _remoteUid;
   late ValueNotifier<bool> isPlaying;
   bool showPlayButton = false;
@@ -69,24 +68,25 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   void configureVideo() {
-    if (!widget.liveStream.isVideo) {
-      generateToken();
-    } else {
-      generateThumbnail(widget.liveStream.videoLink!).then((thumb) {
-        thumbnailNotifier.value = thumb;
-      });
-      _videoPlayerController = VideoPlayerController.networkUrl(
-        Uri.parse(widget.liveStream.videoLink!),
-      )
-        ..addListener(_videoListener)
-        ..initialize().then((_) {
-          if (mounted && widget.isActive) {
-            _videoPlayerController.play();
-            showPlayButton = true;
-            setState(() {});
-          }
+      if (!widget.liveStream.isVideo) {
+        generateToken();
+      } else {
+        generateThumbnail(widget.liveStream.videoLink!).then((thumb) {
+          thumbnailNotifier.value = thumb;
         });
-    }
+        _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
+          Uri.parse(widget.liveStream.videoLink!),
+          invalidateCacheIfOlderThan: const Duration(days: 7),
+        )
+          ..addListener(_videoListener)
+          ..initialize().then((_) {
+            if (mounted && widget.isActive) {
+              _videoPlayerController.play();
+              showPlayButton = true;
+              setState(() {});
+            }
+          });
+      }
   }
 
   Future<void> generateToken() async {
@@ -164,11 +164,8 @@ class _LiveWidgetState extends State<LiveWidget>
         ..play();
       setState(() {});
     }
-    if (_videoPlayerController.value.isPlaying) {
-      isPlaying.value = true;
-    } else {
-      isPlaying.value = false;
-    }
+    isPlaying.value = _videoPlayerController.value.isPlaying;
+    setState(() {});
   }
 
   Future<void> initAgora(String token) async {
@@ -367,13 +364,12 @@ class _LiveWidgetState extends State<LiveWidget>
                               AspectRatio(
                                 aspectRatio:
                                     _videoPlayerController.value.aspectRatio,
-                                child: VideoPlayer(_videoPlayerController),
+                                child: CachedVideoPlayerPlus(_videoPlayerController),
                               ),
                             if (thumbnail != null)
                               AnimatedOpacity(
                                 opacity: (_videoPlayerController
-                                            .value.isInitialized &&
-                                        _videoPlayerController.value.isPlaying)
+                                            .value.isInitialized)
                                     ? 0
                                     : 1,
                                 duration: const Duration(milliseconds: 300),
@@ -577,7 +573,7 @@ class _LiveWidgetState extends State<LiveWidget>
                 left: 0,
                 right: 0,
                 bottom: 0,
-                child: ValueListenableBuilder<VideoPlayerValue>(
+                child: ValueListenableBuilder<CachedVideoPlayerPlusValue>(
                   valueListenable: _videoPlayerController,
                   builder: (context, value, _) {
                     if (!value.isInitialized) return const SizedBox();
@@ -653,7 +649,6 @@ class _LiveWidgetState extends State<LiveWidget>
   @override
   void didUpdateWidget(covariant LiveWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if (widget.isActive && !oldWidget.isActive) {
       configureVideo();
     } else if (!widget.isActive && oldWidget.isActive) {
@@ -667,14 +662,5 @@ class _LiveWidgetState extends State<LiveWidget>
         leaveChannel();
       }
     }
-  }
-
-  Future<Uint8List?> generateThumbnail(String videoUrl) async {
-    final uint8list = await VideoThumbnail.thumbnailData(
-      video: videoUrl,
-      maxWidth: 128,
-      quality: 75,
-    );
-    return uint8list;
   }
 }

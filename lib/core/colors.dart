@@ -12,6 +12,8 @@ class AppColors {
   static const appBackground = Color(0xFF111214);
   static const subHeadingTextColor = Color(0xFFD7D8D9);
 
+  static const greyDark = Color(0xff4b4444);
+
   static const lemon = Color(0xFFA6F164);
   static const blue = Color(0xFF35C1B8);
   static const boxGrey = Color(0xFF24262B);

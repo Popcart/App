@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:form_validator/form_validator.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/dropdown_widget.dart';
 import 'package:popcart/core/utils.dart';
@@ -17,7 +15,6 @@ import 'package:popcart/features/seller/inventory/add_product_variant.dart';
 import 'package:popcart/features/seller/inventory/product_uploaded.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
-import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
 
 class EditProductScreen extends StatefulWidget {

@@ -1,22 +1,7 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
-import 'package:popcart/core/colors.dart' show AppColors;
-import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/live/live_rooms.dart';
 import 'package:popcart/features/buyer/live/scheduled_rooms.dart';
-import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
-import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
-import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
-import 'package:popcart/gen/assets.gen.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class BuyerLiveScreenNav extends StatefulWidget {
   const BuyerLiveScreenNav({super.key});

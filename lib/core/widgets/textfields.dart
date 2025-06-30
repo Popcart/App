@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:pinput/pinput.dart';
-import 'package:popcart/app/router.dart';
 import 'package:popcart/core/colors.dart';
 
 class CustomTextFormField extends TextFormField {
