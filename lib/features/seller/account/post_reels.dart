@@ -7,7 +7,6 @@ import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/seller/models/video_post_response.dart';
-import 'package:popcart/gen/assets.gen.dart';
 
 class PostReels extends StatefulWidget {
   const PostReels({required this.video, required this.isActive, super.key});
@@ -23,7 +22,6 @@ class _PostReelsState extends State<PostReels>
     with AutomaticKeepAliveClientMixin {
   late CachedVideoPlayerPlusController _videoPlayerController;
   late ValueNotifier<bool> isPlaying;
-  bool showPlayButton = false;
   late final ScrollController scrollController;
   late ValueNotifier<Uint8List?> thumbnailNotifier;
 
@@ -56,7 +54,6 @@ class _PostReelsState extends State<PostReels>
       ..initialize().then((_) {
         if (mounted && widget.isActive) {
           _videoPlayerController.play();
-          showPlayButton = true;
           setState(() {});
         }
       });
@@ -65,6 +62,9 @@ class _PostReelsState extends State<PostReels>
   @override
   void dispose() {
     super.dispose();
+    thumbnailNotifier.dispose();
+    scrollController.dispose();
+    isPlaying.dispose();
     if (_videoPlayerController.value.isInitialized) {
       _videoPlayerController
         ..removeListener(_videoListener)
@@ -79,7 +79,6 @@ class _PostReelsState extends State<PostReels>
     if (_videoPlayerController.value.isInitialized &&
         !_videoPlayerController.value.isPlaying &&
         position >= duration) {
-      showPlayButton = false;
       _videoPlayerController
         ..seekTo(Duration.zero)
         ..play();
@@ -117,7 +116,7 @@ class _PostReelsState extends State<PostReels>
                     return Stack(
                       fit: StackFit.expand,
                       children: [
-                        if (_videoPlayerController.value.isInitialized)
+                        if (_videoPlayerController.value.isInitialized && mounted)
                           AspectRatio(
                             aspectRatio:
                                 _videoPlayerController.value.aspectRatio,
@@ -180,9 +179,8 @@ class _PostReelsState extends State<PostReels>
                     ValueListenableBuilder<bool>(
                       valueListenable: isPlaying,
                       builder: (_, playing, __) {
-                        return Icon(playing
-                            ? Icons.pause
-                            : Icons.play_arrow_rounded);
+                        return Icon(
+                            playing ? Icons.pause : Icons.play_arrow_rounded);
                       },
                     ),
                     const SizedBox(

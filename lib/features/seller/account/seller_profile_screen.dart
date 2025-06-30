@@ -205,9 +205,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                                 Navigator.pushNamed(
                                                     context, popPlayScreen,
                                                     arguments: {
-                                                      'post':
-                                                          posts[index],
-                                                      'active': true,
+                                                      'index': index,
+                                                      'posts': posts
                                                     });
                                               },
                                               child: Stack(children: [

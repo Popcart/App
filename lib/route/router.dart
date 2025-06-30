@@ -15,6 +15,7 @@ import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/product/product_screen.dart';
 import 'package:popcart/features/seller/account/create_pop.dart';
 import 'package:popcart/features/seller/account/post_reels.dart';
+import 'package:popcart/features/seller/account/profile_posts.dart';
 import 'package:popcart/features/seller/account/select_video.dart';
 import 'package:popcart/features/seller/account/seller_setings_screen.dart';
 import 'package:popcart/features/seller/analytics/inventory_product_screen.dart';
@@ -145,11 +146,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) {
           final map = settings.arguments! as Map<String, dynamic>;
-          final post = map['post'] as VideoPost;
-          final active = map['active'] as bool;
-          return PostReels(
-            video: post,
-            isActive: active,
+          final posts = map['posts'] as List<VideoPost>;
+          final index = map['index'] as int;
+          return ProfilePosts(
+            posts: posts,
+            index: index,
           );
         },
       );
