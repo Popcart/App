@@ -92,6 +92,7 @@ class _PostReelsState extends State<PostReels>
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
