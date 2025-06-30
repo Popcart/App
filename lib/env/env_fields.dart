@@ -5,4 +5,5 @@ abstract interface class EnvFields {
   abstract final String introGifUrl;
   abstract final String sellerDashboardUrl;
   abstract final String agoraAppId;
+  abstract final String imglyLicenseKey;
 }

@@ -68,6 +68,9 @@ dependencies:
   custom_sliding_segmented_control: ^1.8.5
   get: ^4.7.2
   video_thumbnail: ^0.5.6
+  imgly_editor: 1.53.0
+  photo_manager: ^3.7.1
+  cached_video_player_plus: ^3.0.3
 
 dev_dependencies:
   bloc_test: ^9.1.7

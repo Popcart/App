@@ -5,6 +5,7 @@ import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
 import 'package:popcart/core/repository/order_repo.dart';
+import 'package:popcart/core/repository/pop_play_repo.dart';
 import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
@@ -13,7 +14,7 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory, seller, livestreams, orders, products }
+enum ApiService { auth, user, inventory, seller, livestreams, orders, products, posts }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -52,8 +53,20 @@ Future<void> setupLocator({
           ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/products/'),
       instanceName: ApiService.products.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/posts/'),
+      instanceName: ApiService.posts.name,
+    )
 
 
+    ..registerLazySingleton<PopPlayRepo>(
+      () => PopPlayRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.posts.name,
+        ),
+      ),
+    )
     ..registerLazySingleton<LivestreamsRepo>(
       () => LivestreamsRepoImpl(
         locator.get<ApiHandler>(

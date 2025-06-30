@@ -282,7 +282,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                         GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(Get.context!, searchScreen);
+                              selectedTab.value = 1;
+                              Navigator.pushNamed(context, searchScreen);
                             },
                             child: AppAssets.icons.homeSearch.svg()),
                       ],

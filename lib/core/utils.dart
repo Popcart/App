@@ -5,6 +5,7 @@ import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:intl/intl.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:toastification/toastification.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 String? dotValidator(String? value) {
   if (value != null && !value.contains('.') && !value.contains('@')) {
@@ -207,4 +208,91 @@ Widget userThumbnail(String username) {
     ),
   );
 }
+
+Future<Uint8List?> generateThumbnail(String videoUrl) async {
+  final uint8list = await VideoThumbnail.thumbnailData(
+    video: videoUrl,
+    maxWidth: 128,
+    quality: 75,
+  );
+  return uint8list;
+}
+
+Widget actionCard({
+  required String title,
+  required Widget icon,
+  required void Function() onTap,
+}) {
+  return Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: const Color(0xff24262b),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CircleAvatar(
+          backgroundColor: const Color(0xff111214).withOpacity(0.45),
+          radius: 24,
+          child: icon,
+        ),
+        const Spacer(),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget settingTile({
+  required Widget leading,
+  required String title,
+  required Color color,
+  required void Function() onTap,
+  Color? textColor,
+}) {
+  return ListTile(
+    contentPadding: EdgeInsets.all(10),
+    visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
+    leading: Container(
+      width: 40,
+      height: 40,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: leading,
+    ),
+    title: Text(
+      title,
+      style: TextStyle(
+        color: textColor ?? Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    onTap: onTap,
+    trailing: const Icon(
+      size: 20,
+      Icons.chevron_right,
+      color: Colors.white,
+    ),
+  );
+}
+
+String formatDuration(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, '0');
+  final minutes = twoDigits(duration.inMinutes.remainder(60));
+  final seconds = twoDigits(duration.inSeconds.remainder(60));
+  return '$minutes:$seconds';
+}
+
 

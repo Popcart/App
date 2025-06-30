@@ -111,6 +111,10 @@ class $AssetsIconsGen {
   SvgGenImage get deleteAccount =>
       const SvgGenImage('assets/icons/delete_account.svg');
 
+  /// File path: assets/icons/delete_post.svg
+  SvgGenImage get deletePost =>
+      const SvgGenImage('assets/icons/delete_post.svg');
+
   /// File path: assets/icons/delete_product.svg
   SvgGenImage get deleteProduct =>
       const SvgGenImage('assets/icons/delete_product.svg');
@@ -130,6 +134,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/expanded.svg
   SvgGenImage get expanded => const SvgGenImage('assets/icons/expanded.svg');
+
+  /// File path: assets/icons/eye.svg
+  SvgGenImage get eye => const SvgGenImage('assets/icons/eye.svg');
 
   /// File path: assets/icons/filter_selected.svg
   SvgGenImage get filterSelected =>
@@ -274,6 +281,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/username.svg
   SvgGenImage get username => const SvgGenImage('assets/icons/username.svg');
 
+  /// File path: assets/icons/video_add.svg
+  SvgGenImage get videoAdd => const SvgGenImage('assets/icons/video_add.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     search,
@@ -295,12 +305,14 @@ class $AssetsIconsGen {
     condition,
     delete,
     deleteAccount,
+    deletePost,
     deleteProduct,
     edit,
     engagement,
     errorIcon,
     expand,
     expanded,
+    eye,
     filterSelected,
     findFriends,
     gear,
@@ -342,6 +354,7 @@ class $AssetsIconsGen {
     totalViews,
     unselected,
     username,
+    videoAdd,
   ];
 }
 

@@ -13,12 +13,16 @@ import 'package:popcart/features/onboarding/screens/splash_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
 import 'package:popcart/features/product/product_screen.dart';
+import 'package:popcart/features/seller/account/create_pop.dart';
+import 'package:popcart/features/seller/account/post_reels.dart';
+import 'package:popcart/features/seller/account/select_video.dart';
 import 'package:popcart/features/seller/account/seller_setings_screen.dart';
 import 'package:popcart/features/seller/analytics/inventory_product_screen.dart';
 import 'package:popcart/features/seller/analytics/top_product_screen.dart';
 import 'package:popcart/features/seller/inventory/add_product_screen.dart';
 import 'package:popcart/features/seller/inventory/edit_product_screen.dart';
 import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
+import 'package:popcart/features/seller/models/video_post_response.dart';
 import 'package:popcart/features/seller/seller_home.dart';
 import 'package:popcart/route/route_constants.dart';
 
@@ -65,8 +69,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 
     case sellerSettings:
       return MaterialPageRoute(
-        builder: (context) => const SellerSetingsScreen()
-      );
+          builder: (context) => const SellerSetingsScreen());
 
     //Buyer screens
     case buyerHome:
@@ -117,6 +120,36 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           return SellerLivestreamScreen(
             channelName: map['channelName']!,
             token: map['token']!,
+          );
+        },
+      );
+    case selectVideo:
+      return MaterialPageRoute(
+        builder: (context) {
+          return const SelectVideo();
+        },
+      );
+
+    case createPopPlay:
+      return MaterialPageRoute(
+        builder: (context) {
+          final map = settings.arguments! as Map<String, String?>;
+          return CreatePopScreen(
+            artifact: map['artifact']!,
+            thumbnail: map['thumbnail']!,
+          );
+        },
+      );
+
+    case popPlayScreen:
+      return MaterialPageRoute(
+        builder: (context) {
+          final map = settings.arguments! as Map<String, dynamic>;
+          final post = map['post'] as VideoPost;
+          final active = map['active'] as bool;
+          return PostReels(
+            video: post,
+            isActive: active,
           );
         },
       );

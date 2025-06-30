@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
 import 'package:popcart/app/shared_prefs.dart';
-import 'package:popcart/app/theme_cubit.dart';
+import 'package:popcart/core/utils.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
 
@@ -29,7 +27,7 @@ class SellerSetingsScreen extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
@@ -38,19 +36,19 @@ class SellerSetingsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.personalInformation.svg(),
                     title: 'Personal Information',
                     onTap: () {},
                     color: const Color(0xff279af3),
                   ),
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.paymentMethods.svg(),
                     title: 'Payment Methods',
                     onTap: () {},
                     color: const Color(0xff6fd299),
                   ),
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.addressBook.svg(),
                     title: 'Address Book',
                     onTap: () {},
@@ -77,25 +75,25 @@ class SellerSetingsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.findFriends.svg(),
                     title: 'Find Friends',
                     onTap: () {},
                     color: const Color(0xff8E94f2),
                   ),
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.notifications.svg(),
                     title: 'Notifications',
                     onTap: () {},
                     color: const Color(0xffe0928e),
                   ),
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.becomeASeller.svg(),
                     title: 'Become a seller',
                     onTap: () {},
                     color: const Color(0xff148ab0),
                   ),
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.deleteAccount.svg(),
                     title: 'Delete account',
                     onTap: () {},
@@ -140,11 +138,12 @@ class SellerSetingsScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _settingTile(
+                  settingTile(
                     leading: AppAssets.icons.logOut.svg(),
                     title: 'Log out',
                     onTap: () {
-                      locator<SharedPrefs>().loggedIn = false;
+                      locator.clearApiHandlerToken();
+                      locator<SharedPrefs>().clearAll();
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           onboardingScreenRoute, (route) => false);
                     },
@@ -156,40 +155,6 @@ class SellerSetingsScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _settingTile({
-    required Widget leading,
-    required String title,
-    required Color color,
-    required void Function() onTap,
-    Color? textColor,
-  }) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
-      leading: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: leading,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: textColor ?? Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-      onTap: onTap,
-      trailing: const Icon(
-        Icons.chevron_right,
-        color: Colors.white,
       ),
     );
   }

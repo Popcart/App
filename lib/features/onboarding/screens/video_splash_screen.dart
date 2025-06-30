@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
-import 'package:popcart/app/router_paths.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/l10n/arb/app_localizations.dart';

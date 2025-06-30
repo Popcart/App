@@ -44,4 +44,8 @@ class SharedPrefs {
     _sharedPrefs.setBool('isBuyer', value);
   }
 
+  Future<void> clearAll() async {
+    await _sharedPrefs.clear();
+  }
+
 }
