@@ -5,6 +5,7 @@ import 'package:popcart/core/repository/pop_play_repo.dart';
 import 'package:popcart/features/seller/models/video_post_response.dart';
 
 part 'pop_play_state.dart';
+
 part 'pop_play_cubit.freezed.dart';
 
 class PopPlayCubit extends Cubit<PopPlayState> {
@@ -27,26 +28,45 @@ class PopPlayCubit extends Cubit<PopPlayState> {
         emit(const PopPlayState.uploadSuccess());
       },
       error: (error) {
-        emit(PopPlayState.uploadError(
-            error.message ?? 'An error occurred'));
+        emit(PopPlayState.uploadError(error.message ?? 'An error occurred'));
       },
     );
   }
 
   Future<void> getPosts({
     required String userId,
-}) async {
+  }) async {
     emit(const PopPlayState.loading());
     final response = await _popPlayRepo.getPosts(
-      userId: userId, page: 1, limit: 20,
+      userId: userId,
+      page: 1,
+      limit: 20,
     );
     response.when(
       success: (posts) {
         emit(PopPlayState.loaded(posts?.data?.posts ?? <VideoPost>[]));
       },
       error: (error) {
-        emit(PopPlayState.uploadError(
-            error.message ?? 'An error occurred'));
+        emit(PopPlayState.uploadError(error.message ?? 'An error occurred'));
+      },
+    );
+  }
+
+  Future<void> deletePosts({
+    required String postId,
+    required List<VideoPost> existingPosts,
+  }) async {
+    emit(const PopPlayState.deletePost());
+    final response = await _popPlayRepo.deletePosts(postId: postId);
+    response.when(
+      success: (_) {
+        final updatedPosts =
+            existingPosts.where((post) => post.id != postId).toList();
+        emit(PopPlayState.loaded(updatedPosts));
+      },
+      error: (error) {
+        emit(
+            PopPlayState.postDeleteError(error.message ?? 'An error occurred'));
       },
     );
   }

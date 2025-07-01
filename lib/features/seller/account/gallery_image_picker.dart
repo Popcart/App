@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class GalleryImagePicker extends StatefulWidget {
-
   const GalleryImagePicker({required this.onImageSelected, super.key});
+
   final void Function(AssetEntity image) onImageSelected;
 
   @override
@@ -22,14 +22,21 @@ class _GalleryImagePickerState extends State<GalleryImagePicker> {
   }
 
   Future<void> loadGalleryImages() async {
-    final permission = await PhotoManager.requestPermissionExtend();
-    if (!permission.isAuth) return;
+    try {
+      await PhotoManager.requestPermissionExtend();
 
-    final albums = await PhotoManager.getAssetPathList(type: RequestType.video);
-    final recentAlbum = albums.first;
-    final assets = await recentAlbum.getAssetListPaged(page: 0, size: 100);
+      final albums = await PhotoManager.getAssetPathList(
+        type: RequestType.video,
+        onlyAll: true,
+      );
+      if (albums.isEmpty) return;
+      final recentAlbum = albums.first;
+      final assets = await recentAlbum.getAssetListPaged(page: 0, size: 100);
 
-    setState(() => images = assets);
+      setState(() => images = assets);
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -43,7 +50,8 @@ class _GalleryImagePickerState extends State<GalleryImagePicker> {
       ),
       itemBuilder: (_, index) {
         return FutureBuilder<Uint8List?>(
-          future: images[index].thumbnailDataWithSize(const ThumbnailSize(200, 200)),
+          future: images[index]
+              .thumbnailDataWithSize(const ThumbnailSize(200, 200)),
           builder: (_, snapshot) {
             final data = snapshot.data;
             if (data == null) return const SizedBox.shrink();
@@ -60,7 +68,6 @@ class _GalleryImagePickerState extends State<GalleryImagePicker> {
             );
           },
         );
-
       },
     );
   }

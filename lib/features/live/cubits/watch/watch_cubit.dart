@@ -1,65 +1,47 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
-import 'package:popcart/core/repository/livestreams_repo.dart';
+import 'package:popcart/core/repository/pop_play_repo.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/seller/models/video_post_response.dart';
 
 part 'watch_cubit.freezed.dart';
 part 'watch_state.dart';
 
 class WatchCubit extends Cubit<WatchState> {
   WatchCubit()
-      : _livestreamsRepo = locator<LivestreamsRepo>(),
+      : _popPlayRepo = locator<PopPlayRepo>(),
         super(const WatchState.initial());
 
-  late final LivestreamsRepo _livestreamsRepo;
+  late final PopPlayRepo _popPlayRepo;
 
-  Future<void> getActiveLivestreams() async {
+  Future<void> getAllPostsAndLiveStreams() async {
     emit(const WatchState.loading());
-    final response = await _livestreamsRepo.getActiveLivestreams();
+    final response = await _popPlayRepo.getAllPostAndLiveStreams();
     response.when(
       success: (data) {
-        final baseLiveStream = LiveStream(
-          id: '',
-          user: UserModel.empty(),
-          title: '',
-          products: [],
-          startTime: DateTime.now(),
-          scheduled: false,
-          active: true,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          agoraId: '',
-          v: 0,
-          isVideo: true,
-          videoLink: '',
-          thumbnail: '',
-        );
-        emit(WatchState.success(<LiveStream>[
-          baseLiveStream.copyWith(
-            videoLink:
-                'https://res.cloudinary.com/dvga8tsyy/video/upload/v1750514183/Download_3_nrefot.mp4',
-          ),
-          baseLiveStream.copyWith(
-            videoLink:
-                'https://res.cloudinary.com/dvga8tsyy/video/upload/v1750514183/Download_1_n1e8r1.mp4',
-          ),
-          baseLiveStream.copyWith(
-            videoLink:
-                'https://res.cloudinary.com/dvga8tsyy/video/upload/v1750514186/Download_4_gobvjs.mp4',
-          ),
-          baseLiveStream.copyWith(
-            videoLink:
-                'https://res.cloudinary.com/dvga8tsyy/video/upload/v1750514182/Download_2_ateml8.mp4',
-          ),
-          ...data!.data!
-        ]));
+        final feed = <FeedItem>[];
+        for (final video in data?.data?.posts?? <VideoPost>[]) {
+          feed.add(video);
+        }
+        for (final liveStream in data?.data?.livestreams?? <LiveStream>[]) {
+          feed.add(liveStream);
+        }
+        feed.sort((a, b) {
+          if (a is VideoPost && b is VideoPost) {
+            return b.createdAt.compareTo(a.createdAt);
+          } else if (a is LiveStream && b is LiveStream) {
+            return b.createdAt.compareTo(a.createdAt);
+          } else if (a is VideoPost && b is LiveStream) {
+            return -1; // Video posts come before live streams
+          } else {
+            return 1; // Live streams come after video posts
+          }
+        });
+        emit(WatchState.success(feed));
       },
       error: (error) {
-        emit(
-          WatchState.error(error.message ?? 'An error occurred'),
-        );
+        WatchState.error(error.message ?? 'An error occurred');
       },
     );
   }

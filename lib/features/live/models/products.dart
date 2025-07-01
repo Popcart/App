@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
+import 'package:popcart/features/seller/models/video_post_response.dart';
 import 'package:popcart/features/user/models/user_model.dart';
 
 part 'products.g.dart';
@@ -112,8 +113,8 @@ class SellerConverter implements JsonConverter<UserModel, dynamic> {
   }
 }
 
-@JsonSerializable(createToJson: false)
-class LiveStream {
+@JsonSerializable()
+class LiveStream extends FeedItem{
   LiveStream(
       {required this.id,
       required this.user,
@@ -125,10 +126,7 @@ class LiveStream {
       required this.createdAt,
       required this.updatedAt,
       required this.v,
-      required this.agoraId,
-        this.thumbnail,
-      this.isVideo = false,
-      this.videoLink});
+      required this.agoraId, required this.thumbnail,});
 
   factory LiveStream.empty() => LiveStream(
       id: '',
@@ -142,8 +140,7 @@ class LiveStream {
       updatedAt: DateTime.now(),
       agoraId: '',
       v: 0,
-      isVideo: true,
-      videoLink: '',);
+      thumbnail: '',);
 
   factory LiveStream.fromJson(Map<String, dynamic> json) =>
       _$LiveStreamFromJson(json);
@@ -175,10 +172,6 @@ class LiveStream {
   final int v;
   @JsonKey(name: 'agoraId', defaultValue: '')
   final String agoraId;
-  @JsonKey(name: 'isVideo', defaultValue: false)
-  final bool isVideo;
-  @JsonKey(name: 'videoLink', defaultValue: '')
-  final String? videoLink;
   @JsonKey(name: 'thumbnail', defaultValue: null)
   final String? thumbnail;
 
@@ -215,8 +208,6 @@ class LiveStream {
       updatedAt: updatedAt ?? this.updatedAt,
       agoraId: agoraId ?? this.agoraId,
       v: v ?? this.v,
-      isVideo: isVideo ?? this.isVideo,
-      videoLink: videoLink ?? this.videoLink,
       thumbnail: thumbnail ?? this.thumbnail,
     );
   }
