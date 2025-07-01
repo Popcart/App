@@ -30,9 +30,5 @@ final class QaEnv implements Env, EnvFields {
 
   @override
   @EnviedField(varName: 'IMGLY_LICENSED_KEY')
-  final String imglyLicencedKey = _Env.agoraAppId;
-
-  @override
-  @EnviedField(varName: 'IMGLY_LICENSED_KEY')
   final String imglyLicenseKey = _Env.imglyLicenseKey;
 }
