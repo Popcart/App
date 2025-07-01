@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/user/models/user_model.dart';
 
 part 'video_post_response.g.dart';
 
@@ -36,15 +37,19 @@ class VideoPost extends FeedItem{
     required this.video,
     required this.createdAt,
     required this.updatedAt,
+    required this.views,
   });
 
   factory VideoPost.fromJson(Map<String, dynamic> json) =>
       _$VideoPostFromJson(json);
   @JsonKey(name: '_id')
   final String id;
-  final String user;
+  @SellerConverter()
+  @JsonKey(name: 'user', defaultValue: UserModel.empty)
+  final UserModel user;
   final String caption;
   final String video;
+  final int views;
   final DateTime createdAt;
   final DateTime updatedAt;
   Map<String, dynamic> toJson() => _$VideoPostToJson(this);

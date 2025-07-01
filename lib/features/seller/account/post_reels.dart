@@ -159,6 +159,43 @@ class _PostReelsState extends State<PostReels> {
                       Navigator.of(context).pop();
                     },
                   )),
+              Positioned.fill(
+                bottom: 100,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Spacer(),
+                      Row(
+                        children: [
+                          SizedBox(
+                              height: 20, width: 20,
+                              child: userThumbnail(widget.video.user.username)),
+                          const SizedBox(width: 12),
+                          Text(
+                            widget.video.user.username,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.video.caption,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Positioned(
                 left: 20,
                 right: 20,

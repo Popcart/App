@@ -216,6 +216,23 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                                       snapshot.data!,
                                                       fit: BoxFit.cover) : userThumbnail(posts[index].caption),
                                                 ),
+                                                Positioned.fill(
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(8),
+                                                        gradient: const LinearGradient(
+                                                          begin: Alignment.topCenter,
+                                                          end: Alignment.bottomCenter,
+                                                          colors: [
+                                                            Colors.black54,
+                                                            Colors.transparent,
+                                                            Colors.transparent,
+                                                            Colors.black87,
+                                                          ],
+                                                          stops: [0.0, 0.3, 0.7, 1.0],
+                                                        ),
+                                                      ),
+                                                    )),
                                                 Positioned(
                                                     right: 10,
                                                     top: 10,
@@ -264,7 +281,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                                         const SizedBox(
                                                           width: 10,
                                                         ),
-                                                        const Text('200')
+                                                        Text(posts[index].views
+                                                            .toString())
                                                       ],
                                                     )),
                                               ]),
