@@ -15,7 +15,6 @@ class ProfilePosts extends StatefulWidget {
 class _ProfilePostsState extends State<ProfilePosts> {
   late final PageController _pageController;
   final ValueNotifier<int> currentIndex = ValueNotifier(0);
-
   @override
   void initState() {
     _pageController = PageController(initialPage: widget.index);
@@ -38,7 +37,7 @@ class _ProfilePostsState extends State<ProfilePosts> {
           builder: (_, position, __) {
             return PostReels(
               video: widget.posts[index],
-              isActive: position == index,
+              isActive: position == currentIndex.value,
             );
           },
         );

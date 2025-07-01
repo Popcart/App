@@ -46,7 +46,7 @@ class PopCart extends StatelessWidget {
           create: (context) => ActiveLivestreamsCubit()..getActiveLivestreams(),
         ),
         BlocProvider(
-          create: (context) => WatchCubit()..getActiveLivestreams(),
+          create: (context) => WatchCubit(),
         ),
         BlocProvider(
           create: (context) => ScheduledLivestreamsCubit()..getScheduledLivestreams(),

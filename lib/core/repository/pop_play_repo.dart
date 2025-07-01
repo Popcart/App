@@ -13,6 +13,12 @@ sealed class PopPlayRepo {
     required int page,
     required int limit,
   });
+
+  Future<ApiResponse<void>> deletePosts({
+    required String postId,
+  });
+
+  Future<ApiResponse<VideoPostData>> getAllPostAndLiveStreams();
 }
 
 class PopPlayRepoImpl implements PopPlayRepo {
@@ -50,6 +56,23 @@ class PopPlayRepoImpl implements PopPlayRepo {
         'page': page,
         'limit': limit,
       },
+      responseMapper: VideoPostData.fromJson,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> deletePosts({required String postId}) {
+    return _apiHelper.request<VideoPostData>(
+      path: postId,
+      method: MethodType.delete,
+    );
+  }
+
+  @override
+  Future<ApiResponse<VideoPostData>> getAllPostAndLiveStreams() {
+    return _apiHelper.request<VideoPostData>(
+      path: 'all',
+      method: MethodType.get,
       responseMapper: VideoPostData.fromJson,
     );
   }

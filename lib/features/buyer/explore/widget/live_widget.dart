@@ -14,25 +14,26 @@ import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
-import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
+import 'package:popcart/features/seller/models/video_post_response.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class LiveWidget extends StatefulWidget {
   const LiveWidget(
-      {required this.liveStream, required this.isActive, super.key});
+      {this.liveStream, required this.isActive, super.key, this.videoPost});
 
-  final LiveStream liveStream;
+  final LiveStream? liveStream;
   final bool isActive;
+  final VideoPost? videoPost;
 
   @override
   State<LiveWidget> createState() => _LiveWidgetState();
 }
 
 class _LiveWidgetState extends State<LiveWidget>
-    with AutomaticKeepAliveClientMixin{
+    with AutomaticKeepAliveClientMixin {
   late CachedVideoPlayerPlusController _videoPlayerController;
   int? _remoteUid;
   late ValueNotifier<bool> isPlaying;
@@ -64,48 +65,50 @@ class _LiveWidgetState extends State<LiveWidget>
     scrollController = ScrollController();
     messages = ValueNotifier([]);
     thumbnailNotifier = ValueNotifier(null);
-    configureVideo();
+    if (widget.isActive) configureVideo();
   }
 
   void configureVideo() {
-      if (!widget.liveStream.isVideo) {
-        generateToken();
-      } else {
-        generateThumbnail(widget.liveStream.videoLink!).then((thumb) {
-          thumbnailNotifier.value = thumb;
+    if (widget.liveStream != null) {
+      generateToken();
+    } else {
+      _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
+        Uri.parse(widget.videoPost!.video),
+        invalidateCacheIfOlderThan: const Duration(days: 7),
+      )
+        ..addListener(_videoListener)
+        ..initialize().then((_) {
+          _videoPlayerController
+            ..setLooping(true)
+            ..play();
+          showPlayButton = true;
+          setState(() {});
         });
-        _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
-          Uri.parse(widget.liveStream.videoLink!),
-          invalidateCacheIfOlderThan: const Duration(days: 7),
-        )
-          ..addListener(_videoListener)
-          ..initialize().then((_) {
-            if (mounted && widget.isActive) {
-              _videoPlayerController.play();
-              showPlayButton = true;
-              setState(() {});
-            }
-          });
-      }
+      generateThumbnail(widget.videoPost!.video).then((thumb) {
+        thumbnailNotifier.value = thumb;
+      });
+    }
   }
 
   Future<void> generateToken() async {
-    _remoteUid = null;
-    final openLiveStreamCubit = context.read<OpenLivestreamCubit>();
-    final token = await openLiveStreamCubit.generateAgoraToken(
-      channelName: widget.liveStream.id,
-      agoraRole: 2,
-      uid: 0,
-    );
-    if (token != null) {
-      await initAgora(token);
-    }
+    try {
+      _remoteUid = null;
+      final openLiveStreamCubit = context.read<OpenLivestreamCubit>();
+      final token = await openLiveStreamCubit.generateAgoraToken(
+        channelName: widget.liveStream!.id,
+        agoraRole: 2,
+        uid: 0,
+      );
+      if (token != null) {
+        await initAgora(token);
+      }
+    } catch (e) {}
   }
 
   @override
   void dispose() {
     super.dispose();
-    if (!widget.liveStream.isVideo) {
+    if (widget.liveStream != null) {
       leaveChannel();
     } else {
       if (_videoPlayerController.value.isInitialized) {
@@ -117,21 +120,23 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   Future<void> leaveChannel() async {
-    if (joinedLive) {
-      final username = locator<SharedPrefs>().username;
-      await rtmClient.publish(
-        widget.liveStream.id,
-        '$username left',
-        customType: kLeaveNotification,
-      );
-      rtmClient
-        ..logout()
-        ..release();
-    } else {
-      _engine
-        ..leaveChannel()
-        ..release();
-    }
+    try {
+      if (joinedLive) {
+        final username = locator<SharedPrefs>().username;
+        await rtmClient.publish(
+          widget.liveStream!.id,
+          '$username left',
+          customType: kLeaveNotification,
+        );
+        rtmClient
+          ..logout()
+          ..release();
+      } else {
+        _engine
+          ..leaveChannel()
+          ..release();
+      }
+    } catch (e) {}
   }
 
   Widget _renderVideo() {
@@ -143,7 +148,7 @@ class _LiveWidgetState extends State<LiveWidget>
             uid: _remoteUid,
             renderMode: RenderModeType.renderModeHidden,
           ),
-          connection: RtcConnection(channelId: widget.liveStream.id),
+          connection: RtcConnection(channelId: widget.liveStream!.id),
         ),
       );
     } else {
@@ -152,20 +157,9 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   void _videoListener() {
-    final position = _videoPlayerController.value.position;
-    final duration = _videoPlayerController.value.duration;
-
-    if (_videoPlayerController.value.isInitialized &&
-        !_videoPlayerController.value.isPlaying &&
-        position >= duration) {
-      showPlayButton = false;
-      _videoPlayerController
-        ..seekTo(Duration.zero)
-        ..play();
-      setState(() {});
+    if (_videoPlayerController.value.isInitialized) {
+      isPlaying.value = _videoPlayerController.value.isPlaying;
     }
-    isPlaying.value = _videoPlayerController.value.isPlaying;
-    setState(() {});
   }
 
   Future<void> initAgora(String token) async {
@@ -198,7 +192,7 @@ class _LiveWidgetState extends State<LiveWidget>
       );
       await _engine.joinChannel(
         token: token,
-        channelId: widget.liveStream.id,
+        channelId: widget.liveStream!.id,
         uid: 0,
         options: const ChannelMediaOptions(
           channelProfile: ChannelProfileType.channelProfileLiveBroadcasting,
@@ -255,7 +249,7 @@ class _LiveWidgetState extends State<LiveWidget>
     try {
       final username = locator<SharedPrefs>().username;
       final (status, response) = await rtmClient.publish(
-          widget.liveStream.id, '$username: ${_controller.text}',
+          widget.liveStream!.id, '$username: ${_controller.text}',
           customType: kPlainText);
       if (status.error == true) {
       } else {
@@ -283,13 +277,13 @@ class _LiveWidgetState extends State<LiveWidget>
         final (status, response) = await rtmClient.login(token);
         if (!status.error) {
           final (subStatus, subResponse) =
-              await rtmClient.subscribe(widget.liveStream.id);
+              await rtmClient.subscribe(widget.liveStream!.id);
           if (subStatus.error) {
           } else {
             //User has successfully connected to the live stream.
             // Now send a message to register the count
             final username = locator<SharedPrefs>().username;
-            await rtmClient.publish(widget.liveStream.id, '$username joined',
+            await rtmClient.publish(widget.liveStream!.id, '$username joined',
                 customType: kJoinNotification);
           }
         }
@@ -303,29 +297,29 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   Future<void> showProductModal() async {
-    final product = await showModalBottomSheet<Product>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-          ),
-        ),
-        child: ProductModal(
-          sellerId: widget.liveStream.user.id,
-          products: widget.liveStream.products,
-        ),
-      ),
-    );
+    // final product = await showModalBottomSheet<Product>(
+    //   context: context,
+    //   isScrollControlled: true,
+    //   builder: (_) => Container(
+    //     height: MediaQuery.of(context).size.height * 0.8,
+    //     decoration: BoxDecoration(
+    //       color: Theme.of(context).scaffoldBackgroundColor,
+    //       borderRadius: const BorderRadius.only(
+    //         topLeft: Radius.circular(16),
+    //         topRight: Radius.circular(16),
+    //       ),
+    //     ),
+    //     child: ProductModal(
+    //       sellerId: widget.liveStream.user.id,
+    //       products: widget.liveStream.products,
+    //     ),
+    //   ),
+    // );
 
-    if (product != null) {
-      // print(product);
-      // context.go('/product/${product.id}');
-    }
+    // if (product != null) {
+    // print(product);
+    // context.go('/product/${product.id}');
+    // }
   }
 
   @override
@@ -337,7 +331,7 @@ class _LiveWidgetState extends State<LiveWidget>
       child: GestureDetector(
         onTap: () async {
           // await initRtm();
-          if (widget.liveStream.isVideo) {
+          if (widget.videoPost != null) {
             if (_videoPlayerController.value.isPlaying) {
               await _videoPlayerController.pause();
             } else {
@@ -352,7 +346,7 @@ class _LiveWidgetState extends State<LiveWidget>
               left: 0,
               right: 0,
               bottom: 0,
-              child: !widget.liveStream.isVideo
+              child: widget.liveStream != null
                   ? _renderVideo()
                   : ValueListenableBuilder<Uint8List?>(
                       valueListenable: thumbnailNotifier,
@@ -360,18 +354,20 @@ class _LiveWidgetState extends State<LiveWidget>
                         return Stack(
                           fit: StackFit.expand,
                           children: [
-                            if (_videoPlayerController.value.isInitialized)
+                            if (_videoPlayerController.value.isInitialized &&
+                                mounted)
                               AspectRatio(
                                 aspectRatio:
                                     _videoPlayerController.value.aspectRatio,
-                                child: CachedVideoPlayerPlus(_videoPlayerController),
+                                child: CachedVideoPlayerPlus(
+                                    _videoPlayerController),
                               ),
                             if (thumbnail != null)
                               AnimatedOpacity(
-                                opacity: (_videoPlayerController
-                                            .value.isInitialized)
-                                    ? 0
-                                    : 1,
+                                opacity:
+                                    (_videoPlayerController.value.isInitialized)
+                                        ? 0
+                                        : 1,
                                 duration: const Duration(milliseconds: 300),
                                 child: ImageFiltered(
                                   imageFilter:
@@ -405,8 +401,7 @@ class _LiveWidgetState extends State<LiveWidget>
                 ),
               ),
             )),
-            if (widget.liveStream.isVideo == false &&
-                widget.liveStream.videoLink == null)
+            if (widget.liveStream != null)
               Positioned.fill(
                 bottom: 100,
                 child: Padding(
@@ -453,7 +448,7 @@ class _LiveWidgetState extends State<LiveWidget>
                           ),
                           const SizedBox(width: 12),
                           Text(
-                            widget.liveStream.user.username,
+                            widget.liveStream!.user.username,
                             style: const TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
@@ -560,15 +555,18 @@ class _LiveWidgetState extends State<LiveWidget>
               builder: (_, playing, __) {
                 return Center(
                   child: Visibility(
-                    visible: !isPlaying.value && showPlayButton && widget.liveStream.isVideo,
+                    visible: !isPlaying.value &&
+                        showPlayButton &&
+                        widget.videoPost != null,
                     child: SizedBox(
-                        width: 40, height: 40,
+                        width: 40,
+                        height: 40,
                         child: AppAssets.icons.play.svg()),
                   ),
                 );
               },
             )),
-            if (widget.liveStream.isVideo)
+            if (widget.videoPost != null)
               Positioned(
                 left: 0,
                 right: 0,
@@ -644,21 +642,17 @@ class _LiveWidgetState extends State<LiveWidget>
   }
 
   @override
-  bool get wantKeepAlive => !widget.liveStream.isVideo;
+  bool get wantKeepAlive => widget.liveStream != null;
 
   @override
   void didUpdateWidget(covariant LiveWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
-      configureVideo();
+      if (widget.liveStream != null) {
+        generateToken();
+      }
     } else if (!widget.isActive && oldWidget.isActive) {
-      if (widget.liveStream.isVideo) {
-        if (_videoPlayerController.value.isInitialized) {
-          _videoPlayerController
-            ..removeListener(_videoListener)
-            ..dispose();
-        }
-      } else {
+      if (widget.liveStream != null) {
         leaveChannel();
       }
     }

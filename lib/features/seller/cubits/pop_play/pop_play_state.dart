@@ -8,4 +8,8 @@ class PopPlayState with _$PopPlayState {
   const factory PopPlayState.uploadSuccess() = UploadSuccess;
   const factory PopPlayState.uploadError(String error) = _UploadError;
   const factory PopPlayState.loaded(List<VideoPost> posts) = _Loaded;
+
+  const factory PopPlayState.deletePost() = _DeletingPost;
+  const factory PopPlayState.postDeleted() = _PostDeleted;
+  const factory PopPlayState.postDeleteError(String error) = _PostDeleteError;
 }

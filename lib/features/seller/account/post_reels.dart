@@ -18,8 +18,7 @@ class PostReels extends StatefulWidget {
   State<PostReels> createState() => _PostReelsState();
 }
 
-class _PostReelsState extends State<PostReels>
-    with AutomaticKeepAliveClientMixin {
+class _PostReelsState extends State<PostReels> {
   late CachedVideoPlayerPlusController _videoPlayerController;
   late ValueNotifier<bool> isPlaying;
   late final ScrollController scrollController;
@@ -39,60 +38,48 @@ class _PostReelsState extends State<PostReels>
     isPlaying = ValueNotifier(false);
     scrollController = ScrollController();
     thumbnailNotifier = ValueNotifier(null);
-    configureVideo();
+    if (widget.isActive) configureVideo();
   }
 
   void configureVideo() {
-    generateThumbnail(widget.video.video).then((thumb) {
-      thumbnailNotifier.value = thumb;
-    });
     _videoPlayerController = CachedVideoPlayerPlusController.networkUrl(
       Uri.parse(widget.video.video),
       invalidateCacheIfOlderThan: const Duration(days: 7),
     )
       ..addListener(_videoListener)
       ..initialize().then((_) {
-        if (mounted && widget.isActive) {
-          _videoPlayerController.play();
-          setState(() {});
-        }
+        _videoPlayerController
+          ..setLooping(true)
+          ..play();
+        setState(() {});
       });
+    generateThumbnail(widget.video.video).then((thumb) {
+      thumbnailNotifier.value = thumb;
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
-    thumbnailNotifier.dispose();
-    scrollController.dispose();
-    isPlaying.dispose();
-    if (_videoPlayerController.value.isInitialized) {
-      _videoPlayerController
-        ..removeListener(_videoListener)
-        ..dispose();
-    }
+    _disposeControllers();
+  }
+
+  void _disposeControllers() {
+    _videoPlayerController
+      ..pause()
+      ..removeListener(_videoListener)
+      ..dispose();
   }
 
   void _videoListener() {
-    final position = _videoPlayerController.value.position;
-    final duration = _videoPlayerController.value.duration;
-
-    if (_videoPlayerController.value.isInitialized &&
-        !_videoPlayerController.value.isPlaying &&
-        position >= duration) {
-      _videoPlayerController
-        ..seekTo(Duration.zero)
-        ..play();
-      setState(() {});
+    if (_videoPlayerController.value.isInitialized) {
+      isPlaying.value = _videoPlayerController.value.isPlaying;
     }
-    isPlaying.value = _videoPlayerController.value.isPlaying;
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
-
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -117,7 +104,8 @@ class _PostReelsState extends State<PostReels>
                     return Stack(
                       fit: StackFit.expand,
                       children: [
-                        if (_videoPlayerController.value.isInitialized && mounted)
+                        if (_videoPlayerController.value.isInitialized &&
+                            mounted)
                           AspectRatio(
                             aspectRatio:
                                 _videoPlayerController.value.aspectRatio,
@@ -187,7 +175,9 @@ class _PostReelsState extends State<PostReels>
                     const SizedBox(
                       width: 10,
                     ),
-                    Text(formatDuration(_videoPlayerController.value.position)),
+                    if (_videoPlayerController.value.isInitialized)
+                      Text(formatDuration(
+                          _videoPlayerController.value.position)),
                     const SizedBox(
                       width: 5,
                     ),
@@ -224,7 +214,9 @@ class _PostReelsState extends State<PostReels>
                     const SizedBox(
                       width: 5,
                     ),
-                    Text(formatDuration(_videoPlayerController.value.duration)),
+                    if (_videoPlayerController.value.isInitialized)
+                      Text(formatDuration(
+                          _videoPlayerController.value.duration)),
                   ],
                 ),
               )
@@ -233,23 +225,5 @@ class _PostReelsState extends State<PostReels>
         ),
       ),
     );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void didUpdateWidget(covariant PostReels oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.isActive && !oldWidget.isActive) {
-      configureVideo();
-    } else if (!widget.isActive && oldWidget.isActive) {
-      if (_videoPlayerController.value.isInitialized) {
-        _videoPlayerController
-          ..removeListener(_videoListener)
-          ..dispose();
-      }
-    }
   }
 }

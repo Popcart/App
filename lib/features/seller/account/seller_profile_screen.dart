@@ -26,7 +26,6 @@ class SellerProfileScreen extends StatefulWidget {
 class _SellerProfileScreenState extends State<SellerProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  int _selectedIndex = 0;
 
   final tabs = [
     'Live Rooms',
@@ -34,7 +33,6 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
   ];
 
   void _onTabTap(int index) {
-    setState(() => _selectedIndex = index);
     _tabController.animateTo(index,
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
@@ -213,23 +211,58 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                                 ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(8),
-                                                  child: Image.memory(
+                                                  child: snapshot.data != null ?
+                                                  Image.memory(
                                                       width: double.infinity,
                                                       snapshot.data!,
-                                                      fit: BoxFit.cover),
+                                                      fit: BoxFit.cover) :
+                                                  userThumbnail(posts[index].caption),
                                                 ),
                                                 Positioned(
                                                     right: 10,
                                                     top: 10,
-                                                    child: AppAssets
-                                                        .icons.deletePost
-                                                        .svg()),
+                                                    child: GestureDetector(
+                                                      onTap: () async {
+                                                        final result = await showAdaptiveDialog<bool>(
+                                                          context: context,
+                                                          builder: (context) => AlertDialog.adaptive(
+                                                            title: const Text('Deleting post'),
+                                                            content: const Text('Do you want to delete this post?'),
+                                                            actions: [
+                                                              TextButton(
+                                                                onPressed: () => Navigator.of(context).pop(false),
+                                                                child: const Text('Cancel'),
+                                                              ),
+                                                              TextButton(
+                                                                onPressed: () => Navigator.of(context).pop(true),
+                                                                child: const Text('Yes'),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        );
+                                                        if (result != null && result && context.mounted) {
+                                                          await context
+                                                              .read<
+                                                              PopPlayCubit>()
+                                                              .deletePosts(
+                                                              postId:
+                                                              posts[index]
+                                                                  .id,
+                                                              existingPosts: posts);
+                                                        }
+
+                                                      },
+                                                      child: AppAssets
+                                                          .icons.deletePost
+                                                          .svg(),
+                                                    )),
                                                 Positioned(
                                                     bottom: 10,
                                                     left: 10,
                                                     child: Row(
                                                       children: [
-                                                        AppAssets.icons.eye.svg(),
+                                                        AppAssets.icons.eye
+                                                            .svg(),
                                                         const SizedBox(
                                                           width: 10,
                                                         ),
