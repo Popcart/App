@@ -197,7 +197,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                               child:
                                                   CupertinoActivityIndicator(),
                                             );
-                                          } else if (snapshot.hasData) {
+                                          } else if (snapshot.hasData || !snapshot.hasData) {
                                             return GestureDetector(
                                               onTap: () {
                                                 Navigator.pushNamed(
@@ -211,12 +211,10 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                                 ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(8),
-                                                  child: snapshot.data != null ?
-                                                  Image.memory(
+                                                  child: snapshot.data != null ? Image.memory(
                                                       width: double.infinity,
                                                       snapshot.data!,
-                                                      fit: BoxFit.cover) :
-                                                  userThumbnail(posts[index].caption),
+                                                      fit: BoxFit.cover) : userThumbnail(posts[index].caption),
                                                 ),
                                                 Positioned(
                                                     right: 10,

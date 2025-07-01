@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:imgly_editor/imgly_editor.dart';
-import 'package:popcart/env/env.dart';
 import 'package:popcart/features/seller/account/gallery_image_picker.dart';
 import 'package:popcart/route/route_constants.dart';
 
@@ -15,7 +14,7 @@ class SelectVideo extends StatefulWidget {
 
 class _SelectVideoState extends State<SelectVideo> {
   final settings = EditorSettings(
-    license: Env().imglyLicenseKey,
+    license: 'iH3Dvnh2R48T6kcPiJMZp_855fGRrCwZHMTxLCHxL7XuXkmyyS9Jzi4K2LfbidDI',
   );
 
   @override
