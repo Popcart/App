@@ -403,7 +403,7 @@ class _LiveWidgetState extends State<LiveWidget>
             )),
             if (widget.liveStream != null)
               Positioned.fill(
-                bottom: 100,
+                bottom: 20,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -462,7 +462,43 @@ class _LiveWidgetState extends State<LiveWidget>
                 ),
               )
             else
-              const SizedBox(),
+              Positioned.fill(
+                bottom: 20,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Spacer(),
+                      Row(
+                        children: [
+                          SizedBox(
+                              height: 20, width: 20,
+                              child: userThumbnail(widget.videoPost?.user.username??'')),
+                          const SizedBox(width: 12),
+                          Text(
+                            '${widget.videoPost?.user.username}',
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.videoPost?.caption??'',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Visibility(
               visible: joinedLive,
               child: Positioned.fill(
