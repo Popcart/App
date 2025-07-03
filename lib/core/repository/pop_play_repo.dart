@@ -18,6 +18,10 @@ sealed class PopPlayRepo {
     required String postId,
   });
 
+  Future<ApiResponse<void>> markVideoAsWatched({
+    required String postId,
+  });
+
   Future<ApiResponse<VideoPostData>> getAllPostAndLiveStreams();
 }
 
@@ -74,6 +78,15 @@ class PopPlayRepoImpl implements PopPlayRepo {
       path: 'all',
       method: MethodType.get,
       responseMapper: VideoPostData.fromJson,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> markVideoAsWatched({required String postId}) {
+    return _apiHelper.request<VideoPostData>(
+      path: postId,
+      queryParameters: {'postId': postId},
+      method: MethodType.get,
     );
   }
 }

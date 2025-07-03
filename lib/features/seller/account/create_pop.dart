@@ -30,7 +30,8 @@ class _CreatePopScreenState extends State<CreatePopScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<Duration> getVideoDuration(String path) async {
-    final controller = CachedVideoPlayerPlusController.file(File(Uri.parse(path).path));
+    final controller =
+        CachedVideoPlayerPlusController.file(File(Uri.parse(path).path));
     await controller.initialize();
     final duration = controller.value.duration;
     await controller.dispose();
@@ -76,8 +77,7 @@ class _CreatePopScreenState extends State<CreatePopScreen> {
                     ),
                     child: const ProductUploaded(
                       title: 'Post Added Successfully!',
-                      description:
-                      'Your new post is now live',
+                      description: 'Your new post is now live',
                     ),
                   ),
                 );
@@ -86,99 +86,101 @@ class _CreatePopScreenState extends State<CreatePopScreen> {
               },
             );
           },
-  child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                              child: Stack(
-                                children: [
-                                  Container(
-                                    width: 200,
-                                    height: 300,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: FileImage(File(
-                                            Uri.parse(widget.thumbnail).path)),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    right: 10,
-                                    top: 10,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(10),
+          child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Center(
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 200,
+                                      height: 300,
                                       decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        color: AppColors.greyDark,
-                                      ),
-                                      child: Text(
-                                        videoDuration,
-                                        style: const TextStyle(
-                                            color: AppColors.white,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold),
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: FileImage(File(
+                                              Uri.parse(widget.thumbnail)
+                                                  .path)),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Positioned(
+                                      right: 10,
+                                      top: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                          color: AppColors.greyDark,
+                                        ),
+                                        child: Text(
+                                          videoDuration,
+                                          style: const TextStyle(
+                                              color: AppColors.white,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            const Text('Video Caption',
-                                style: TextStyles.textTitle),
-                            const SizedBox(height: 10),
-                            CustomTextFormField(
-                              validator: ValidationBuilder().required().build(),
-                              controller: caption,
-                              hintText: 'Caption',
-                              textInputAction: TextInputAction.next,
-                            ),
-                            const Spacer(),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            CustomElevatedButton(
-                              loading: context
-                                  .watch<PopPlayCubit>()
-                                  .state
-                                  .whenOrNull(
-                                loading: () => true,
-                              ) ??
-                                  false,
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  context.read<PopPlayCubit>().uploadPost(
-                                        video: widget.artifact,
-                                        caption: caption.text,
-                                      );
-                                }
-                              },
-                              text: 'Done',
-                              showIcon: false,
-                            ),
-                            const SizedBox(height: 40),
-                          ],
+                              const SizedBox(height: 10),
+                              const Text('Video Caption',
+                                  style: TextStyles.textTitle),
+                              const SizedBox(height: 10),
+                              CustomTextFormField(
+                                validator:
+                                    ValidationBuilder().required().build(),
+                                controller: caption,
+                                hintText: 'Caption',
+                                textInputAction: TextInputAction.next,
+                              ),
+                              const Spacer(),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              CustomElevatedButton(
+                                loading: context
+                                        .watch<PopPlayCubit>()
+                                        .state
+                                        .whenOrNull(
+                                          loading: () => true,
+                                        ) ??
+                                    false,
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    context.read<PopPlayCubit>().uploadPost(
+                                          video: widget.artifact,
+                                          caption: caption.text,
+                                        );
+                                  }
+                                },
+                                text: 'Done',
+                                showIcon: false,
+                              ),
+                              const SizedBox(height: 40),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            )),
-));
+                  );
+                },
+              )),
+        ));
   }
 }

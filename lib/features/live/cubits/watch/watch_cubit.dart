@@ -28,16 +28,11 @@ class WatchCubit extends Cubit<WatchState> {
           feed.add(liveStream);
         }
         feed.sort((a, b) {
-          if (a is VideoPost && b is VideoPost) {
-            return b.createdAt.compareTo(a.createdAt);
-          } else if (a is LiveStream && b is LiveStream) {
-            return b.createdAt.compareTo(a.createdAt);
-          } else if (a is VideoPost && b is LiveStream) {
-            return -1; // Video posts come before live streams
-          } else {
-            return 1; // Live streams come after video posts
-          }
+          final aDate = a is VideoPost ? a.createdAt : (a as LiveStream).createdAt;
+          final bDate = b is VideoPost ? b.createdAt : (b as LiveStream).createdAt;
+          return bDate.compareTo(aDate);
         });
+
         emit(WatchState.success(feed));
       },
       error: (error) {

@@ -6,12 +6,14 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/features/buyer/explore/watch_screen.dart';
 import 'package:popcart/features/buyer/explore/widget/interest_filter.dart';
+import 'package:popcart/features/buyer/explore/widget/live_pop_up.dart';
 import 'package:popcart/features/buyer/explore/widget/product_search.dart';
 import 'package:popcart/features/buyer/live/buyer_livestream_screen.dart';
 import 'package:popcart/features/components/network_image.dart';
@@ -291,7 +293,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   )),
               child: value == 1
                   ? RefreshIndicator.adaptive(
-                displacement: 120,
+                      displacement: 120,
                       onRefresh: () async {
                         await context
                             .read<ActiveLivestreamsCubit>()
@@ -824,7 +826,7 @@ class _StoresCardState extends State<StoresCard> {
       ),
       child: Column(
         children: [
-          NetworkImageWithLoader(''),
+          const NetworkImageWithLoader(''),
           const SizedBox(height: 8),
           Text(
             widget.userModel.businessProfile.businessName,

@@ -2,6 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
+import 'package:popcart/features/buyer/explore/widget/live_pop_up.dart';
 import 'package:popcart/features/buyer/explore/widget/live_widget.dart';
 import 'package:popcart/features/live/cubits/watch/watch_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
@@ -21,12 +25,30 @@ class _WatchScreenState extends State<WatchScreen> {
   void initState() {
     super.initState();
     context.read<WatchCubit>().getAllPostsAndLiveStreams();
+    showPopUpDialog();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final watchCubit = context.watch<WatchCubit>();
-    return RefreshIndicator.adaptive(
+  void showPopUpDialog() {
+    final showPopup = locator<SharedPrefs>().showFundWalletDialog;
+    if (showPopup) {
+      Future.delayed(const Duration(seconds: 1), () {
+        showDialog<void>(
+          context: Get.context!,
+          builder: (_) =>
+              Dialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: const LivePopUp()
+              ),
+        );
+      });
+    }
+  }
+
+    @override
+    Widget build(BuildContext context) {
+      final watchCubit = context.watch<WatchCubit>();
+      return RefreshIndicator.adaptive(
         onRefresh: () async {
           unawaited(watchCubit.getAllPostsAndLiveStreams());
         },
@@ -57,6 +79,6 @@ class _WatchScreenState extends State<WatchScreen> {
             );
           },
         ),
-    );
+      );
+    }
   }
-}

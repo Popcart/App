@@ -390,7 +390,6 @@ class _SellerLiveNavState extends State<SellerLiveNav> {
                   'channelName': generatedLiveStream?.id,
                 });
               }else{
-                print("Live schedule created");
                 await context.showSuccess('Live stream scheduled successfully');
                 Navigator.pop(context);
               }
