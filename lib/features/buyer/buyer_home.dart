@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
 import 'package:popcart/features/buyer/explore/explore_screen.dart';
 import 'package:popcart/features/buyer/live/buyer_live_screen_nav.dart';
+import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
 class BuyerHome extends StatefulWidget {
@@ -29,6 +31,12 @@ class _BuyerHomeState extends State<BuyerHome>{
       src,
       height: 24,
     );
+  }
+
+  @override
+  void initState() {
+    context.read<ProfileCubit>().fetchUserProfile();
+    super.initState();
   }
 
   @override

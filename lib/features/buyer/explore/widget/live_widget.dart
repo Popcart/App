@@ -16,6 +16,7 @@ import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
+import 'package:popcart/features/seller/cubits/pop_play/pop_play_cubit.dart';
 import 'package:popcart/features/seller/live/seller_livestream_screen.dart';
 import 'package:popcart/features/seller/models/video_post_response.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -156,9 +157,18 @@ class _LiveWidgetState extends State<LiveWidget>
     }
   }
 
+  bool markVideoWatched = false;
   void _videoListener() {
     if (_videoPlayerController.value.isInitialized) {
       isPlaying.value = _videoPlayerController.value.isPlaying;
+      if(!markVideoWatched &&
+          _videoPlayerController.value.position.inSeconds >= 5) {
+        markVideoWatched = true;
+        context.read<PopPlayCubit>()
+        .markVideoAsWatched(
+          postId: widget.videoPost!.id,
+        );
+      }
     }
   }
 
@@ -484,6 +494,22 @@ class _LiveWidgetState extends State<LiveWidget>
                               color: Colors.white,
                             ),
                           ),
+                          const SizedBox(width: 10,),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: AppColors.orange,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: const Text(
+                              'Follow',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          )
                         ],
                       ),
                       const SizedBox(height: 10),

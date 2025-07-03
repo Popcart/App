@@ -70,4 +70,10 @@ class PopPlayCubit extends Cubit<PopPlayState> {
       },
     );
   }
+
+  Future<void> markVideoAsWatched({
+    required String postId,
+  }) async {
+    await _popPlayRepo.markVideoAsWatched(postId: postId);
+  }
 }

@@ -13,6 +13,7 @@ class SharedPrefs {
   String? get refreshToken => _sharedPrefs.getString('refreshToken');
   bool get loggedIn => _sharedPrefs.getBool('loggedIn') ?? false;
   bool get isBuyer => _sharedPrefs.getBool('isBuyer') ?? false;
+  bool get showFundWalletDialog => _sharedPrefs.getBool('showFundWallet') ?? true;
   String get userUid => _sharedPrefs.getString('uid') ?? '';
   String get username => _sharedPrefs.getString('username') ?? '';
 
@@ -30,6 +31,10 @@ class SharedPrefs {
 
   set loggedIn(bool value) {
     _sharedPrefs.setBool('loggedIn', value);
+  }
+
+  set showFundWalletDialog(bool value) {
+    _sharedPrefs.setBool('showFundWallet', value);
   }
 
   set userUid(String value) {

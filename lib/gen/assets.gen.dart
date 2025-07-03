@@ -381,6 +381,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/buyer.png
   AssetGenImage get buyer => const AssetGenImage('assets/images/buyer.png');
 
+  /// File path: assets/images/designer_bag.png
+  AssetGenImage get designerBag =>
+      const AssetGenImage('assets/images/designer_bag.png');
+
   /// File path: assets/images/dotted_lines.png
   AssetGenImage get dottedLines =>
       const AssetGenImage('assets/images/dotted_lines.png');
@@ -403,6 +407,7 @@ class $AssetsImagesGen {
     bag,
     box,
     buyer,
+    designerBag,
     dottedLines,
     girl,
     seller,
