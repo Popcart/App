@@ -84,7 +84,7 @@ class PopPlayRepoImpl implements PopPlayRepo {
   @override
   Future<ApiResponse<void>> markVideoAsWatched({required String postId}) {
     return _apiHelper.request<VideoPostData>(
-      path: postId,
+      path: 'watch/$postId',
       queryParameters: {'postId': postId},
       method: MethodType.get,
     );
