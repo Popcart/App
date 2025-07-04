@@ -2,15 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:popcart/app/app.module.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/wallet/cubit/wallet_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
 
-class BuyerProfileScreen extends StatelessWidget {
+class BuyerProfileScreen extends StatefulWidget {
   const BuyerProfileScreen({super.key});
+
+  @override
+  State<BuyerProfileScreen> createState() => _BuyerProfileScreenState();
+}
+
+class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
+  final balance = locator<SharedPrefs>().walletBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +114,8 @@ class BuyerProfileScreen extends StatelessWidget {
                     onTap: () {},
                   ),
                   actionCard(
-                    title: 'Boosts',
-                    icon: AppAssets.icons.boosts.svg(),
+                    title: balance.toCurrency(),
+                    icon: AppAssets.icons.wallet.svg(),
                     onTap: () {},
                   ),
                   actionCard(

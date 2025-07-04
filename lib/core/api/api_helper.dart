@@ -50,7 +50,9 @@ class ApiSuccess<T> {
       message: (json['message']) as String?,
       status: json['status'] as bool?,
       accessToken: json['access_token'] as String?,
-      data: fromJson?.call(json['data'] as Map<String, dynamic>),
+      data: fromJson != null && json['data'] != null
+          ? fromJson(json['data'] as Map<String, dynamic>)
+          : fromJson?.call(json),
     );
   }
 

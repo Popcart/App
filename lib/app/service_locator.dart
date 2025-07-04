@@ -9,12 +9,13 @@ import 'package:popcart/core/repository/pop_play_repo.dart';
 import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
+import 'package:popcart/core/repository/wallet_repo.dart';
 import 'package:popcart/env/env.dart';
 // import 'package:twilio_flutter/twilio_flutter.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory, seller, livestreams, orders, products, posts }
+enum ApiService { auth, user, inventory, seller, livestreams, orders, products, posts, wallet }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -58,8 +59,20 @@ Future<void> setupLocator({
           ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/posts/'),
       instanceName: ApiService.posts.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: '${Env().walletServiceBaseUrl}/wallets/'),
+      instanceName: ApiService.wallet.name,
+    )
 
 
+    ..registerLazySingleton<WalletRepo>(
+      () => WalletRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.wallet.name,
+        ),
+      ),
+    )
     ..registerLazySingleton<PopPlayRepo>(
       () => PopPlayRepoImpl(
         locator.get<ApiHandler>(
@@ -116,26 +129,6 @@ Future<void> setupLocator({
       ),
     ),
   );
-  //  ..registerLazySingleton<PeerToPeerRepository>(
-  //   () => PeerToPeerRepositoryImpl(
-  //     locator.get<ApiHandler>(
-  //       instanceName: ApiService.auth.name,
-  //     ),
-  //   ),
-  // )
-  // ..registerLazySingleton<PaymentRepository>(
-  //   () => PaymentRepositoryImpl(
-  //     locator.get<ApiHandler>(
-  //       instanceName: ApiService.auth.name,
-  //     ),
-  //   ),
-  // )..registerLazySingleton<ProfileRepository>(
-  //   () => ProfileRepositoryImpl(
-  //     locator.get<ApiHandler>(
-  //       instanceName: ApiService.auth.name,
-  //     ),
-  //   ),
-  // );
 }
 
 extension GetItExtensions on GetIt {

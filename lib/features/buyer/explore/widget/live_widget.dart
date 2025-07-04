@@ -33,11 +33,11 @@ class LiveWidget extends StatefulWidget {
   State<LiveWidget> createState() => _LiveWidgetState();
 }
 
-class _LiveWidgetState extends State<LiveWidget>
-    with AutomaticKeepAliveClientMixin {
+class _LiveWidgetState extends State<LiveWidget> {
   late CachedVideoPlayerPlusController _videoPlayerController;
   int? _remoteUid;
   late ValueNotifier<bool> isPlaying;
+  late ValueNotifier<bool> joinedLive;
   bool showPlayButton = false;
   late RtcEngine _engine;
   late ValueNotifier<int> userJoined;
@@ -45,7 +45,6 @@ class _LiveWidgetState extends State<LiveWidget>
   late final TextEditingController _controller;
   late final ValueNotifier<List<MessageModel>> messages;
   late final ScrollController scrollController;
-  bool joinedLive = false;
   late ValueNotifier<Uint8List?> thumbnailNotifier;
 
   void scrollToBottom() {
@@ -61,6 +60,7 @@ class _LiveWidgetState extends State<LiveWidget>
     super.initState();
     userJoined = ValueNotifier(0);
     isPlaying = ValueNotifier(false);
+    joinedLive = ValueNotifier(false);
     showPlayButton = false;
     _controller = TextEditingController();
     scrollController = ScrollController();
@@ -83,7 +83,9 @@ class _LiveWidgetState extends State<LiveWidget>
             ..setLooping(true)
             ..play();
           showPlayButton = true;
-          setState(() {});
+          if (mounted) {
+            setState(() {});
+          }
         });
       generateThumbnail(widget.videoPost!.video).then((thumb) {
         thumbnailNotifier.value = thumb;
@@ -122,7 +124,7 @@ class _LiveWidgetState extends State<LiveWidget>
 
   Future<void> leaveChannel() async {
     try {
-      if (joinedLive) {
+      if (joinedLive.value) {
         final username = locator<SharedPrefs>().username;
         await rtmClient.publish(
           widget.liveStream!.id,
@@ -137,6 +139,7 @@ class _LiveWidgetState extends State<LiveWidget>
           ..leaveChannel()
           ..release();
       }
+      joinedLive.value = false;
     } catch (e) {}
   }
 
@@ -152,22 +155,22 @@ class _LiveWidgetState extends State<LiveWidget>
           connection: RtcConnection(channelId: widget.liveStream!.id),
         ),
       );
-    } else {
-      return const Center(child: CircularProgressIndicator());
-    }
+    } return widget.liveStream?.thumbnail != null
+        ? Image.network(widget.liveStream!.thumbnail!, fit: BoxFit.fill,)
+        : const CircularProgressIndicator();
   }
 
   bool markVideoWatched = false;
+
   void _videoListener() {
     if (_videoPlayerController.value.isInitialized) {
       isPlaying.value = _videoPlayerController.value.isPlaying;
-      if(!markVideoWatched &&
+      if (!markVideoWatched &&
           _videoPlayerController.value.position.inSeconds >= 5) {
         markVideoWatched = true;
-        context.read<PopPlayCubit>()
-        .markVideoAsWatched(
-          postId: widget.videoPost!.id,
-        );
+        context.read<PopPlayCubit>().markVideoAsWatched(
+              postId: widget.videoPost!.id,
+            );
       }
     }
   }
@@ -218,9 +221,6 @@ class _LiveWidgetState extends State<LiveWidget>
 
   Future<void> initRtm() async {
     try {
-      setState(() {
-        joinedLive = true;
-      });
       final userId = locator<SharedPrefs>().userUid;
       final (status, client) = await RTM(Env().agoraAppId, userId);
       if (status.error == true) {
@@ -252,7 +252,9 @@ class _LiveWidgetState extends State<LiveWidget>
           },
           linkState: (event) {});
       await loginToSignal();
-    } catch (e) {}
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _send() async {
@@ -295,6 +297,7 @@ class _LiveWidgetState extends State<LiveWidget>
             final username = locator<SharedPrefs>().username;
             await rtmClient.publish(widget.liveStream!.id, '$username joined',
                 customType: kJoinNotification);
+            joinedLive.value = true;
           }
         }
       }
@@ -334,20 +337,22 @@ class _LiveWidgetState extends State<LiveWidget>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: GestureDetector(
         onTap: () async {
-          // await initRtm();
           if (widget.videoPost != null) {
             if (_videoPlayerController.value.isPlaying) {
               await _videoPlayerController.pause();
             } else {
               await _videoPlayerController.play();
             }
-          } else {}
+          } else {
+            if (!joinedLive.value) {
+              await initRtm();
+            }
+          }
         },
         child: Stack(
           children: [
@@ -412,65 +417,189 @@ class _LiveWidgetState extends State<LiveWidget>
               ),
             )),
             if (widget.liveStream != null)
-              Positioned.fill(
-                bottom: 20,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        ValueListenableBuilder(
+        valueListenable: joinedLive,
+        builder: (_, joinedLive, __) {
+          return !joinedLive
+              ? Positioned.fill(
+            bottom: 20,
+            top: 10,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Spacer(),
+                  IntrinsicWidth(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xffcc0000),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        children: [
+                          AppAssets.icons.radar.svg(),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          const Text(
+                            'Live',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
                     children: [
-                      const Spacer(),
-                      IntrinsicWidth(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            color: const Color(0xffcc0000),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: Row(
-                            children: [
-                              AppAssets.icons.radar.svg(),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              const Text(
-                                'Live',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                      const CircleAvatar(
+                        radius: 12,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        widget.liveStream!.user.username,
+                        style: const TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          )
+              : Positioned.fill(
+            top: 120,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const CircleAvatar(
+                        radius: 12,
                       ),
-                      Row(
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            radius: 12,
-                          ),
-                          const SizedBox(width: 12),
                           Text(
                             widget.liveStream!.user.username,
                             style: const TextStyle(
-                              fontSize: 17,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const Text(
+                            '0 followers',
+                            style: TextStyle(
+                              fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xfff97316),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Follow',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xff4B4444)
+                                  .withOpacity(0.5),
+                              borderRadius:
+                              BorderRadius.circular(100),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.remove_red_eye_outlined,
+                                  color: Colors.white,
+                                  size: 12,
+                                ),
+                                const SizedBox(width: 4),
+                                ValueListenableBuilder<int>(
+                                    valueListenable: userJoined,
+                                    builder: (context, count, _) {
+                                      return Text(
+                                        count.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      );
+                                    }),
+                                const SizedBox(width: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 4,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xffcc0000),
+                                    borderRadius:
+                                    BorderRadius.circular(100),
+                                  ),
+                                  child: const Text(
+                                    'Live',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              )
+                ],
+              ),
+            ),
+          );
+        })
             else
               Positioned.fill(
                 bottom: 20,
@@ -483,8 +612,10 @@ class _LiveWidgetState extends State<LiveWidget>
                       Row(
                         children: [
                           SizedBox(
-                              height: 20, width: 20,
-                              child: userThumbnail(widget.videoPost?.user.username??'')),
+                              height: 20,
+                              width: 20,
+                              child: userThumbnail(
+                                  widget.videoPost?.user.username ?? '')),
                           const SizedBox(width: 12),
                           Text(
                             '${widget.videoPost?.user.username}',
@@ -494,9 +625,12 @@ class _LiveWidgetState extends State<LiveWidget>
                               color: Colors.white,
                             ),
                           ),
-                          const SizedBox(width: 10,),
+                          const SizedBox(
+                            width: 10,
+                          ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
                             decoration: BoxDecoration(
                               color: AppColors.orange,
                               borderRadius: BorderRadius.circular(100),
@@ -514,7 +648,7 @@ class _LiveWidgetState extends State<LiveWidget>
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        widget.videoPost?.caption??'',
+                        widget.videoPost?.caption ?? '',
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -525,92 +659,102 @@ class _LiveWidgetState extends State<LiveWidget>
                   ),
                 ),
               ),
-            Visibility(
-              visible: joinedLive,
-              child: Positioned.fill(
-                top: 50,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: SafeArea(
-                    maintainBottomViewPadding: true,
-                    child: FooterLayout(
-                      footer: KeyboardAttachable(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height * 0.4,
-                                ),
-                                child: SingleChildScrollView(
-                                  reverse: true,
-                                  child: ValueListenableBuilder<
-                                      List<MessageModel>>(
-                                    valueListenable: messages,
-                                    builder: (context, messages, _) {
-                                      return ListView.builder(
-                                        shrinkWrap: true,
-                                        controller: scrollController,
-                                        itemCount: messages.length,
-                                        padding: EdgeInsets.zero,
-                                        itemBuilder: (context, i) => ListTile(
-                                          contentPadding: EdgeInsets.zero,
-                                          minVerticalPadding: 0,
-                                          visualDensity: VisualDensity.compact,
-                                          dense: true,
-                                          leading: const Icon(
-                                            Icons.account_circle_rounded,
-                                            color: AppColors.white,
-                                          ),
-                                          title: Text(messages[i].message,
-                                              style: const TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: Colors.white,
-                                              )),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: chatBox(),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  GestureDetector(
-                                    onTap: showProductModal,
-                                    behavior: HitTestBehavior.opaque,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                            color: Colors.white, width: 0.5),
+            ValueListenableBuilder(
+                valueListenable: joinedLive,
+                builder: (_, joinedLive, __) {
+                  return Visibility(
+                    visible: joinedLive,
+                    child: Positioned.fill(
+                      top: 50,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SafeArea(
+                          maintainBottomViewPadding: true,
+                          child: FooterLayout(
+                            footer: KeyboardAttachable(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxHeight:
+                                            MediaQuery.of(context).size.height *
+                                                0.4,
                                       ),
-                                      child: AppAssets.icons.storefront.svg(),
+                                      child: SingleChildScrollView(
+                                        reverse: true,
+                                        child: ValueListenableBuilder<
+                                            List<MessageModel>>(
+                                          valueListenable: messages,
+                                          builder: (context, messages, _) {
+                                            return ListView.builder(
+                                              shrinkWrap: true,
+                                              controller: scrollController,
+                                              itemCount: messages.length,
+                                              padding: EdgeInsets.zero,
+                                              itemBuilder: (context, i) =>
+                                                  ListTile(
+                                                contentPadding: EdgeInsets.zero,
+                                                minVerticalPadding: 0,
+                                                visualDensity:
+                                                    VisualDensity.compact,
+                                                dense: true,
+                                                leading: const Icon(
+                                                  Icons.account_circle_rounded,
+                                                  color: AppColors.white,
+                                                ),
+                                                title: Text(messages[i].message,
+                                                    style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.white,
+                                                    )),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: chatBox(),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        GestureDetector(
+                                          onTap: showProductModal,
+                                          behavior: HitTestBehavior.opaque,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(16),
+                                            decoration: BoxDecoration(
+                                              color: Colors.transparent,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 0.5),
+                                            ),
+                                            child: AppAssets.icons.storefront
+                                                .svg(),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
+                  );
+                }),
             Positioned(
                 child: ValueListenableBuilder<bool>(
               valueListenable: isPlaying,
@@ -703,20 +847,20 @@ class _LiveWidgetState extends State<LiveWidget>
     );
   }
 
-  @override
-  bool get wantKeepAlive => widget.liveStream != null;
-
-  @override
-  void didUpdateWidget(covariant LiveWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isActive && !oldWidget.isActive) {
-      if (widget.liveStream != null) {
-        generateToken();
-      }
-    } else if (!widget.isActive && oldWidget.isActive) {
-      if (widget.liveStream != null) {
-        leaveChannel();
-      }
-    }
-  }
+// @override
+// bool get wantKeepAlive => false;
+//
+// @override
+// void didUpdateWidget(covariant LiveWidget oldWidget) {
+//   super.didUpdateWidget(oldWidget);
+//   if (widget.isActive && !oldWidget.isActive) {
+//     if (widget.liveStream != null) {
+//       generateToken();
+//     }
+//   } else if (!widget.isActive && oldWidget.isActive) {
+//     if (widget.liveStream != null) {
+//       leaveChannel();
+//     }
+//   }
+// }
 }
