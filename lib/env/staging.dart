@@ -27,10 +27,6 @@ final class QaEnv implements Env, EnvFields {
   final String agoraAppId = _Env.agoraAppId;
 
   @override
-  @EnviedField(varName: 'IMGLY_LICENSED_KEY')
-  final String imglyKey = _Env.imglyKey;
-
-  @override
   @EnviedField(varName: 'WALLET_SERVICE_BASE_URL')
   final String walletServiceBaseUrl = _Env.walletServiceBaseUrl;
 }
