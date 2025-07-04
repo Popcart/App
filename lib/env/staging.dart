@@ -25,8 +25,4 @@ final class QaEnv implements Env, EnvFields {
   @override
   @EnviedField(varName: 'AGORA_APP_ID')
   final String agoraAppId = _Env.agoraAppId;
-
-  @override
-  @EnviedField(varName: 'WALLET_SERVICE_BASE_URL')
-  final String walletServiceBaseUrl = _Env.walletServiceBaseUrl;
 }
