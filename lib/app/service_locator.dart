@@ -61,7 +61,7 @@ Future<void> setupLocator({
     )
     ..registerLazySingleton<ApiHandler>(
       () =>
-          ApiHandler(baseUrl: 'https://wallet-ufwe.onrender.com/wallets/'),
+          ApiHandler(baseUrl: '${Env().walletServiceBaseUrl}/wallets/'),
       instanceName: ApiService.wallet.name,
     )
 
