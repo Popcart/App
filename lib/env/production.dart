@@ -8,9 +8,6 @@ part 'production.g.dart';
 @Envied(path: 'assets/env/production.env', name: 'Env', obfuscate: true)
 final class ProdEnv implements Env, EnvFields {
   @override
-  
-
-  @override
   @EnviedField(varName: 'INTRO_GIF_URL')
   final String introGifUrl = _Env.introGifUrl;
 
@@ -32,7 +29,7 @@ final class ProdEnv implements Env, EnvFields {
 
   @override
   @EnviedField(varName: 'IMGLY_LICENSED_KEY')
-  final String imglyLicenseKey = _Env.imglyLicenseKey;
+  final String imglyKey = _Env.imglyKey;
 
   @override
   @EnviedField(varName: 'WALLET_SERVICE_BASE_URL')

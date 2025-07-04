@@ -6,8 +6,6 @@ part 'staging.g.dart';
 
 @Envied(path: 'assets/env/staging.env', name: 'Env', obfuscate: true)
 final class QaEnv implements Env, EnvFields {
-  
-
   @override
   @EnviedField(varName: 'INTRO_GIF_URL')
   final String introGifUrl = _Env.introGifUrl;
@@ -30,7 +28,7 @@ final class QaEnv implements Env, EnvFields {
 
   @override
   @EnviedField(varName: 'IMGLY_LICENSED_KEY')
-  final String imglyLicenseKey = _Env.imglyLicenseKey;
+  final String imglyKey = _Env.imglyKey;
 
   @override
   @EnviedField(varName: 'WALLET_SERVICE_BASE_URL')
