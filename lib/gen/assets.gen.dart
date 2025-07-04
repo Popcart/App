@@ -284,6 +284,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/video_add.svg
   SvgGenImage get videoAdd => const SvgGenImage('assets/icons/video_add.svg');
 
+  /// File path: assets/icons/wallet.svg
+  SvgGenImage get wallet => const SvgGenImage('assets/icons/wallet.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     search,
@@ -355,6 +358,7 @@ class $AssetsIconsGen {
     unselected,
     username,
     videoAdd,
+    wallet,
   ];
 }
 

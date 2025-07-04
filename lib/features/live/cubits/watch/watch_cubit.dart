@@ -27,11 +27,7 @@ class WatchCubit extends Cubit<WatchState> {
         for (final liveStream in data?.data?.livestreams?? <LiveStream>[]) {
           feed.add(liveStream);
         }
-        feed.sort((a, b) {
-          final aDate = a is VideoPost ? a.createdAt : (a as LiveStream).createdAt;
-          final bDate = b is VideoPost ? b.createdAt : (b as LiveStream).createdAt;
-          return bDate.compareTo(aDate);
-        });
+        feed.shuffle();
 
         emit(WatchState.success(feed));
       },

@@ -16,6 +16,7 @@ class SharedPrefs {
   bool get showFundWalletDialog => _sharedPrefs.getBool('showFundWallet') ?? true;
   String get userUid => _sharedPrefs.getString('uid') ?? '';
   String get username => _sharedPrefs.getString('username') ?? '';
+  int get walletBalance => _sharedPrefs.getInt('walletBalance') ?? 0;
 
   set firstTime(bool? value) {
     _sharedPrefs.setBool('firstTime', value!);
@@ -47,6 +48,10 @@ class SharedPrefs {
 
   set isBuyer(bool value) {
     _sharedPrefs.setBool('isBuyer', value);
+  }
+
+  set walletBalance(int value) {
+    _sharedPrefs.setInt('walletBalance', value);
   }
 
   Future<void> clearAll() async {
