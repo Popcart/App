@@ -23,8 +23,31 @@ class _GalleryImagePickerState extends State<GalleryImagePicker> {
 
   Future<void> loadGalleryImages() async {
     try {
-      await PhotoManager.requestPermissionExtend();
-
+      final result = await PhotoManager.requestPermissionExtend();
+      if (!result.isAuth) {
+        final result = await showAdaptiveDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog.adaptive(
+            title: const Text('Permission Required'),
+            content: const Text('This feature requires access to your photos'
+                ' and videos. Please enable the permission in app settings.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+        if (result != null && result && context.mounted) {
+          await PhotoManager.openSetting();
+        }
+        // return;
+      }
       final albums = await PhotoManager.getAssetPathList(
         type: RequestType.video,
         onlyAll: true,

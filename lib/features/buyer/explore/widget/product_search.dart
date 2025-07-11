@@ -48,11 +48,10 @@ class _InterestFilterState extends State<ProductSearch> {
                 (item) => SimilarProduct.fromJson(item as Map<String, dynamic>))
             .toList();
       } else {
-        throw Exception('Failed to upload image');
+        return [];
       }
     } catch (e) {
-      print(e);
-      throw Exception();
+      return [];
     }
   }
 
@@ -77,15 +76,21 @@ class _InterestFilterState extends State<ProductSearch> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [CircularProgressIndicator()]),
                 );
-              } else if (snapshot.hasError) {
-                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('No products found'),
+                    ],
+                  ),
+                );
               } else {
                 return Expanded(
                   child: GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              mainAxisSpacing: 0,
                               crossAxisSpacing: 16,
                               mainAxisExtent: 150),
                       itemCount: snapshot.data!.length,

@@ -6,8 +6,10 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
+import 'package:popcart/features/buyer/cart/cart_screen.dart';
 import 'package:popcart/features/buyer/explore/explore_screen.dart';
 import 'package:popcart/features/buyer/live/buyer_live_screen_nav.dart';
+import 'package:popcart/features/buyer/orders/buyers_orders_screen.dart';
 import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/wallet/cubit/wallet_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
@@ -25,6 +27,8 @@ class _BuyerHomeState extends State<BuyerHome> {
   final List<Widget> _pages = const [
     BuyerLiveScreenNav(),
     ExploreScreen(),
+    BuyersOrdersScreen(),
+    CartScreen(),
     BuyerProfileScreen(),
   ];
 
@@ -50,6 +54,7 @@ class _BuyerHomeState extends State<BuyerHome> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ValueListenableBuilder<int>(
       valueListenable: currentIndex,
       builder: (context, index, _) {
@@ -70,38 +75,59 @@ class _BuyerHomeState extends State<BuyerHome> {
             body: _pages[index],
             bottomNavigationBar: Container(
               padding: const EdgeInsets.only(top: 2),
-              color: Theme.of(context).brightness == Brightness.light
+              color: theme.brightness ==
+                      Brightness.light
                   ? Colors.white
                   : const Color(0xFF101015),
-              child: BottomNavigationBar(
-                currentIndex: index,
-                onTap: (newIndex) => currentIndex.value = newIndex,
-                backgroundColor:
-                    Theme.of(context).brightness == Brightness.light
-                        ? Colors.white
-                        : const Color(0xFF101015),
-                type: BottomNavigationBarType.fixed,
-                items: [
-                  BottomNavigationBarItem(
-                    activeIcon:
-                        AppAssets.icons.liveSelected.themedIcon(context),
-                    icon: AppAssets.icons.liveUnselected.themedIcon(context),
-                    label: 'Live',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                        AppAssets.icons.auctionsSelected.themedIcon(context),
-                    icon:
-                        AppAssets.icons.auctionsUnselected.themedIcon(context),
-                    label: 'Explore',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                        AppAssets.icons.profileSelected.themedIcon(context),
-                    icon: AppAssets.icons.profileUnselected.themedIcon(context),
-                    label: 'Account',
-                  ),
-                ],
+              child: Theme(
+                data: theme.copyWith(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                child: BottomNavigationBar(
+                  currentIndex: index,
+                  onTap: (newIndex) => currentIndex.value = newIndex,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Colors.white
+                          : const Color(0xFF101015),
+                  type: BottomNavigationBarType.fixed,
+                  items: [
+                    BottomNavigationBarItem(
+                      activeIcon:
+                          AppAssets.icons.liveSelected.themedIcon(context),
+                      icon: AppAssets.icons.liveUnselected.themedIcon(context),
+                      label: 'Live',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                          AppAssets.icons.auctionsSelected.themedIcon(context),
+                      icon:
+                          AppAssets.icons.auctionsUnselected.themedIcon(context),
+                      label: 'Explore',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                          AppAssets.icons.buyerSelectedOrder.themedIcon(context),
+                      icon: AppAssets.icons.buyerUnselectedOrder
+                          .themedIcon(context),
+                      label: 'Orders',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                          AppAssets.icons.cartSelected.themedIcon(context),
+                      icon:
+                          AppAssets.icons.cartUnselected.themedIcon(context),
+                      label: 'Cart',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                          AppAssets.icons.profileSelected.themedIcon(context),
+                      icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                      label: 'Account',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

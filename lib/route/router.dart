@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
 import 'package:popcart/features/buyer/account/buyer_setings_screen.dart';
 import 'package:popcart/features/buyer/buyer_home.dart';
+import 'package:popcart/features/buyer/cart/delivery_address.dart';
 import 'package:popcart/features/buyer/explore/search_screen.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/business_details_screen.dart';
@@ -106,6 +107,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case addProductScreen:
       return MaterialPageRoute(
         builder: (context) => const AddProductScreen(),
+      );
+    case deliveryAddress:
+      return MaterialPageRoute(
+        builder: (context) => const DeliveryAddress(),
       );
     case productScreen:
       return MaterialPageRoute(

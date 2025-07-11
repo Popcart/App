@@ -50,6 +50,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/Search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/Search.svg');
 
+  /// File path: assets/icons/add.svg
+  SvgGenImage get add => const SvgGenImage('assets/icons/add.svg');
+
   /// File path: assets/icons/add_icon.svg
   SvgGenImage get addIcon => const SvgGenImage('assets/icons/add_icon.svg');
 
@@ -92,8 +95,24 @@ class $AssetsIconsGen {
   /// File path: assets/icons/business.svg
   SvgGenImage get business => const SvgGenImage('assets/icons/business.svg');
 
+  /// File path: assets/icons/buyer_selected_order.svg
+  SvgGenImage get buyerSelectedOrder =>
+      const SvgGenImage('assets/icons/buyer_selected_order.svg');
+
+  /// File path: assets/icons/buyer_unselected_order.svg
+  SvgGenImage get buyerUnselectedOrder =>
+      const SvgGenImage('assets/icons/buyer_unselected_order.svg');
+
   /// File path: assets/icons/cancel.svg
   SvgGenImage get cancel => const SvgGenImage('assets/icons/cancel.svg');
+
+  /// File path: assets/icons/cart_selected.svg
+  SvgGenImage get cartSelected =>
+      const SvgGenImage('assets/icons/cart_selected.svg');
+
+  /// File path: assets/icons/cart_unselected.svg
+  SvgGenImage get cartUnselected =>
+      const SvgGenImage('assets/icons/cart_unselected.svg');
 
   /// File path: assets/icons/chat.svg
   SvgGenImage get chat => const SvgGenImage('assets/icons/chat.svg');
@@ -111,6 +130,10 @@ class $AssetsIconsGen {
   SvgGenImage get deleteAccount =>
       const SvgGenImage('assets/icons/delete_account.svg');
 
+  /// File path: assets/icons/delete_cart.svg
+  SvgGenImage get deleteCart =>
+      const SvgGenImage('assets/icons/delete_cart.svg');
+
   /// File path: assets/icons/delete_post.svg
   SvgGenImage get deletePost =>
       const SvgGenImage('assets/icons/delete_post.svg');
@@ -118,6 +141,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/delete_product.svg
   SvgGenImage get deleteProduct =>
       const SvgGenImage('assets/icons/delete_product.svg');
+
+  /// File path: assets/icons/delivery.svg
+  SvgGenImage get delivery => const SvgGenImage('assets/icons/delivery.svg');
 
   /// File path: assets/icons/edit.svg
   SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
@@ -185,6 +211,9 @@ class $AssetsIconsGen {
   SvgGenImage get liveUnselected =>
       const SvgGenImage('assets/icons/live_unselected.svg');
 
+  /// File path: assets/icons/location.svg
+  SvgGenImage get location => const SvgGenImage('assets/icons/location.svg');
+
   /// File path: assets/icons/log_out.svg
   SvgGenImage get logOut => const SvgGenImage('assets/icons/log_out.svg');
 
@@ -196,6 +225,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/messages.svg
   SvgGenImage get messages => const SvgGenImage('assets/icons/messages.svg');
+
+  /// File path: assets/icons/minus.svg
+  SvgGenImage get minus => const SvgGenImage('assets/icons/minus.svg');
 
   /// File path: assets/icons/name.svg
   SvgGenImage get name => const SvgGenImage('assets/icons/name.svg');
@@ -255,6 +287,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/send.svg
   SvgGenImage get send => const SvgGenImage('assets/icons/send.svg');
 
+  /// File path: assets/icons/send_orange.svg
+  SvgGenImage get sendOrange =>
+      const SvgGenImage('assets/icons/send_orange.svg');
+
   /// File path: assets/icons/star.svg
   SvgGenImage get star => const SvgGenImage('assets/icons/star.svg');
 
@@ -290,6 +326,7 @@ class $AssetsIconsGen {
   /// List of all assets
   List<SvgGenImage> get values => [
     search,
+    add,
     addIcon,
     addressBook,
     analyticSelected,
@@ -302,14 +339,20 @@ class $AssetsIconsGen {
     bookmark,
     boosts,
     business,
+    buyerSelectedOrder,
+    buyerUnselectedOrder,
     cancel,
+    cartSelected,
+    cartUnselected,
     chat,
     checkicon,
     condition,
     delete,
     deleteAccount,
+    deleteCart,
     deletePost,
     deleteProduct,
+    delivery,
     edit,
     engagement,
     errorIcon,
@@ -329,10 +372,12 @@ class $AssetsIconsGen {
     inventoryUnselected,
     liveSelected,
     liveUnselected,
+    location,
     logOut,
     mail,
     menu,
     messages,
+    minus,
     name,
     notifications,
     orderSelected,
@@ -350,6 +395,7 @@ class $AssetsIconsGen {
     rewards,
     selected,
     send,
+    sendOrange,
     star,
     storefront,
     totalRevenue,

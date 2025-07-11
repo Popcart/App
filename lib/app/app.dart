@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:popcart/app/theme.dart';
 import 'package:popcart/app/theme_cubit.dart';
+import 'package:popcart/features/buyer/cart/cubit/cart_cubit.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
 import 'package:popcart/features/live/cubits/watch/watch_cubit.dart';
@@ -57,6 +58,9 @@ class PopCart extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => WalletCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CartCubit(),
         ),
       ],
       child: ToastificationWrapper(

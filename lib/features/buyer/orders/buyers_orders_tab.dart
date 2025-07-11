@@ -9,19 +9,19 @@ import 'package:popcart/features/seller/inventory/product_item.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
-class OrdersTabView extends StatefulWidget {
-  const OrdersTabView({required this.type, super.key});
+class BuyersOrdersTabView extends StatefulWidget {
+  const BuyersOrdersTabView({required this.type, super.key});
 
   final String type;
 
   @override
-  State<OrdersTabView> createState() => _OrdersTabViewState();
+  State<BuyersOrdersTabView> createState() => _BuyersOrdersTabViewState();
 }
 
-class _OrdersTabViewState extends State<OrdersTabView> {
+class _BuyersOrdersTabViewState extends State<BuyersOrdersTabView> {
   final PagingController<int, Product> _pagingController =
       PagingController(firstPageKey: 1);
-
+  String filterBy = 'Recents';
   @override
   void initState() {
     super.initState();
@@ -57,6 +57,37 @@ class _OrdersTabViewState extends State<OrdersTabView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        GestureDetector(
+          onTap: () async {
+            await showSortModal(
+              context: context,
+              selected: filterBy,
+              onChanged: (val) => setState(() => filterBy = val),
+            );
+
+          },
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  'Sort by: ',
+                  style: TextStyles.titleHeading,
+                ),
+                Text(
+                  filterBy,
+                  style: TextStyles.titleHeading,
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                const Icon(Icons.keyboard_arrow_down)
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: 20,),
         Expanded(
           child: PagedListView<int, Product>(
             pagingController: _pagingController,
@@ -72,7 +103,9 @@ class _OrdersTabViewState extends State<OrdersTabView> {
                   'Looks like an error occurred. Kindly try again!'),
               noItemsFoundIndicatorBuilder: (context) => emptyState(
                   AppAssets.images.bag.image(),
-                  'Your orders will appear here'),
+                  'You haven’t received any orders from this buyer. '
+                      'Once they make a purchase, their orders will '
+                      'appear here.'),
             ),
           ),
         ),

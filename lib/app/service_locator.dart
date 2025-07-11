@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
+import 'package:popcart/core/repository/cart_repo.dart';
 import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
@@ -15,7 +16,8 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory, seller, livestreams, orders, products, posts, wallet }
+enum ApiService { auth, user, inventory, seller, livestreams, orders, products,
+  posts, wallet, cart }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -64,8 +66,20 @@ Future<void> setupLocator({
           ApiHandler(baseUrl: 'https://wallet-ufwe.onrender.com/wallets/'),
       instanceName: ApiService.wallet.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: 'https://order-ctx2.onrender.com/'),
+      instanceName: ApiService.cart.name,
+    )
 
 
+    ..registerLazySingleton<CartRepo>(
+      () => CartRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.cart.name,
+        ),
+      ),
+    )
     ..registerLazySingleton<WalletRepo>(
       () => WalletRepoImpl(
         locator.get<ApiHandler>(

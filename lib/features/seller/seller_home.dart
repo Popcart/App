@@ -48,10 +48,13 @@ class _SellerHomeState extends State<SellerHome>{
 
   Future<void> loadData() async {
     await context.read<ProfileCubit>().fetchUserProfile();
-    await context.read<WalletCubit>().getWalletInfo(userId: locator<SharedPrefs>().userUid);
+    if(locator<SharedPrefs>().isBuyer) {
+      await context.read<WalletCubit>().getWalletInfo(userId: locator<SharedPrefs>().userUid);
+    }
   }
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ValueListenableBuilder<int>(
       valueListenable: sellerCurrentIndex,
       builder: (context, index, _) {
@@ -71,50 +74,56 @@ class _SellerHomeState extends State<SellerHome>{
             body: _pages[index],
             bottomNavigationBar: Container(
               padding: const EdgeInsets.only(top: 2),
-              color: Theme.of(context).brightness == Brightness.light
+              color: theme.brightness == Brightness.light
                   ? Colors.white
                   : const Color(0xFF101015),
-              child: BottomNavigationBar(
-                currentIndex: index,
-                onTap: (newIndex) => sellerCurrentIndex.value = newIndex,
-                backgroundColor: Theme.of(context).brightness == Brightness.light
-                    ? Colors.white
-                    : const Color(0xFF101015),
-                type: BottomNavigationBarType.fixed,
-                items: [
-                  BottomNavigationBarItem(
-                    activeIcon:
-                    AppAssets.icons.analyticSelected.themedIcon(context),
-                    icon:
-                    AppAssets.icons.analyticUnselected.themedIcon(context),
-                    label: 'Analytics',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                    AppAssets.icons.orderSelected.themedIcon(context),
-                    icon: AppAssets.icons.orderUnselected.themedIcon(context),
-                    label: 'Orders',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                    AppAssets.icons.auctionsSelected.themedIcon(context),
-                    icon:
-                    AppAssets.icons.auctionsUnselected.themedIcon(context),
-                    label: 'Inventory',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                    AppAssets.icons.liveSelected.themedIcon(context),
-                    icon: AppAssets.icons.liveUnselected.themedIcon(context),
-                    label: 'Live',
-                  ),
-                  BottomNavigationBarItem(
-                    activeIcon:
-                    AppAssets.icons.profileSelected.themedIcon(context),
-                    icon: AppAssets.icons.profileUnselected.themedIcon(context),
-                    label: 'Account',
-                  ),
-                ],
+              child: Theme(
+                data: theme.copyWith(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                ),
+                child: BottomNavigationBar(
+                  currentIndex: index,
+                  onTap: (newIndex) => sellerCurrentIndex.value = newIndex,
+                  backgroundColor: Theme.of(context).brightness == Brightness.light
+                      ? Colors.white
+                      : const Color(0xFF101015),
+                  type: BottomNavigationBarType.fixed,
+                  items: [
+                    BottomNavigationBarItem(
+                      activeIcon:
+                      AppAssets.icons.analyticSelected.themedIcon(context),
+                      icon:
+                      AppAssets.icons.analyticUnselected.themedIcon(context),
+                      label: 'Analytics',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                      AppAssets.icons.orderSelected.themedIcon(context),
+                      icon: AppAssets.icons.orderUnselected.themedIcon(context),
+                      label: 'Orders',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                      AppAssets.icons.auctionsSelected.themedIcon(context),
+                      icon:
+                      AppAssets.icons.auctionsUnselected.themedIcon(context),
+                      label: 'Inventory',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                      AppAssets.icons.liveSelected.themedIcon(context),
+                      icon: AppAssets.icons.liveUnselected.themedIcon(context),
+                      label: 'Live',
+                    ),
+                    BottomNavigationBarItem(
+                      activeIcon:
+                      AppAssets.icons.profileSelected.themedIcon(context),
+                      icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                      label: 'Account',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
