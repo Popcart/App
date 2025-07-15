@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:popcart/core/api/api_helper.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 
 sealed class UserRepository {
   Future<ApiResponse<void>> submitRegisteredBusinessInformation({
@@ -12,13 +12,18 @@ sealed class UserRepository {
     required File utilityBillDocument,
     required File idDocument,
   });
+
   Future<ApiResponse<void>> submitIndividualBusinessInformation({
     required String bvn,
     String? businessEmail,
     String? businessName,
   });
+
   Future<ApiResponse<UserModel>> getUserProfile();
+
   Future<ApiResponse<dynamic>> saveInterest(List<String> interests);
+
+  Future<ApiResponse<void>> saveFcmToken(String deviceToken);
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -84,6 +89,18 @@ class UserRepositoryImpl implements UserRepository {
       method: MethodType.put,
       payload: {
         'interests': interests,
+      },
+    );
+    return response;
+  }
+
+  @override
+  Future<ApiResponse<void>> saveFcmToken(String deviceToken) async {
+    final response = await _apiHelper.request<void>(
+      path: 'save-device-token',
+      method: MethodType.post,
+      payload: {
+        'deviceToken': deviceToken,
       },
     );
     return response;

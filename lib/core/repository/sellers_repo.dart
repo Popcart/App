@@ -1,7 +1,7 @@
 import 'package:popcart/core/api/api_helper.dart';
 import 'package:popcart/core/api/pagination.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 
 sealed class SellersRepo {
   Future<ApiResponse<PaginationResponse<Product>>> getProducts({

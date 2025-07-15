@@ -3,6 +3,7 @@ import 'package:popcart/features/buyer/account/buyer_profile_screen.dart';
 import 'package:popcart/features/buyer/account/buyer_setings_screen.dart';
 import 'package:popcart/features/buyer/buyer_home.dart';
 import 'package:popcart/features/buyer/cart/delivery_address.dart';
+import 'package:popcart/features/buyer/cart/payment_screen.dart';
 import 'package:popcart/features/buyer/explore/search_screen.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/screens/business_details_screen.dart';
@@ -13,9 +14,8 @@ import 'package:popcart/features/onboarding/screens/sign_up_screen.dart';
 import 'package:popcart/features/onboarding/screens/splash_screen.dart';
 import 'package:popcart/features/onboarding/screens/verify_otp_screen.dart';
 import 'package:popcart/features/onboarding/screens/video_splash_screen.dart';
-import 'package:popcart/features/product/product_screen.dart';
+import 'package:popcart/features/common/screen/product_screen.dart';
 import 'package:popcart/features/seller/account/create_pop.dart';
-import 'package:popcart/features/seller/account/post_reels.dart';
 import 'package:popcart/features/seller/account/profile_posts.dart';
 import 'package:popcart/features/seller/account/select_video.dart';
 import 'package:popcart/features/seller/account/seller_setings_screen.dart';
@@ -73,7 +73,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
           builder: (context) => const SellerSetingsScreen());
 
-    //Buyer screens
+  //Buyer screens
     case buyerHome:
       return MaterialPageRoute(
         builder: (context) => const BuyerHome(),
@@ -111,6 +111,13 @@ Route<dynamic> generateRoute(RouteSettings settings) {
     case deliveryAddress:
       return MaterialPageRoute(
         builder: (context) => const DeliveryAddress(),
+      );
+    case paymentScreen:
+      return MaterialPageRoute(
+        builder: (context) {
+          final deliveryAddress = settings.arguments! as Map<String, dynamic>;
+          return PaymentScreen(address: deliveryAddress,);
+        },
       );
     case productScreen:
       return MaterialPageRoute(

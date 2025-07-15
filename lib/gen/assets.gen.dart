@@ -244,9 +244,21 @@ class $AssetsIconsGen {
   SvgGenImage get orderUnselected =>
       const SvgGenImage('assets/icons/order_unselected.svg');
 
+  /// File path: assets/icons/payment_interswitch.svg
+  SvgGenImage get paymentInterswitch =>
+      const SvgGenImage('assets/icons/payment_interswitch.svg');
+
   /// File path: assets/icons/payment_methods.svg
   SvgGenImage get paymentMethods =>
       const SvgGenImage('assets/icons/payment_methods.svg');
+
+  /// File path: assets/icons/payment_paystack.svg
+  SvgGenImage get paymentPaystack =>
+      const SvgGenImage('assets/icons/payment_paystack.svg');
+
+  /// File path: assets/icons/payment_wallet.svg
+  SvgGenImage get paymentWallet =>
+      const SvgGenImage('assets/icons/payment_wallet.svg');
 
   /// File path: assets/icons/personal_information.svg
   SvgGenImage get personalInformation =>
@@ -382,7 +394,10 @@ class $AssetsIconsGen {
     notifications,
     orderSelected,
     orderUnselected,
+    paymentInterswitch,
     paymentMethods,
+    paymentPaystack,
+    paymentWallet,
     personalInformation,
     phone,
     play,

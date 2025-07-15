@@ -10,7 +10,7 @@ import 'package:popcart/features/buyer/cart/cart_screen.dart';
 import 'package:popcart/features/buyer/explore/explore_screen.dart';
 import 'package:popcart/features/buyer/live/buyer_live_screen_nav.dart';
 import 'package:popcart/features/buyer/orders/buyers_orders_screen.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/wallet/cubit/wallet_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
@@ -45,11 +45,19 @@ class _BuyerHomeState extends State<BuyerHome> {
     super.initState();
   }
 
+
   Future<void> loadData() async {
-    await context.read<ProfileCubit>().fetchUserProfile();
-    await context
-        .read<WalletCubit>()
-        .getWalletInfo(userId: locator<SharedPrefs>().userUid);
+    final profileCubit = context.read<ProfileCubit>();
+    final walletCubit = context.read<WalletCubit>();
+    final sharedPref = locator<SharedPrefs>();
+
+    await profileCubit.fetchUserProfile();
+
+    if (sharedPref.loggedIn) {
+      await profileCubit.saveFcmToken();
+    }
+
+    await walletCubit.getWalletInfo(userId: sharedPref.userUid);
   }
 
   @override
@@ -75,8 +83,7 @@ class _BuyerHomeState extends State<BuyerHome> {
             body: _pages[index],
             bottomNavigationBar: Container(
               padding: const EdgeInsets.only(top: 2),
-              color: theme.brightness ==
-                      Brightness.light
+              color: theme.brightness == Brightness.light
                   ? Colors.white
                   : const Color(0xFF101015),
               child: Theme(
@@ -102,13 +109,13 @@ class _BuyerHomeState extends State<BuyerHome> {
                     BottomNavigationBarItem(
                       activeIcon:
                           AppAssets.icons.auctionsSelected.themedIcon(context),
-                      icon:
-                          AppAssets.icons.auctionsUnselected.themedIcon(context),
+                      icon: AppAssets.icons.auctionsUnselected
+                          .themedIcon(context),
                       label: 'Explore',
                     ),
                     BottomNavigationBarItem(
-                      activeIcon:
-                          AppAssets.icons.buyerSelectedOrder.themedIcon(context),
+                      activeIcon: AppAssets.icons.buyerSelectedOrder
+                          .themedIcon(context),
                       icon: AppAssets.icons.buyerUnselectedOrder
                           .themedIcon(context),
                       label: 'Orders',
@@ -116,14 +123,14 @@ class _BuyerHomeState extends State<BuyerHome> {
                     BottomNavigationBarItem(
                       activeIcon:
                           AppAssets.icons.cartSelected.themedIcon(context),
-                      icon:
-                          AppAssets.icons.cartUnselected.themedIcon(context),
+                      icon: AppAssets.icons.cartUnselected.themedIcon(context),
                       label: 'Cart',
                     ),
                     BottomNavigationBarItem(
                       activeIcon:
                           AppAssets.icons.profileSelected.themedIcon(context),
-                      icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                      icon:
+                          AppAssets.icons.profileUnselected.themedIcon(context),
                       label: 'Account',
                     ),
                   ],

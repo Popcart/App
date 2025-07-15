@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:popcart/core/widgets/widgets.dart';
-import 'package:popcart/features/seller/orders/orders_tab.dart';
+import 'package:popcart/features/buyer/orders/buyers_orders_tab.dart';
+import 'package:popcart/features/seller/orders/seller_orders_tab.dart';
 
 class BuyersOrdersScreen extends StatefulWidget {
   const BuyersOrdersScreen({super.key});
@@ -49,7 +50,7 @@ class _BuyersOrdersScreenState extends State<BuyersOrdersScreen>
                   controller: _tabController,
                   physics: const NeverScrollableScrollPhysics(),
                   children:
-                      tabs.map((type) => OrdersTabView(type: type)).toList(),
+                      tabs.map((type) => BuyersOrdersTabView(type: type)).toList(),
                 ),
               ),
             ],

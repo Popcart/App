@@ -22,7 +22,7 @@ import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cub
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/onboarding/cubits/interest_list/interest_list_cubit.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
 

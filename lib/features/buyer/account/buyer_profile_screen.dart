@@ -6,7 +6,7 @@ import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/widgets.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/wallet/cubit/wallet_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';

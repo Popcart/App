@@ -5,7 +5,7 @@ import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/components/network_image.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
 

@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popcart/features/buyer/live/widget/live_stream_card.dart';
 import 'package:popcart/features/live/cubits/active_livestream/active_livestreams_cubit.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class LiveRooms extends StatefulWidget {

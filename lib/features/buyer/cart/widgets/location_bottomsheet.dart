@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-
 import 'package:extended_image/extended_image.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -38,49 +36,45 @@ class _LocationBottomsheetState extends State<LocationBottomsheet> {
   }
 
   Future<List<String>> fetchPlaceSuggestions() async {
-      final url =
-          'https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${searchController
-          .text}&key=AIzaSyDYxkdoCPdRSTXYPfjAodX4HpR2njHpKVA';
-      // Uri.https(baseUrl, '/maps/api/place/autocomplete/json', {
-      // 'input': placeName,
-      // 'types': 'establishment|geocode',
-      // 'key': apiKey,
-      // 'components': 'country:ng'
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final predictions = data['predictions'] as List;
-        return predictions.map((p) => p['description'] as String).toList();
-      } else {
-        throw Exception('Failed to fetch suggestions');
-      }
+    final link =
+        Uri.https('maps.googleapis.com', '/maps/api/place/autocomplete/json', {
+      'input': searchController.text,
+      'types': 'establishment|geocode',
+      'key': 'AIzaSyDYxkdoCPdRSTXYPfjAodX4HpR2njHpKVA',
+      'components': 'country:ng'
+    });
+    final response = await http.get(link);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final predictions = data['predictions'] as List;
+      return predictions.map((p) => p['description'] as String).toList();
+    } else {
+      throw Exception('Failed to fetch suggestions');
+    }
   }
 
   Future<String?> getCurrentAddress() async {
-    final permission = await Permission.location.request();
+    try {
+      await Geolocator.requestPermission();
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        await Geolocator.openLocationSettings();
+        return null;
+      }
 
-    if (!permission.isGranted) {
-      await openAppSettings();
+      final position = await Geolocator.getCurrentPosition();
+
+      final placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        return '${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
+      }
+
       return null;
-    }
-
-    if (!await Geolocator.isLocationServiceEnabled()) {
-      await Geolocator.openLocationSettings();
-      return null;
-    }
-
-    final position = await Geolocator.getCurrentPosition();
-
-    final placemarks = await placemarkFromCoordinates(
-      position.latitude,
-      position.longitude,
-    );
-
-    if (placemarks.isNotEmpty) {
-      final place = placemarks.first;
-      return '${place.street}, ${place.locality}, ${place.administrativeArea}, ${place.country}';
-    }
-
+    } catch (_) {}
     return null;
   }
 
@@ -126,8 +120,8 @@ class _LocationBottomsheetState extends State<LocationBottomsheet> {
             height: 20,
           ),
           GestureDetector(
-            onTap: (){
-              getCurrentAddress().then((address) {
+            onTap: () async {
+              await getCurrentAddress().then((address) {
                 if (address != null) {
                   Navigator.pop(context, address);
                 } else {
@@ -154,8 +148,7 @@ class _LocationBottomsheetState extends State<LocationBottomsheet> {
           ),
           ValueListenableBuilder(
             valueListenable: addresses,
-            builder:
-                (BuildContext context, List<String> value, Widget? child) {
+            builder: (BuildContext context, List<String> value, Widget? child) {
               return Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
@@ -163,7 +156,7 @@ class _LocationBottomsheetState extends State<LocationBottomsheet> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: ()=> Navigator.pop(context, value[index]),
+                      onTap: () => Navigator.pop(context, value[index]),
                       child: Row(
                         children: [
                           AppAssets.icons.location.svg(),

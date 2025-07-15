@@ -13,4 +13,8 @@ class CartState with _$CartState {
 
   const factory CartState.updateCartSuccess() = _UpdateCartSuccess;
   const factory CartState.updateCartError(String error) = _UpdateCartError;
+
+  const factory CartState.processingOrder() = _ProcessingOrder;
+  const factory CartState.orderProcessed() = _OrderProcessed;
+  const factory CartState.processingOrderError(String error) = _ProcessingOrderError;
 }

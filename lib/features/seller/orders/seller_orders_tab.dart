@@ -4,22 +4,25 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/order_repo.dart';
 import 'package:popcart/core/widgets/widgets.dart';
+import 'package:popcart/features/common/widget/order_item.dart';
+import 'package:popcart/features/common/widget/seller_order_item.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/features/seller/inventory/product_item.dart';
+import 'package:popcart/features/common/models/order_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
-class OrdersTabView extends StatefulWidget {
-  const OrdersTabView({required this.type, super.key});
+class SellerOrdersTabView extends StatefulWidget {
+  const SellerOrdersTabView({required this.type, super.key});
 
   final String type;
 
   @override
-  State<OrdersTabView> createState() => _OrdersTabViewState();
+  State<SellerOrdersTabView> createState() => _SellerOrdersTabViewState();
 }
 
-class _OrdersTabViewState extends State<OrdersTabView> {
-  final PagingController<int, Product> _pagingController =
+class _SellerOrdersTabViewState extends State<SellerOrdersTabView> {
+  final PagingController<int, Order> _pagingController =
       PagingController(firstPageKey: 1);
 
   @override
@@ -35,21 +38,19 @@ class _OrdersTabViewState extends State<OrdersTabView> {
   }
 
   Future<void> fetchPage(int pageKey) async {
-    final items = await locator<OrderRepo>().getOrders(
+    final items = await locator<OrderRepo>().getSellersOrder(
       page: pageKey,
       limit: 10, status: widget.type.toLowerCase(),
     );
     items.when(
       success: (data) {
-        final isLastPage = data?.data?.page == data?.data?.totalPages;
-        final results = data?.data?.results ?? <Product>[];
-        if (isLastPage) {
-          _pagingController.appendLastPage(results);
-        } else {
-          _pagingController.appendPage(results, pageKey + 1);
-        }
+        final results = data?.data ?? <Order>[];
+        _pagingController.appendPage(results, pageKey + 1);
       },
-      error: (err) => _pagingController.error = err,
+      error: (err){
+        print(err);
+        _pagingController.error = err;
+      }
     );
   }
 
@@ -58,13 +59,12 @@ class _OrdersTabViewState extends State<OrdersTabView> {
     return Column(
       children: [
         Expanded(
-          child: PagedListView<int, Product>(
+          child: PagedListView<int, Order>(
             pagingController: _pagingController,
-            builderDelegate: PagedChildBuilderDelegate<Product>(
-              itemBuilder: (context, product, index) {
-                return ProductItem(
-                  product: product,
-                  onDeleted: _pagingController.refresh,
+            builderDelegate: PagedChildBuilderDelegate<Order>(
+              itemBuilder: (context, order, index) {
+                return SellerOrderItem(
+                  order: order,
                 );
               },
               firstPageErrorIndicatorBuilder: (context) => emptyState(

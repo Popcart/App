@@ -29,6 +29,7 @@ class _CartItemState extends State<CartItem> {
 
   @override
   Widget build(BuildContext context) {
+    final cartCubit = context.read<CartCubit>();
     return InkWell(
       onTap: (){
         Navigator.pushNamed(
@@ -86,16 +87,17 @@ class _CartItemState extends State<CartItem> {
                         return InkWell(
                             onTap: () async {
                               quantity.value--;
-                              await context.read<CartCubit>().updateCartItem(
+                              await cartCubit.updateCartItem(
                                   widget.cartItem.copyWith(quantity: quantity.value));
+                              await cartCubit.getCart(showLoading: false);
                             },
                             child: AppAssets.icons.minus.svg());
                       } else {
                         return InkWell(
                             onTap: () async {
-                              await context
-                                  .read<CartCubit>()
+                              await cartCubit
                                   .deleteCartItem(widget.cartItem);
+                              await cartCubit.getCart(showLoading: false);
                             },
                             child: AppAssets.icons.deleteCart.svg());
                       }
@@ -119,8 +121,9 @@ class _CartItemState extends State<CartItem> {
                   InkWell(
                       onTap: () async {
                         quantity.value++;
-                        await context.read<CartCubit>().updateCartItem(
+                        await cartCubit.updateCartItem(
                             widget.cartItem.copyWith(quantity: quantity.value));
+                        await cartCubit.getCart(showLoading: false);
                       },
                       child: AppAssets.icons.add.svg())
                 ],

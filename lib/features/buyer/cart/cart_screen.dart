@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
+import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/core/widgets/widgets.dart';
 import 'package:popcart/features/buyer/cart/cubit/cart_cubit.dart';
 import 'package:popcart/features/buyer/cart/widgets/cart_item.dart';
 import 'package:popcart/features/live/models/cart_item_model.dart';
-import 'package:popcart/features/seller/orders/orders_tab.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
 import 'package:popcart/utils/text_styles.dart';
@@ -20,6 +20,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   List<CartItemModel> carts = [];
+  Map<String, dynamic>? address;
 
   @override
   void initState() {
@@ -57,48 +58,174 @@ class _CartScreenState extends State<CartScreen> {
               state.maybeWhen(loading: () => true, orElse: () => false);
           return !isLoading
               ? carts.isNotEmpty
-                  ? RefreshIndicator.adaptive(
-                    onRefresh: ()=> context.read<CartCubit>().getCart(),
-                    child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.pushNamed(context, deliveryAddress);
-                              },
-                              child: Row(
-                                children: [
-                                  AppAssets.icons.delivery.svg(),
-                                  const SizedBox(
-                                    width: 12,
-                                  ),
-                                  const Text(
-                                    'Add delivery address',
-                                    style: TextStyles.titleHeading,
-                                  ),
-                                  const Spacer(),
-                                  const Icon(Icons.keyboard_arrow_right_rounded)
-                                ],
-                              ),
+                  ? SingleChildScrollView(
+                      child: RefreshIndicator.adaptive(
+                        onRefresh: () => context.read<CartCubit>().getCart(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: address == null
+                                  ? InkWell(
+                                      onTap: () async {
+                                        final result =
+                                            await Navigator.pushNamed(
+                                                context, deliveryAddress);
+                                        if (result != null) {
+                                          setState(() {
+                                            address =
+                                                result as Map<String, dynamic>;
+                                          });
+                                        }
+                                      },
+                                      child: Row(
+                                        children: [
+                                          AppAssets.icons.delivery.svg(),
+                                          const SizedBox(
+                                            width: 12,
+                                          ),
+                                          const Text(
+                                            'Add delivery address',
+                                            style: TextStyles.titleHeading,
+                                          ),
+                                          const Spacer(),
+                                          const Icon(Icons
+                                              .keyboard_arrow_right_rounded)
+                                        ],
+                                      ),
+                                    )
+                                  : Row(
+                                      children: [
+                                        AppAssets.icons.delivery.svg(),
+                                        const SizedBox(
+                                          width: 12,
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Text(
+                                                      address!['address']
+                                                          .toString(),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyles
+                                                          .titleHeading,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 20,
+                                                  ),
+                                                  InkWell(
+                                                    onTap: () async {
+                                                      final result =
+                                                          await Navigator
+                                                              .pushNamed(
+                                                                  context,
+                                                                  deliveryAddress);
+                                                      if (result != null) {
+                                                        setState(() {
+                                                          address = result
+                                                              as Map<String,
+                                                                  dynamic>;
+                                                        });
+                                                      }
+                                                    },
+                                                    child: const Text(
+                                                      'Change',
+                                                      style: TextStyle(
+                                                        color: AppColors.orange,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 5,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const Text(
+                                                        'Phone Number',
+                                                        style: TextStyles
+                                                            .subheadingBlackOnWhite,
+                                                      ),
+                                                      Text(
+                                                        address!['phoneNumber']
+                                                            .toString(),
+                                                        style: TextStyles
+                                                            .titleHeading,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 30,
+                                                    child: VerticalDivider(
+                                                      color: AppColors
+                                                          .textFieldFillColor,
+                                                      thickness: 1,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      const Text(
+                                                        'Delivery Fee',
+                                                        style: TextStyles
+                                                            .subheadingBlackOnWhite,
+                                                      ),
+                                                      Text(
+                                                        0.toCurrency(),
+                                                        style: TextStyles
+                                                            .titleHeading,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Divider(
-                            thickness: 6,
-                            color: AppColors.textFieldFillColor,
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Divider(
+                              thickness: 6,
+                              color: AppColors.textFieldFillColor,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
                               child: ListView.separated(
                                 shrinkWrap: true,
                                 itemCount: carts.length,
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemBuilder: (context, index) {
                                   return CartItem(cartItem: carts[index]);
                                 },
@@ -114,21 +241,106 @@ class _CartScreenState extends State<CartScreen> {
                                 },
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const Divider(
+                              thickness: 6,
+                              color: AppColors.textFieldFillColor,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                'Order Summary',
+                                style: TextStyles.titleHeading,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Column(
+                                children: [
+                                  detail('${carts.length} items',
+                                      calculateCartTotal(carts).toCurrency()),
+                                  detail('Delivery Fee', 0.toCurrency()),
+                                  detail('Estimated taxes and fees',
+                                      0.toCurrency()),
+                                  detail('Sub total', 0.toCurrency()),
+                                ],
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              child: Divider(
+                                thickness: 0.5,
+                                color: AppColors.textFieldFillColor,
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: detail('Total to pay', calculateCartTotal(carts).toCurrency()),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: CustomElevatedButton(
+                                  onPressed: () {
+                                    if (address == null) {
+                                      context.showError(
+                                          'Please add delivery address');
+                                      return;
+                                    }
+                                    Navigator.pushNamed(context, paymentScreen,
+                                        arguments: address);
+                                  },
+                                  showIcon: false,
+                                  text: 'Place order'),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
                       ),
-                  )
-                  : Expanded(
-                      child: emptyState(
-                          SizedBox(
-                              width: 100,
-                              child: AppAssets.images.designerBag.image()),
-                          'You cart is empty'),
                     )
+                  : emptyState(
+                      SizedBox(
+                          width: 100,
+                          child: AppAssets.images.designerBag.image()),
+                      'You cart is empty')
               : const Center(
                   child: CircularProgressIndicator(),
                 );
         },
+      ),
+    );
+  }
+
+  Widget detail(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyles.titleHeading,
+          ),
+          Text(
+            value,
+            style: TextStyles.titleHeading,
+          ),
+        ],
       ),
     );
   }

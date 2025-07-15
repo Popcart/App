@@ -1,9 +1,17 @@
+import 'package:popcart/app/app.module.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
-import 'package:popcart/core/api/pagination.dart';
+import 'package:popcart/features/common/models/order_model.dart';
 import 'package:popcart/features/live/models/products.dart';
 
 sealed class OrderRepo {
-  Future<ApiResponse<PaginationResponse<Product>>> getOrders({
+  Future<ListApiResponse<TransactionList>> getBuyerOrders({
+    required int page,
+    required int limit,
+    required String status,
+  });
+
+  Future<ListApiResponse<Order>> getSellersOrder({
     required int page,
     required int limit,
     required String status,
@@ -20,26 +28,31 @@ class OrderRepoImpl implements OrderRepo {
   final ApiHandler _apiHelper;
 
   @override
-  Future<ApiResponse<PaginationResponse<Product>>> getOrders({
+  Future<ListApiResponse<TransactionList>> getBuyerOrders({
     required int page,
     required int limit,
     required String status,
-}) async {
-    return _apiHelper.request<PaginationResponse<Product>>(
-      path: '',
+  }) async {
+    final pref = locator<SharedPrefs>();
+    final userId = pref.userUid;
+    return _apiHelper.requestList<TransactionList>(
+      path: 'orders/buyer/$userId',
       method: MethodType.get,
-      queryParameters: {
-        'page': page,
-        'limit': limit,
-        'status': status
-      },
-      responseMapper: (v) {
-        return PaginationResponse<Product>.fromJson(
-          v,
-              (i) => Product.fromJson(i! as Map<String, dynamic>),
-          'orders',
-        );
-      },
+      responseMapper: TransactionList.fromJson,
+    );
+  }
+  @override
+  Future<ListApiResponse<Order>> getSellersOrder({
+    required int page,
+    required int limit,
+    required String status,
+  }) async {
+    final pref = locator<SharedPrefs>();
+    final userId = pref.userUid;
+    return _apiHelper.requestList<Order>(
+      path: 'orders/seller/$userId',
+      method: MethodType.get,
+      responseMapper: Order.fromJson,
     );
   }
 
@@ -51,5 +64,4 @@ class OrderRepoImpl implements OrderRepo {
       responseMapper: Product.fromJson,
     );
   }
-
 }

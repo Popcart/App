@@ -18,6 +18,8 @@ sealed class CartRepo {
   Future<ApiResponse<void>> deleteCartItem({
     required CartItemModel cartItem,
   });
+
+  Future<ApiResponse<void>> clearCart({required String userId,});
 }
 
 class CartRepoImpl implements CartRepo {
@@ -64,6 +66,14 @@ class CartRepoImpl implements CartRepo {
   Future<ApiResponse<void>> deleteCartItem({required CartItemModel cartItem}) {
     return _apiHelper.request<Product>(
       path: 'cart/remove/${cartItem.id}',
+      method: MethodType.delete,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> clearCart({required String userId,}) {
+    return _apiHelper.request<Product>(
+      path: 'cart/clear/$userId',
       method: MethodType.delete,
     );
   }

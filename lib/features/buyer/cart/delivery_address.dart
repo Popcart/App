@@ -38,7 +38,6 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
 
   @override
   Widget build(BuildContext context) {
-    final productCubit = context.watch<ProductCubit>();
     return BlocListener<ProductCubit, AddProductState>(
       listener: (context, state) {
         state.whenOrNull(
@@ -118,9 +117,6 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
                   CustomTextFormField(
                     validator: ValidationBuilder().required().build(),
                     controller: landmark,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
                     hintText: 'Closest landmark to your address',
                     textInputAction: TextInputAction.next,
                   ),
@@ -147,7 +143,16 @@ class _DeliveryAddressState extends State<DeliveryAddress> {
                     text: 'Add delivery address',
                     showIcon: false,
                     loading: false,
-                    onPressed: () async {},
+                    onPressed: () async {
+                      if (!_formKey.currentState!.validate()) {
+                        return;
+                      }
+                      Navigator.pop(context, {
+                        'address': addressCtrl.text,
+                        'landmark': landmark.text,
+                        'phoneNumber': phoneNumber.text,
+                      });
+                    },
                   )
                 ],
               ),

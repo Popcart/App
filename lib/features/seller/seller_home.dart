@@ -10,7 +10,7 @@ import 'package:popcart/features/seller/analytics/analytics_screen.dart';
 import 'package:popcart/features/seller/inventory/inventory_screen.dart';
 import 'package:popcart/features/seller/live/seller_live_nav.dart';
 import 'package:popcart/features/seller/orders/orders_screen.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/wallet/cubit/wallet_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 
@@ -23,15 +23,14 @@ class SellerHome extends StatefulWidget {
 
 ValueNotifier<int> sellerCurrentIndex = ValueNotifier(0);
 
-class _SellerHomeState extends State<SellerHome>{
+class _SellerHomeState extends State<SellerHome> {
   final List<Widget> _pages = const [
     AnalyticsScreen(),
-    OrdersScreen(),
+    SellerOrdersScreen(),
     InventoryScreen(),
     SellerLiveNav(),
     SellerProfileScreen(),
   ];
-
 
   SvgPicture svgIcon(String src, {Color? color}) {
     return SvgPicture.asset(
@@ -47,11 +46,16 @@ class _SellerHomeState extends State<SellerHome>{
   }
 
   Future<void> loadData() async {
-    await context.read<ProfileCubit>().fetchUserProfile();
-    if(locator<SharedPrefs>().isBuyer) {
-      await context.read<WalletCubit>().getWalletInfo(userId: locator<SharedPrefs>().userUid);
+    final profileCubit = context.read<ProfileCubit>();
+    final sharedPref = locator<SharedPrefs>();
+
+    await profileCubit.fetchUserProfile();
+
+    if (sharedPref.loggedIn) {
+      await profileCubit.saveFcmToken();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -85,41 +89,43 @@ class _SellerHomeState extends State<SellerHome>{
                 child: BottomNavigationBar(
                   currentIndex: index,
                   onTap: (newIndex) => sellerCurrentIndex.value = newIndex,
-                  backgroundColor: Theme.of(context).brightness == Brightness.light
-                      ? Colors.white
-                      : const Color(0xFF101015),
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.light
+                          ? Colors.white
+                          : const Color(0xFF101015),
                   type: BottomNavigationBarType.fixed,
                   items: [
                     BottomNavigationBarItem(
                       activeIcon:
-                      AppAssets.icons.analyticSelected.themedIcon(context),
-                      icon:
-                      AppAssets.icons.analyticUnselected.themedIcon(context),
+                          AppAssets.icons.analyticSelected.themedIcon(context),
+                      icon: AppAssets.icons.analyticUnselected
+                          .themedIcon(context),
                       label: 'Analytics',
                     ),
                     BottomNavigationBarItem(
                       activeIcon:
-                      AppAssets.icons.orderSelected.themedIcon(context),
+                          AppAssets.icons.orderSelected.themedIcon(context),
                       icon: AppAssets.icons.orderUnselected.themedIcon(context),
                       label: 'Orders',
                     ),
                     BottomNavigationBarItem(
                       activeIcon:
-                      AppAssets.icons.auctionsSelected.themedIcon(context),
-                      icon:
-                      AppAssets.icons.auctionsUnselected.themedIcon(context),
+                          AppAssets.icons.auctionsSelected.themedIcon(context),
+                      icon: AppAssets.icons.auctionsUnselected
+                          .themedIcon(context),
                       label: 'Inventory',
                     ),
                     BottomNavigationBarItem(
                       activeIcon:
-                      AppAssets.icons.liveSelected.themedIcon(context),
+                          AppAssets.icons.liveSelected.themedIcon(context),
                       icon: AppAssets.icons.liveUnselected.themedIcon(context),
                       label: 'Live',
                     ),
                     BottomNavigationBarItem(
                       activeIcon:
-                      AppAssets.icons.profileSelected.themedIcon(context),
-                      icon: AppAssets.icons.profileUnselected.themedIcon(context),
+                          AppAssets.icons.profileSelected.themedIcon(context),
+                      icon:
+                          AppAssets.icons.profileUnselected.themedIcon(context),
                       label: 'Account',
                     ),
                   ],

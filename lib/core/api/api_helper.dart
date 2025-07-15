@@ -51,9 +51,9 @@ class ApiSuccess<T> {
       message: (json['message']) as String?,
       status: json['status'] as bool?,
       accessToken: json['access_token'] as String?,
-      data: fromJson != null && json['data'] != null
-          ? fromJson(json['data'] as Map<String, dynamic>)
-          : fromJson?.call(json),
+      data: fromJson?.call(json['data'] != null
+          ? json['data'] as Map<String, dynamic>
+          : json,),
     );
   }
 
@@ -329,7 +329,6 @@ class ApiHandler {
           error: e.response?.data?['error'] as String?,
         )..code = e.response?.statusCode ?? 500,
       );
-
       return error;
     } catch (e, stackTrace) {
       log('Error: $e', name: 'DioError');
