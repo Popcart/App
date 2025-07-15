@@ -8,7 +8,7 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/widgets/buttons.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 
 class SelectProductsScreen extends StatefulHookWidget {
   const SelectProductsScreen({super.key});

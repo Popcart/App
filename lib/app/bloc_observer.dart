@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/env/env.dart';
-// ignore: depend_on_referenced_packages
+import 'package:popcart/firebase_options.dart';
 import 'package:sprintf/sprintf.dart';
 
 class AppBlocObserver extends BlocObserver {
@@ -144,10 +144,13 @@ Future<void> bootstrap(
 }) async {
   try {
     final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-        await Firebase.initializeApp();
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
 
     await setupLocator(environment: environment);
-    await locator<SharedPrefs>().init();
+    final sharedPref = locator<SharedPrefs>();
+    await sharedPref.init();
     FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
     FlutterError.onError = (details) {
       log(
@@ -172,16 +175,16 @@ Future<void> bootstrap(
     await FirebaseMessaging.instance.requestPermission(provisional: true);
     FirebaseMessaging.onMessage.listen(onMessage);
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
-    final isFirstTime = locator<SharedPrefs>().firstTime;
+    final isFirstTime = sharedPref.firstTime;
     if (isFirstTime == null) {
       // await downloadSplashFromServer();
-      locator<SharedPrefs>().firstTime = false;
+      sharedPref.firstTime = false;
     }
-    final isLoggedIn = locator.get<SharedPrefs>().loggedIn;
+    final isLoggedIn = sharedPref.loggedIn;
     if (isLoggedIn) {
-      final token = locator.get<SharedPrefs>().accessToken ?? '';
+      final token = sharedPref.accessToken ?? '';
       if (token.isNotEmpty) {
-        locator.get<SharedPrefs>().accessToken = token;
+        sharedPref.accessToken = token;
       }
     }
   } catch (e, s) {

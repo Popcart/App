@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 
 part 'onboarding_models.g.dart';
 

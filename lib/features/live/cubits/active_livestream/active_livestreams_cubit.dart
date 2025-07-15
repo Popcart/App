@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/user/models/user_model.dart';
 
 part 'active_livestreams_cubit.freezed.dart';
 

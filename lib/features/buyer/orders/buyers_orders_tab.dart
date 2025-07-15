@@ -4,24 +4,24 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/repository/order_repo.dart';
 import 'package:popcart/core/widgets/widgets.dart';
-import 'package:popcart/features/live/models/products.dart';
-import 'package:popcart/features/seller/inventory/product_item.dart';
+import 'package:popcart/features/common/models/order_model.dart';
+import 'package:popcart/features/common/widget/order_item.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/utils/text_styles.dart';
 
-class OrdersTabView extends StatefulWidget {
-  const OrdersTabView({required this.type, super.key});
+class BuyersOrdersTabView extends StatefulWidget {
+  const BuyersOrdersTabView({required this.type, super.key});
 
   final String type;
 
   @override
-  State<OrdersTabView> createState() => _OrdersTabViewState();
+  State<BuyersOrdersTabView> createState() => _BuyersOrdersTabViewState();
 }
 
-class _OrdersTabViewState extends State<OrdersTabView> {
-  final PagingController<int, Product> _pagingController =
+class _BuyersOrdersTabViewState extends State<BuyersOrdersTabView> {
+  final PagingController<int, TransactionList> _pagingController =
       PagingController(firstPageKey: 1);
-  String filterBy = 'Recents';
+
   @override
   void initState() {
     super.initState();
@@ -35,19 +35,19 @@ class _OrdersTabViewState extends State<OrdersTabView> {
   }
 
   Future<void> fetchPage(int pageKey) async {
-    final items = await locator<OrderRepo>().getOrders(
+    final items = await locator<OrderRepo>().getBuyerOrders(
       page: pageKey,
       limit: 10, status: widget.type.toLowerCase(),
     );
     items.when(
       success: (data) {
-        final isLastPage = data?.data?.page == data?.data?.totalPages;
-        final results = data?.data?.results ?? <Product>[];
-        if (isLastPage) {
-          _pagingController.appendLastPage(results);
-        } else {
+        // final isLastPage = data?.data?.page == data?.data?.totalPages;
+        final results = data?.data ?? <TransactionList>[];
+        // if (isLastPage) {
+        //   _pagingController.appendLastPage(results);
+        // } else {
           _pagingController.appendPage(results, pageKey + 1);
-        }
+        // }
       },
       error: (err) => _pagingController.error = err,
     );
@@ -57,45 +57,13 @@ class _OrdersTabViewState extends State<OrdersTabView> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        GestureDetector(
-          onTap: () async {
-            await showSortModal(
-              context: context,
-              selected: filterBy,
-              onChanged: (val) => setState(() => filterBy = val),
-            );
-
-          },
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                const Text(
-                  'Sort by: ',
-                  style: TextStyles.titleHeading,
-                ),
-                Text(
-                  filterBy,
-                  style: TextStyles.titleHeading,
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                const Icon(Icons.keyboard_arrow_down)
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: 20,),
         Expanded(
-          child: PagedListView<int, Product>(
+          child: PagedListView<int, TransactionList>(
             pagingController: _pagingController,
-            builderDelegate: PagedChildBuilderDelegate<Product>(
-              itemBuilder: (context, product, index) {
-                return ProductItem(
-                  product: product,
-                  onDeleted: _pagingController.refresh,
+            builderDelegate: PagedChildBuilderDelegate<TransactionList>(
+              itemBuilder: (context, order, index) {
+                return OrderItem(
+                  transactionList: order,
                 );
               },
               firstPageErrorIndicatorBuilder: (context) => emptyState(

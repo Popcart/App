@@ -18,6 +18,8 @@ const String searchScreen = 'search_screen';
 const String productScreen = 'product_screen';
 const String settingsScreen = 'settings_screen';
 const String profileScreen = 'profile_screen';
+const String deliveryAddress = 'delivery_address';
+const String paymentScreen = 'payment_screen';
 
 
 //Seller routes

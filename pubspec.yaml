@@ -18,7 +18,7 @@ dependencies:
   firebase_analytics: ^11.3.5
   firebase_core: ^3.8.0
   firebase_crashlytics: ^4.1.5
-  firebase_messaging: ^15.1.5
+  firebase_messaging: ^15.2.9
   firebase_performance_dio: ^0.7.1
   flutter:
     sdk: flutter
@@ -71,6 +71,8 @@ dependencies:
   imgly_editor: 1.53.0
   photo_manager: ^3.7.1
   cached_video_player_plus: ^3.0.3
+  geolocator: ^14.0.2
+  geocoding: ^4.0.0
 
 dev_dependencies:
   bloc_test: ^9.1.7

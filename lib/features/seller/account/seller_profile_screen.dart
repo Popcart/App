@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -10,11 +9,10 @@ import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/widgets.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/features/seller/cubits/pop_play/pop_play_cubit.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:popcart/route/route_constants.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class SellerProfileScreen extends StatefulWidget {
   const SellerProfileScreen({super.key});

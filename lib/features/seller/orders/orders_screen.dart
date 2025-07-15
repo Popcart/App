@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:popcart/core/widgets/widgets.dart';
-import 'package:popcart/features/seller/orders/orders_tab.dart';
+import 'package:popcart/features/seller/orders/seller_orders_tab.dart';
 
-class OrdersScreen extends StatefulWidget {
-  const OrdersScreen({super.key});
+class SellerOrdersScreen extends StatefulWidget {
+  const SellerOrdersScreen({super.key});
 
   @override
-  State<OrdersScreen> createState() => _OrdersScreenState();
+  State<SellerOrdersScreen> createState() => _SellerOrdersScreenState();
 }
 
-class _OrdersScreenState extends State<OrdersScreen>
+class _SellerOrdersScreenState extends State<SellerOrdersScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0;
@@ -53,7 +53,7 @@ class _OrdersScreenState extends State<OrdersScreen>
                 controller: _tabController,
                 physics: const NeverScrollableScrollPhysics(),
                 children:
-                    tabs.map((type) => OrdersTabView(type: type)).toList(),
+                    tabs.map((type) => SellerOrdersTabView(type: type)).toList(),
               ),
             ),
           ],

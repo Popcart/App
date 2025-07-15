@@ -23,7 +23,8 @@ class CustomTextFormField extends TextFormField {
     super.textCapitalization,
     super.inputFormatters,
     super.onChanged,
-    Widget? prefixIcon
+    Widget? prefixIcon,
+    Widget? suffixIcon
   }) : super(
           onTapOutside: (_) => FocusScope.of(Get.context!).unfocus(),
           style: const TextStyle(
@@ -39,10 +40,8 @@ class CustomTextFormField extends TextFormField {
             hintStyle: TextStyle(color: AppColors.white.withOpacity(0.2)),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-            prefixIcon: prefixIcon != null ?Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: prefixIcon,
-            ): null,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(19),
               borderSide: const BorderSide(color: AppColors.white),

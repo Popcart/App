@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/api/api_helper.dart';
+import 'package:popcart/core/repository/cart_repo.dart';
 import 'package:popcart/core/repository/inventory_repo.dart';
 import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
@@ -8,6 +9,7 @@ import 'package:popcart/core/repository/order_repo.dart';
 import 'package:popcart/core/repository/pop_play_repo.dart';
 import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
+import 'package:popcart/core/repository/transaction_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
 import 'package:popcart/core/repository/wallet_repo.dart';
 import 'package:popcart/env/env.dart';
@@ -15,7 +17,8 @@ import 'package:popcart/env/env.dart';
 
 GetIt locator = GetIt.instance;
 
-enum ApiService { auth, user, inventory, seller, livestreams, orders, products, posts, wallet }
+enum ApiService { auth, user, inventory, seller, livestreams, products,
+  posts, wallet, transactions, order }
 
 Future<void> setupLocator({
   required AppEnvironment environment,
@@ -46,11 +49,6 @@ Future<void> setupLocator({
     )
     ..registerLazySingleton<ApiHandler>(
       () =>
-          ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/orders/'),
-      instanceName: ApiService.orders.name,
-    )
-    ..registerLazySingleton<ApiHandler>(
-      () =>
           ApiHandler(baseUrl: '${Env().authServiceBaseUrl}/products/'),
       instanceName: ApiService.products.name,
     )
@@ -64,8 +62,32 @@ Future<void> setupLocator({
           ApiHandler(baseUrl: 'https://wallet-ufwe.onrender.com/wallets/'),
       instanceName: ApiService.wallet.name,
     )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: 'https://order-ctx2.onrender.com/'),
+      instanceName: ApiService.order.name,
+    )
+    ..registerLazySingleton<ApiHandler>(
+      () =>
+          ApiHandler(baseUrl: 'https://transaction-7jox.onrender.com/transactions/'),
+      instanceName: ApiService.transactions.name,
+    )
 
 
+    ..registerLazySingleton<TransactionRepo>(
+      () => TransactionRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.transactions.name,
+        ),
+      ),
+    )
+    ..registerLazySingleton<CartRepo>(
+      () => CartRepoImpl(
+        locator.get<ApiHandler>(
+          instanceName: ApiService.order.name,
+        ),
+      ),
+    )
     ..registerLazySingleton<WalletRepo>(
       () => WalletRepoImpl(
         locator.get<ApiHandler>(
@@ -118,7 +140,7 @@ Future<void> setupLocator({
     ..registerLazySingleton<OrderRepo>(
       () => OrderRepoImpl(
         locator.get<ApiHandler>(
-          instanceName: ApiService.orders.name,
+          instanceName: ApiService.order.name,
         ),
       ),
     )

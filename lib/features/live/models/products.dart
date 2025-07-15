@@ -1,8 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 import 'package:popcart/features/onboarding/models/onboarding_models.dart';
 import 'package:popcart/features/seller/models/variant_model.dart';
 import 'package:popcart/features/seller/models/video_post_response.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 
 part 'products.g.dart';
 

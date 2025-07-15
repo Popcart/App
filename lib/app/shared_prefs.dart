@@ -16,6 +16,7 @@ class SharedPrefs {
   bool get showFundWalletDialog => _sharedPrefs.getBool('showFundWallet') ?? true;
   String get userUid => _sharedPrefs.getString('uid') ?? '';
   String get username => _sharedPrefs.getString('username') ?? '';
+  String get email => _sharedPrefs.getString('email') ?? '';
   int get walletBalance => _sharedPrefs.getInt('walletBalance') ?? 0;
 
   set firstTime(bool? value) {
@@ -44,6 +45,10 @@ class SharedPrefs {
 
   set username(String value) {
     _sharedPrefs.setString('username', value);
+  }
+
+  set email(String value) {
+    _sharedPrefs.setString('email', value);
   }
 
   set isBuyer(bool value) {

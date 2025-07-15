@@ -32,7 +32,7 @@ class _SelectVideoState extends State<SelectVideo> {
               final result = await IMGLYEditor.openEditor(
                   settings: settings,
                   preset: EditorPreset.video,
-                  source: Source.fromVideo(file!.path));
+                  source: Source.fromVideo(file!.path),);
               if (result == null) return;
               unawaited(
                 Navigator.pushNamed(

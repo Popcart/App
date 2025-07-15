@@ -14,8 +14,8 @@ import 'package:popcart/core/repository/livestreams_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/env/env.dart';
 import 'package:popcart/features/live/cubits/open_livestream/open_livestream_cubit.dart';
-import 'package:popcart/features/user/cubits/cubit/profile_cubit.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/cubits/cubit/profile_cubit.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class MessageModel {

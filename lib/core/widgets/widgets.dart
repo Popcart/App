@@ -225,15 +225,18 @@ class CustomTabBar extends StatelessWidget {
 
 Widget emptyState(Widget icon, String label) {
   return Column(
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
       const Spacer(),
-      icon,
+      Center(child: icon),
       const SizedBox(
         height: 10,
       ),
-      Text(label,
-        textAlign: TextAlign.center,
-        style: TextStyles.titleHeading,
+      Center(
+        child: Text(label,
+          textAlign: TextAlign.center,
+          style: TextStyles.titleHeading,
+        ),
       ),
       const Spacer(),
     ],

@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:haptic_feedback/haptic_feedback.dart';
 import 'package:intl/intl.dart';
+import 'package:popcart/features/live/models/cart_item_model.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:toastification/toastification.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
@@ -293,6 +296,18 @@ String formatDuration(Duration duration) {
   final minutes = twoDigits(duration.inMinutes.remainder(60));
   final seconds = twoDigits(duration.inSeconds.remainder(60));
   return '$minutes:$seconds';
+}
+
+String generateTransactionRef(String userId) {
+  final prefix = userId.length >= 5 ? userId.substring(0, 5) : userId;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final rand = Random();
+  final randomPart = List.generate(8, (index) => chars[rand.nextInt(chars.length)]).join();
+  return 'TX-$prefix-$randomPart';
+}
+
+double calculateCartTotal(List<CartItemModel> cartItems) {
+  return cartItems.fold(0, (sum, item) => sum + (item.meta.price * item.quantity));
 }
 
 

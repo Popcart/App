@@ -3,14 +3,19 @@ import 'dart:math';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:popcart/app/service_locator.dart';
+import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/colors.dart';
+import 'package:popcart/core/repository/cart_repo.dart';
 import 'package:popcart/core/repository/products_repo.dart';
 import 'package:popcart/core/repository/sellers_repo.dart';
 import 'package:popcart/core/utils.dart';
 import 'package:popcart/core/widgets/buttons.dart';
+import 'package:popcart/features/buyer/cart/cubit/cart_cubit.dart';
 import 'package:popcart/features/components/network_image.dart';
+import 'package:popcart/features/live/models/cart_item_model.dart';
 import 'package:popcart/features/live/models/products.dart';
 import 'package:popcart/gen/assets.gen.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -22,6 +27,7 @@ class ProductScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cartCubit = context.read<CartCubit>();
     final product = useState<Product>(Product.empty());
     final fetchProduct = useCallback(() async {
       final response =
@@ -61,9 +67,11 @@ class ProductScreen extends HookWidget {
               children: [
                 SizedBox(
                     height: 270,
-                    child: product.value.images.isNotEmpty ? NetworkImageWithLoader(
-                      product.value.images.first,
-                    ) : const Center(child: CupertinoActivityIndicator())),
+                    child: product.value.images.isNotEmpty
+                        ? NetworkImageWithLoader(
+                            product.value.images.first,
+                          )
+                        : const Center(child: CupertinoActivityIndicator())),
                 const SizedBox(height: 8),
                 Text(
                   product.value.brand,
@@ -92,10 +100,41 @@ class ProductScreen extends HookWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                CustomElevatedButton(
-                  text: 'Buy now',
-                  showIcon: false,
-                  onPressed: () async {},
+                BlocConsumer<CartCubit, CartState>(
+                  listener: (context, state) {
+                    state.maybeWhen(
+                      cartAddedSuccess: () {
+                        context.showSuccess('Product added to cart successfully');
+                      },
+                      cartAddingError: (error) {
+                        context.showError(error);
+                      },
+                      orElse: () {},
+                    );
+                  },
+                  builder: (context, state) {
+                    return CustomElevatedButton(
+                      text: 'Add to cart',
+                      showIcon: false,
+                      loading: state.maybeWhen(
+                        orElse: () => false,
+                        addingToCart: ()=> true,
+                      ),
+                      onPressed: () async {
+                        await cartCubit.addToCart(
+                            CartItemModel(
+                                userId: locator<SharedPrefs>().userUid,
+                                productId: productId,
+                                quantity: 1,
+                                variant: '',
+                                meta: Meta(
+                                    name: product.value.name,
+                                    image: product.value.images[0],
+                                    price: product.value.price,
+                                    sellerId: product.value.seller.id), id: ''));
+                      },
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 const Text(

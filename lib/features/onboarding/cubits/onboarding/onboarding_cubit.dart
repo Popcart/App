@@ -6,7 +6,7 @@ import 'package:popcart/app/service_locator.dart';
 import 'package:popcart/app/shared_prefs.dart';
 import 'package:popcart/core/repository/onboarding_repo.dart';
 import 'package:popcart/core/repository/user_repo.dart';
-import 'package:popcart/features/user/models/user_model.dart';
+import 'package:popcart/features/common/models/user_model.dart';
 
 part 'onboarding_cubit.freezed.dart';
 

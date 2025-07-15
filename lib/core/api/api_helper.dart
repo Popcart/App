@@ -7,6 +7,7 @@ import 'package:dio/dio.dart' as dio;
 import 'package:firebase_performance_dio/firebase_performance_dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+
 // ignore: depend_on_referenced_packages
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:popcart/app/service_locator.dart';
@@ -50,9 +51,9 @@ class ApiSuccess<T> {
       message: (json['message']) as String?,
       status: json['status'] as bool?,
       accessToken: json['access_token'] as String?,
-      data: fromJson != null && json['data'] != null
-          ? fromJson(json['data'] as Map<String, dynamic>)
-          : fromJson?.call(json),
+      data: fromJson?.call(json['data'] != null
+          ? json['data'] as Map<String, dynamic>
+          : json,),
     );
   }
 
@@ -80,7 +81,7 @@ class ListApiSuccess<T> {
     return ListApiSuccess(
       message: json['message'] as String?,
       status: json['status'] as bool?,
-      data: (json['data'] as List)
+      data: ((json['data'] ?? json) as List)
           .map((e) => fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -199,7 +200,8 @@ class ApiHandler {
     if (filesList != null) {
       final uploadedImageUrls = <dynamic>[];
       for (final file in filesList) {
-        final compressedFile = await FileCompressor.compressFile(File(file.path));
+        final compressedFile =
+            await FileCompressor.compressFile(File(file.path));
         final data = dio.FormData.fromMap({
           'files': await dio.MultipartFile.fromFile(compressedFile.path),
         });
@@ -224,33 +226,34 @@ class ApiHandler {
         final imageUrl = (response.data['data'] as List).firstOrNull ?? '';
         uploadedImageUrls.add(imageUrl);
       }
-      modifiedPayload[imagesKey??'images'] = uploadedImageUrls;
+      modifiedPayload[imagesKey ?? 'images'] = uploadedImageUrls;
     }
     if (singleFile != null) {
-        final compressedFile = await FileCompressor.compressFile(File(singleFile.path));
-        final data = dio.FormData.fromMap({
-          'files': await dio.MultipartFile.fromFile(compressedFile.path),
-        });
-        final uploadInstance = dio.Dio()
-          ..interceptors.add(
-            PrettyDioLogger(
-              requestBody: true,
-              requestHeader: true,
-              responseHeader: true,
-              logPrint: (value) {
-                if (kDebugMode) {
-                  log(value.toString(), name: 'Dio');
-                }
-              },
-            ),
-          );
-        // ignore: inference_failure_on_function_invocation
-        final response = await uploadInstance.post(
-          '${Env().authServiceBaseUrl}/upload',
-          data: data,
+      final compressedFile =
+          await FileCompressor.compressFile(File(singleFile.path));
+      final data = dio.FormData.fromMap({
+        'files': await dio.MultipartFile.fromFile(compressedFile.path),
+      });
+      final uploadInstance = dio.Dio()
+        ..interceptors.add(
+          PrettyDioLogger(
+            requestBody: true,
+            requestHeader: true,
+            responseHeader: true,
+            logPrint: (value) {
+              if (kDebugMode) {
+                log(value.toString(), name: 'Dio');
+              }
+            },
+          ),
         );
-        final imageUrl = response.data['data'][0];
-      modifiedPayload[imagesKey??'images'] = imageUrl;
+      // ignore: inference_failure_on_function_invocation
+      final response = await uploadInstance.post(
+        '${Env().authServiceBaseUrl}/upload',
+        data: data,
+      );
+      final imageUrl = response.data['data'][0];
+      modifiedPayload[imagesKey ?? 'images'] = imageUrl;
     }
 
     try {
@@ -326,7 +329,6 @@ class ApiHandler {
           error: e.response?.data?['error'] as String?,
         )..code = e.response?.statusCode ?? 500,
       );
-
       return error;
     } catch (e, stackTrace) {
       log('Error: $e', name: 'DioError');
@@ -403,16 +405,20 @@ class ApiHandler {
             ),
           );
       }
+      log('Success: $response');
       final successResponse = ListApiSuccess<T>.fromJson(
         response.data ?? {},
         responseMapper ?? (json) => json as T,
       );
+      log('Success response $successResponse');
       final finalResponse = ListApiResponse<T>.success(
         data: successResponse,
       );
-      // log(finalResponse.toString(), name: 'DioResponse');
+      log(finalResponse.toString(), name: 'DioResponse');
       return finalResponse;
-    } on dio.DioException catch (e) {
+    } on dio.DioException catch (e, stackTrace) {
+      log(stackTrace.toString(), name: 'DioException');
+      log(e.toString(), name: 'DioException');
       final error = ListApiResponse<T>.error(
         ApiError(
           message: (e.response?.data != null && e.response?.data is Map)
