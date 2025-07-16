@@ -228,7 +228,7 @@ DEPENDENCIES
   logger
 
 RUBY VERSION
-   ruby 2.6.10p210
+   ruby 3.4.2p28
 
 BUNDLED WITH
    2.4.22
