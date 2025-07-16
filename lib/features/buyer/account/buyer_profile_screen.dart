@@ -26,7 +26,6 @@ class _BuyerProfileScreenState extends State<BuyerProfileScreen> {
     final title = walletCubit.state.maybeWhen(
       loaded: (wallet) => wallet.balance.toCurrency(),
       orElse: () => '....',
-
     );
     return Scaffold(
       appBar: AppBar(
