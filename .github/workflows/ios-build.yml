@@ -93,6 +93,10 @@ jobs:
           cd ios
           pod deintegrate
           pod cache clean --all
+
+      - name: Update Fastlane
+        working-directory: ios
+        run: bundle update fastlane
           
       - name: Pod Install
         working-directory: ios
