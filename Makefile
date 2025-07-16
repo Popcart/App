@@ -14,7 +14,6 @@ clean: ## Cleans Flutter project.  dart run build_runner build --delete-conflict
 	rm -f ios/Podfile.lock
 	flutter clean
 	flutter pub get
-	cd ios && bundle update fastlane
 	cd ios && pod repo update && pod install --verbose && cd ..
 	dart run build_runner build --delete-conflicting-outputs
 
