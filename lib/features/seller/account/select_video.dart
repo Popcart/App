@@ -28,11 +28,10 @@ class _SelectVideoState extends State<SelectVideo> {
           padding: const EdgeInsets.all(20),
           child: GalleryImagePicker(
             onImageSelected: (asset) async {
-              final file = await asset.file;
               final result = await IMGLYEditor.openEditor(
                   settings: settings,
                   preset: EditorPreset.video,
-                  source: Source.fromVideo(file!.path),);
+                  source: Source.fromVideo(Uri.file(asset).toString()),);
               if (result == null) return;
               unawaited(
                 Navigator.pushNamed(

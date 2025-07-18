@@ -137,16 +137,22 @@ class CartCubit extends Cubit<CartState> {
             final navResponse = await Navigator.push(
               Get.context!,
               MaterialPageRoute<bool?>(
-                builder: (context) => WebViewScreen(
-                  txnRef: transactionRef,
-                  amount: data['amount'],
-                  paymentLink:
-                      'https://newwebpay.qa.interswitchng.com/collections/w/pay',
-                ),
+                builder: (context) =>
+                    WebViewScreen(
+                        paymentLink:
+                        'https://newwebpay.qa.interswitchng.com/'
+                            'collections/w/pay'
+                            '?merchant_code=MX182923'
+                            '&pay_item_id=Default_Payable_MX182923'
+                            '&site_redirect_url=google.com'
+                            '&txn_ref=$transactionRef'
+                            '&amount=${data['amount']}'
+                            '&currency=566',
+                    ),
               ),
             );
             if (navResponse != null && navResponse == true) {
-              await cartRepo.clearCart(userId: pref.userUid);
+              // await cartRepo.clearCart(userId: pref.userUid);
               await updateTransaction({
                 'reference': transactionRef,
                 'source': data['paymentOption'],
@@ -170,15 +176,14 @@ class CartCubit extends Cubit<CartState> {
             final navResponse = await Navigator.push(
               Get.context!,
               MaterialPageRoute<bool>(
-                builder: (context) => WebViewScreen(
-                  txnRef: transactionRef,
-                  amount: data['amount'],
-                  paymentLink: result?.data?['authorization_url'] as String,
-                ),
+                builder: (context) =>
+                    WebViewScreen(
+                      paymentLink: result?.data?['authorization_url'] as String,
+                    ),
               ),
             );
             if (navResponse != null && navResponse == true) {
-              await cartRepo.clearCart(userId: pref.userUid);
+              // await cartRepo.clearCart(userId: pref.userUid);
               await updateTransaction({
                 'reference': transactionRef,
                 'source': data['paymentOption'],
@@ -211,7 +216,7 @@ class CartCubit extends Cubit<CartState> {
             );
             await debitResponse.when(
               success: (result) async {
-                await cartRepo.clearCart(userId: pref.userUid);
+                // await cartRepo.clearCart(userId: pref.userUid);
                 emit(const CartState.orderProcessed());
               },
               error: (message) {
