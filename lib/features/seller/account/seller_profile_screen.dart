@@ -176,7 +176,8 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                 },
                                 child: GridView.builder(
                                     gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                        const
+                                        SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
                                       mainAxisSpacing: 16,
                                       crossAxisSpacing: 16,
@@ -185,7 +186,7 @@ class _SellerProfileScreenState extends State<SellerProfileScreen>
                                     itemBuilder: (_, index) {
                                       return FutureBuilder<Uint8List?>(
                                         future: generateThumbnail(
-                                            posts[index].video),
+                                            posts[index].video,),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {

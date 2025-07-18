@@ -6,7 +6,7 @@ import 'package:photo_manager/photo_manager.dart';
 class GalleryImagePicker extends StatefulWidget {
   const GalleryImagePicker({required this.onImageSelected, super.key});
 
-  final void Function(AssetEntity image) onImageSelected;
+  final void Function(String image) onImageSelected;
 
   @override
   State<GalleryImagePicker> createState() => _GalleryImagePickerState();
@@ -80,7 +80,10 @@ class _GalleryImagePickerState extends State<GalleryImagePicker> {
             if (data == null) return const SizedBox.shrink();
 
             return GestureDetector(
-              onTap: () => widget.onImageSelected(images[index]),
+              onTap: () async {
+                final file = await images[index].file;
+                widget.onImageSelected(file?.path ?? '');
+              },
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.memory(
